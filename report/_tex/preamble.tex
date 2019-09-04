@@ -146,9 +146,11 @@
 %
 % Bibliography
 %
-\usepackage[numbers]{natbib}
-\renewcommand{\bibsection}{}
-\bibliographystyle{IEEEtranN}
+\usepackage[backend=bibtex,style=ieee,natbib=true]{biblatex} %added
+\addbibresource{_tex/biblio.bib}
+%\usepackage[numbers]{natbib}
+%\renewcommand{\bibsection}{}
+%\bibliographystyle{ieee}
 
 %
 % Glossary and abbreviations
