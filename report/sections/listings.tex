@@ -1,0 +1,80 @@
+\hypertarget{listings}{%
+\section{Listings}\label{sec:listings}}
+
+\begin{lstlisting}[language=python, caption=Python example]
+    # Python code
+    class Employee:
+    'Common base class for all employees'
+    empCount = 0
+  
+    def __init__(self, name, salary):
+       self.name = name
+       self.salary = salary
+       Employee.empCount += 1
+    
+    def displayCount(self):
+      print ("Total Employee %d" % Employee.empCount)
+  
+    def displayEmployee(self):
+       print ("Name : ", self.name,  ", Salary: ", self.salary)      
+  \end{lstlisting}
+  
+  \begin{lstlisting}[language=HTML, caption=HTML example]
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>This is the title of the page.</title>
+    </head>
+    <body>
+      <a href="http://example.com">This is a link.</a>
+      <img src="./image.jpg" alt="This is an image.">
+    </body>
+  </html>
+  \end{lstlisting}
+  
+  \begin{lstlisting}[language=SQL, caption=SQL example]
+  CREATE TYPE person_t AS (
+      firstName VARCHAR(50) NOT NULL,
+      lastName VARCHAR(50) NOT NULL
+  );
+  
+  CREATE Or REPLACE FUNCTION getFormattedName(person) RETURNS text AS 
+      $$ SELECT 'P: ' || initcap($1.firstName); $$ 
+  LANGUAGE SQL;
+  \end{lstlisting}
+  
+  \begin{lstlisting}[language=JavaScript, caption=Javascript example]
+  Name.prototype = {
+    methodName: function(params){
+      var doubleQuoteString = "some text";
+      var singleQuoteString = 'some more text';
+      // this is a comment
+      if(this.confirmed != null && typeof(this.confirmed) == Boolean && this.confirmed == true){
+        document.createElement('h3');
+        $('#system').append("This looks great");
+        return false;
+      } else {
+        throw new Error;
+      }
+      while true {
+        new class Employee
+      }
+    }
+  }
+  \end{lstlisting}
+  
+  \begin{lstlisting}[language={[Sharp]C}, caption=C\# example]
+  // Welcome to the Interactive C# Tutorial.
+  // Start by choosing a chapter and write your code in this window.
+  
+  using System;
+  
+  public class Hello
+  {
+      public static void Main()
+      {
+          Console.WriteLine("Hello, World!");
+      }
+  }
+  \end{lstlisting}
+  

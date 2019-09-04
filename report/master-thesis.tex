@@ -1,0 +1,35 @@
+\include{_tex/preamble}
+\begin{document}
+	\input{sections/titlepage.tex}
+	\clearpage
+	\clearpage % end title page
+	% Empty page after title page
+	\begingroup
+	\pagestyle{empty}
+	\null
+	\newpage
+	\endgroup
+	\pagenumbering{Roman}
+	\justify
+	\input{sections/preface.tex}
+	\setcounter{page}{1}
+	\input{sections/abstract.tex}
+    \setglossarystyle{mcolindex}
+    \printnoidxglossary[type=\acronymtype]%,numberedsection=autolabel]
+    %\pagebreak
+    \tableofcontents
+    \pagenumbering{arabic}
+    \pagebreak
+    \input{sections/introduction.tex}
+    \input{sections/document.tex}
+    \input{sections/listings.tex}
+    \input{sections/tables.tex}
+    \input{sections/figure.tex}
+    \input{sections/blockquotes.tex}
+    \input{sections/references.tex}
+    \pagebreak
+    \input{sections/appendix.tex}
+    \pagebreak
+    \printnoidxglossary[type=main]%,numberedsection=autolabel]
+    \addcontentsline{toc}{chapter}{Glossary}
+\end{document}
