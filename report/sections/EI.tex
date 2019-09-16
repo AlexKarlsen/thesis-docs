@@ -1,6 +1,8 @@
 \section{Edge Intelligence}
 
-Motivation??
+State-of-the-art \gls{dnn} are getting deeper i.e. adding more layer to the models to improve model accuracy, however the added amount of model parameters require additional computations, hence inference time is degraded \cite{bibid}. Conventionally intelligent mobile applications have been run in the cloud, introducing highly unreliable latency in \gls{wan}. As end-devices have become more powerful, smaller albeit less accurate \gls{ai} architectures have been proposed, however with the emergence of \gls{iot} less powerful devices, not able to run highly demanding algorithms are constantly being connected to the internet. Devices which work in application, that advantageously could benefit from intelligence. In order to find the right balance between primarily highly accurate \gls{mcc} and highly responsive mobile computing, a new computing paradigm emerges namely \gls{mec}.  
+
+A survey by \citet{zhou_edge_2019} review the current state within the research field of \gls{ei}. The survey includes training and inference of \gls{dnn} on the edge and categorizes several performance metrics for \gls{ei} applications and services. This work mainly addresses the inference process and will not focus on edge-specific training methods. In these next sections architectures, performance metrics and enabling technologies for edge-centric inference will be described.  
 
 \subsection{Architectures}
 
@@ -32,3 +34,19 @@ The aim of edge intelligence is to accommodate certain performance metrics:
 \end{description}
 
 \subsection{Enabling technologies (related work?)}
+
+This work is mainly concerned the accuracy-latency trade-off for inference in \gls{ei} applications and services. Thus, it will primarily address technologies regarding these performance metrics, and refer to the survey for a broader perspective on all of the performance metrics for \gls{ei} applications and services. The centralized device-based and edge-based architectures are addressed by common \gls{dl} literature. The distributed inference models for \gls{ei} is a fairly recent and promising field of research for truly enabling \gls{ai} applications and services.
+
+Technologies for distributed \gls{dnn} inference includes:
+
+\begin{description}
+	\item[Model Compression] description \cite{courbariaux_binaryconnect:_2015}
+	\item[Model Partition] description \cite{eshratifar_bottlenet:_2019}
+	\item[Model Early-Exit] description \cite{teerapittayanon_branchynet:_2016} \cite{teerapittayanon_distributed_2017}
+	\item[Edge Caching] description
+	\item[Input Filtering] description
+	\item[Model Selection] description
+	\item[Support for Multi-Tenancy] description
+	\item[Application-specific Optimization] description
+\end{description}
+
