@@ -25,7 +25,23 @@ The weighted sum loss is back-propagated to optimize the weights of the network.
 
 \subsubsection{Training BranchyResNet}
 
-The B-ResNet is trained on the *-dataset \cite{dataset}. The model is trained on a single \gls{gpu} GTX1080 with 12Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. The network weights are initialized as pre-trained ImageNet \cite{deng_imagenet:_2009}, to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network classifiers are rough-tuned by freezing the model feature extractor for X epoch with a learning rate of Y. The entire network is then made trainable and trained for Z epochs. 
+The B-ResNet is trained on the *-dataset \cite{dataset}. The model is trained on a single \gls{gpu} GTX1080 with 12Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. The network weights are initialized as pre-trained ImageNet \cite{deng_imagenet:_2009}, to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network classifiers are rough-tuned by freezing the model feature extractor for X epoch with a learning rate of Y. The entire network is then made trainable and trained for Z epochs.
+
+\begin{figure}
+	
+	\centering
+	\captionsetup[subfigure]{justification=centering}
+	\subfloat[Train loss\label{fig:B-resnet-voc-train-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_loss_VOC.png}}
+	\subfloat[Test loss \label{fig:B-resnet-voc-test-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_test_loss_VOC.png}}
+	\hfill
+	\subfloat[Train accuracy\label{fig:B-resnet-voc-train-acc}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_acc_VOC.png}}
+	\subfloat[Test accuracy\label{fig:B-resnet-voc-test-acc}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_test_acc_VOC.png}}
+	\caption[B-ResNet VOC Training summary]{Training summary shows the progression of model attributes over times of epochs, \protect\subref{fig:B-resnet-voc-train-loss} train loss, \protect\subref{fig:B-resnet-voc-test-loss} test loss, \protect\subref{fig:B-resnet-voc-train-acc} train accuracy, \protect\subref{fig:B-resnet-voc-test-acc}, test accuracy.}
+\end{figure}
+
+Visualizing the training progression, clearly indicates that model overfitting to the training data. When a model overfits it suffers to generalize the true underlying distribution of the data. This can be caused by insufficient number of training samples or too complex a model. Since the model has shown promising results in image classification task previously, we can conclude, that the dataset is too sparse.
+
+Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
 
 \subsection{\acrlong{ddnn}}
 
