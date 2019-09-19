@@ -9,7 +9,8 @@ One may argue, that the two datasets used for benchmarking are not applicable to
 This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. ResNet50 is built up of 50 layers divided into 4 blocks, these blocks are decided to be the initial exiting points. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network.
 
 \begin{figure}
-	*Figure of B-ResNet50*
+	\centering
+	\includegraphics[width=.9\linewidth]{figures/models/BResNet.png}
 	\caption[B-ResNet architecture]{ResNet50 extended to implement the BranchyNet framework.}
 	\label{b-resnet}
 \end{figure}
@@ -25,7 +26,7 @@ The weighted sum loss is back-propagated to optimize the weights of the network.
 
 \subsubsection{Training BranchyResNet}
 
-The B-ResNet is trained on the *-dataset \cite{dataset}. The model is trained on a single \gls{gpu} GTX1080 with 12Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. The network weights are initialized as pre-trained ImageNet \cite{deng_imagenet:_2009}, to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network classifiers are rough-tuned by freezing the model feature extractor for X epoch with a learning rate of Y. The entire network is then made trainable and trained for Z epochs.
+The B-ResNet is trained on the *-dataset \cite{dataset}. The model is trained on a single \gls{gpu} GTX1080 with 8Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. The network weights are initialized as pre-trained ImageNet \cite{deng_imagenet:_2009}, to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network classifiers are rough-tuned by freezing the model feature extractor for X epoch with a learning rate of Y. The entire network is then made trainable and trained for Z epochs.
 
 \begin{figure}
 	
