@@ -1,30 +1,6 @@
-\section{Experiments}
+\chapter{Experiments}
 
-\subsection{BranchyNet}
-
-BranchyNet \cite{teerapittayanon_branchynet:_2016} proposed by \citeauthor{teerapittayanon_branchynet:_2016} is an early exiting framework for fast inference of a \gls{dnn}. The work states, that typically samples can be accurately classified using less \gls{dnn} layers which can improve the inference time, if a sample cannot be classified with proper confidence more layers can be used to obtain a more confident prediction. The framework show promising results of reduced inference time, added regularization via joint optimization of exiting points and mitigation of vanishing gradients. The result are based on three well-known \gls{dnn} architectures; LeNet \cite{bibid}, AlexNet \cite{bibid} and ResNet \cite{he_deep_2015}, modified to implement the BranchyNet framework, and to accommodate the MNIST \cite{bibid} and Cifar-10 \cite{bibid} datasets. 
-
-One may argue, that the two datasets used for benchmarking are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples.
-
-This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. ResNet50 is built up of 50 layers divided into 4 blocks, these blocks are decided to be the initial exiting points. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=.9\linewidth]{figures/models/BResNet.png}
-	\caption[B-ResNet architecture]{ResNet50 extended to implement the BranchyNet framework.}
-	\label{b-resnet}
-\end{figure}
-
-The network is trained solving the joint-optimization problem is defined as the weighted sum of each branch-prediction.
-
-\begin{align*}
-	L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
-\end{align*}
-
-Where the loss function is the softmax cross-entropy objective.
-The weighted sum loss is back-propagated to optimize the weights of the network. 
-
-\subsubsection{Training BranchyResNet}
+\section{Training BranchyResNet}
 
 The B-ResNet is trained on the *-dataset \cite{dataset}. The model is trained on a single \gls{gpu} GTX1080 with 8Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. The network weights are initialized as pre-trained ImageNet \cite{deng_imagenet:_2009}, to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network classifiers are rough-tuned by freezing the model feature extractor for X epoch with a learning rate of Y. The entire network is then made trainable and trained for Z epochs.
 
@@ -44,30 +20,25 @@ Visualizing the training progression, clearly indicates that model overfitting t
 
 Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
 
-\subsection{\acrlong{ddnn}}
+\subsection{Image Augmentation}
 
-\gls{ddnn} \cite{teerapittayanon_distributed_2017} also proposed by \citeauthor{teerapittayanon_distributed_2017}, extend upon early exiting models and model partitioning,  to  create a distributed computing hierarchy over cloud, edge and end devices. The idea is having the same shallow model running on multiple end-device, that collaboratively classifies the object. If the network of end devices cannot obtain a classification of satisfactory confidence, a larger model taking the output features from all end-devices as input, is run on a \gls{lan} connected edge server. 
+Data augmentation haven proven to be powerful tool in order to virtually create more data and enlarging the dataset to improve the models generalization \cite{data augmentation}.
 
-\begin{figure}
-	*Figure of DDNN-ResNet50*
-	\caption[\gls{ddnn}-ResNet architecture]{ResNet50 extended to implement the \gls{ddnn} framework.}
-	\label{ddnn-resnet}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/augmentation/augmentation_high_resolution.png}
+	\caption[Image Augmentaion Example]{Image Augmentation of an elephant}
+	\label{fig:augmentation}
 \end{figure}
 
-The distributed network is trained solving the same joint-optimization problem as for BranchyNet.
+ Data augmentation of images involves transformations using tools from image processing to randomly apply additive noise and color, contrast and saturation distortions as well as geometric transformations to create different image perspectives. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant. 
 
-\begin{align*}
-L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
-\end{align*}
 
-Where the loss function is the softmax cross-entropy objective.
-The weighted sum loss is back-propagated to optimize the weights of the network. 
 
-Being a distributed system comes with all the fallacies and benefits from distributed computing e.g. fault tolerance etc.
 
-\subsubsection{Training \gls{ddnn}}
+\section{Training DDNN}
 
-\subsection{Transport Protocol} 
+\section{Transport Protocol} 
 
 Offloading tasks over the network, irregardless fully or partially requires a transport protocol. The selection is typically a choice of either \gls{tcp} or \gls{udp}. \gls{tcp} is a reliable protocol, that guarantee no losses by retransmission of lost packets. \gls{udp} on the other hand is a best-effort protocol, that accept packets loss, thus not introducing any communication overhead such as retransmissions. 
 

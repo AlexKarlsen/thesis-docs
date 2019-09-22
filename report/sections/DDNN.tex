@@ -1,5 +1,20 @@
-\section{\acrlong{ddnn}}
+\section{Distributed Deep Neural Network}
 
-\gls{ddnn} is an early exit framework proposed by \citet{teerapittayanon_distributed_2017} as their fllow-up on BranchyNet \cite{teerapittayanon_branchynet:_2016} extending the early exit model into a distributed system over cloud, edge and end devices.
+\gls{ddnn} \cite{teerapittayanon_distributed_2017} also proposed by \citeauthor{teerapittayanon_distributed_2017}, extend upon early exiting models and model partitioning,  to  create a distributed computing hierarchy over cloud, edge and end devices. The idea is having the same shallow model running on multiple end-device, that collaboratively classifies the object. If the network of end devices cannot obtain a classification of satisfactory confidence, a larger model taking the output features from all end-devices as input, is run on a \gls{lan} connected edge server. 
 
-This thesis implements the \gls{ddnn} framework, however extending the device model to implement \cite{sandler_mobilenetv2:_2018} and edge model to implement ResNet152 \cite{he_deep_2015} and train on a more complex dataset, Pascal VOC \cite{everingham_pascal_2010}. 
+\begin{figure}
+	*Figure of DDNN-ResNet50*
+	\caption[\gls{ddnn}-ResNet architecture]{ResNet50 extended to implement the \gls{ddnn} framework.}
+	\label{ddnn-resnet}
+\end{figure}
+
+The distributed network is trained solving the same joint-optimization problem as for BranchyNet.
+
+\begin{align*}
+L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
+\end{align*}
+
+Where the loss function is the softmax cross-entropy objective.
+The weighted sum loss is back-propagated to optimize the weights of the network. 
+
+Being a distributed system comes with all the fallacies and benefits from distributed computing e.g. fault tolerance etc.

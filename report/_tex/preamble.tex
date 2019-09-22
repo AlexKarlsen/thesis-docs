@@ -103,6 +103,27 @@
 \usepackage[margin=2.5cm,includehead=true,includefoot=true,centering]{geometry}
 \usepackage{longtable,booktabs}
 \usepackage{longtable,tabu}
+\usepackage{multirow}
+
+
+\makeatletter
+\def\tabu@verticalmeasure{\everypar{}%
+	\unless\ifnum\currentgrouptype=14 \let\tabu@currentgrouptype\currentgrouptype\fi
+	\ifnum \tabu@currentgrouptype>12         % 14=semi-simple, 15=math shift group
+	\setbox\tabu@box =\hbox\bgroup
+	\let\tabu@verticalspacing \tabu@verticalsp@lcr
+	\d@llarbegin                % after \hbox ...
+	\else
+	\edef\tabu@temp{\ifnum\tabu@currentgrouptype=5\vtop
+		\else\ifnum\tabu@currentgrouptype=12\vcenter
+		\else\vbox\fi\fi}%
+	\setbox\tabu@box \hbox\bgroup$\tabu@temp \bgroup
+	\let\tabu@verticalspacing \tabu@verticalsp@pmb
+	\fi
+}
+\makeatother
+
+
 \usepackage[export]{adjustbox}
 \usepackage{graphicx}
 \usepackage{listings}
