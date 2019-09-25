@@ -1,142 +1,4 @@
 
-@inproceedings{deng_imagenet:_2009,
-	title = {{ImageNet}: A Large-Scale Hierarchical Image Database},
-	booktitle = {{CVPR}09},
-	author = {Deng, J. and Dong, W. and Socher, R. and Li, L.-J. and Li, K. and Fei-Fei, L.},
-	date = {2009}
-}
-
-@article{masters_revisiting_nodate,
-	title = {Revisiting Small Batch Training for Deep Neural Networks},
-	volume = {abs/1804.07612},
-	url = {http://arxiv.org/abs/1804.07612},
-	author = {Masters, Dominic and Luschi, Carlos},
-	urldate = {2018-08-13},
-	file = {1804.07612.pdf:C\:\\Users\\ajk\\Zotero\\storage\\RMHUUJQ3\\1804.07612.pdf:application/pdf}
-}
-
-@article{yosinski_how_2014,
-	title = {How transferable are features in deep neural networks?},
-	url = {http://arxiv.org/abs/1411.1792},
-	abstract = {Many deep neural networks trained on natural images exhibit a curious phenomenon in common: on the ﬁrst layer they learn features similar to Gabor ﬁlters and color blobs. Such ﬁrst-layer features appear not to be speciﬁc to a particular dataset or task, but general in that they are applicable to many datasets and tasks. Features must eventually transition from general to speciﬁc by the last layer of the network, but this transition has not been studied extensively. In this paper we experimentally quantify the generality versus speciﬁcity of neurons in each layer of a deep convolutional neural network and report a few surprising results. Transferability is negatively affected by two distinct issues: (1) the specialization of higher layer neurons to their original task at the expense of performance on the target task, which was expected, and (2) optimization difﬁculties related to splitting networks between co-adapted neurons, which was not expected. In an example network trained on {ImageNet}, we demonstrate that either of these two issues may dominate, depending on whether features are transferred from the bottom, middle, or top of the network. We also document that the transferability of features decreases as the distance between the base task and target task increases, but that transferring features even from distant tasks can be better than using random features. A ﬁnal surprising result is that initializing a network with transferred features from almost any number of layers can produce a boost to generalization that lingers even after ﬁne-tuning to the target dataset.},
-	journaltitle = {{arXiv}:1411.1792 [cs]},
-	author = {Yosinski, Jason and Clune, Jeff and Bengio, Yoshua and Lipson, Hod},
-	urldate = {2019-09-16},
-	date = {2014-11-06},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1411.1792},
-	keywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing},
-	file = {Yosinski et al. - 2014 - How transferable are features in deep neural netwo.pdf:C\:\\Users\\ajk\\Zotero\\storage\\JIFRNQES\\Yosinski et al. - 2014 - How transferable are features in deep neural netwo.pdf:application/pdf}
-}
-
-@article{he_deep_2015,
-	title = {Deep Residual Learning for Image Recognition},
-	url = {http://arxiv.org/abs/1512.03385},
-	abstract = {Deeper neural networks are more difﬁcult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the {ImageNet} dataset we evaluate residual nets with a depth of up to 152 layers—8× deeper than {VGG} nets [41] but still having lower complexity. An ensemble of these residual nets achieves 3.57\% error on the {ImageNet} test set. This result won the 1st place on the {ILSVRC} 2015 classiﬁcation task. We also present analysis on {CIFAR}-10 with 100 and 1000 layers.},
-	journaltitle = {{arXiv}:1512.03385 [cs]},
-	author = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
-	urldate = {2019-09-04},
-	date = {2015-12-10},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1512.03385},
-	keywords = {Computer Science - Computer Vision and Pattern Recognition},
-	file = {He et al. - 2015 - Deep Residual Learning for Image Recognition.pdf:C\:\\Users\\ajk\\Zotero\\storage\\ZLU3X59T\\He et al. - 2015 - Deep Residual Learning for Image Recognition.pdf:application/pdf}
-}
-
-@article{stoica_berkeley_2017,
-	title = {A Berkeley View of Systems Challenges for {AI}},
-	url = {http://arxiv.org/abs/1712.05855},
-	abstract = {With the increasing commoditization of computer vision, speech recognition and machine translation systems and the widespread deployment of learning-based back-end technologies such as digital advertising and intelligent infrastructures, {AI} (Arti cial Intelligence) has moved from research labs to production. ese changes have been made possible by unprecedented levels of data and computation, by methodological advances in machine learning, by innovations in systems so ware and architectures, and by the broad accessibility of these technologies.},
-	journaltitle = {{arXiv}:1712.05855 [cs]},
-	author = {Stoica, Ion and Song, Dawn and Popa, Raluca Ada and Patterson, David and Mahoney, Michael W. and Katz, Randy and Joseph, Anthony D. and Jordan, Michael and Hellerstein, Joseph M. and Gonzalez, Joseph E. and Goldberg, Ken and Ghodsi, Ali and Culler, David and Abbeel, Pieter},
-	urldate = {2019-09-02},
-	date = {2017-12-15},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1712.05855},
-	keywords = {Computer Science - Artificial Intelligence},
-	file = {Stoica et al. - 2017 - A Berkeley View of Systems Challenges for AI.pdf:C\:\\Users\\ajk\\Zotero\\storage\\XWTWHH3J\\Stoica et al. - 2017 - A Berkeley View of Systems Challenges for AI.pdf:application/pdf}
-}
-
-@inproceedings{teerapittayanon_distributed_2017,
-	location = {Atlanta, {GA}, {USA}},
-	title = {Distributed Deep Neural Networks Over the Cloud, the Edge and End Devices},
-	isbn = {978-1-5386-1792-2},
-	url = {http://ieeexplore.ieee.org/document/7979979/},
-	doi = {10.1109/ICDCS.2017.226},
-	abstract = {We propose distributed deep neural networks ({DDNNs}) over distributed computing hierarchies, consisting of the cloud, the edge (fog) and end devices. While being able to accommodate inference of a deep neural network ({DNN}) in the cloud, a {DDNN} also allows fast and localized inference using shallow portions of the neural network at the edge and end devices. When supported by a scalable distributed computing hierarchy, a {DDNN} can scale up in neural network size and scale out in geographical span. Due to its distributed nature, {DDNNs} enhance sensor fusion, system fault tolerance and data privacy for {DNN} applications. In implementing a {DDNN}, we map sections of a {DNN} onto a distributed computing hierarchy. By jointly training these sections, we minimize communication and resource usage for devices and maximize usefulness of extracted features which are utilized in the cloud. The resulting system has built-in support for automatic sensor fusion and fault tolerance. As a proof of concept, we show a {DDNN} can exploit geographical diversity of sensors to improve object recognition accuracy and reduce communication cost. In our experiment, compared with the traditional method of ofﬂoading raw sensor data to be processed in the cloud, {DDNN} locally processes most sensor data on end devices while achieving high accuracy and is able to reduce the communication cost by a factor of over 20x.},
-	eventtitle = {2017 {IEEE} 37th International Conference on Distributed Computing Systems ({ICDCS})},
-	pages = {328--339},
-	booktitle = {2017 {IEEE} 37th International Conference on Distributed Computing Systems ({ICDCS})},
-	publisher = {{IEEE}},
-	author = {Teerapittayanon, Surat and {McDanel}, Bradley and Kung, H.T.},
-	urldate = {2019-08-26},
-	date = {2017-06},
-	langid = {english},
-	file = {Teerapittayanon et al. - 2017 - Distributed Deep Neural Networks Over the Cloud, t.pdf:C\:\\Users\\ajk\\Zotero\\storage\\4HWB62A9\\Teerapittayanon et al. - 2017 - Distributed Deep Neural Networks Over the Cloud, t.pdf:application/pdf}
-}
-
-@inproceedings{teerapittayanon_branchynet:_2016,
-	location = {Cancun},
-	title = {{BranchyNet}: Fast inference via early exiting from deep neural networks},
-	isbn = {978-1-5090-4847-2},
-	url = {http://ieeexplore.ieee.org/document/7900006/},
-	doi = {10.1109/ICPR.2016.7900006},
-	shorttitle = {{BranchyNet}},
-	abstract = {Deep neural networks are state of the art methods for many learning tasks due to their ability to extract increasingly better features at each network layer. However, the improved performance of additional layers in a deep network comes at the cost of added latency and energy usage in feedforward inference. As networks continue to get deeper and larger, these costs become more prohibitive for real-time and energy-sensitive applications. To address this issue, we present {BranchyNet}, a novel deep network architecture that is augmented with additional side branch classiﬁers. The architecture allows prediction results for a large portion of test samples to exit the network early via these branches when samples can already be inferred with high conﬁdence. {BranchyNet} exploits the observation that features learned at an early layer of a network may often be sufﬁcient for the classiﬁcation of many data points. For more difﬁcult samples, which are expected less frequently, {BranchyNet} will use further or all network layers to provide the best likelihood of correct prediction. We study the {BranchyNet} architecture using several well-known networks ({LeNet}, {AlexNet}, {ResNet}) and datasets ({MNIST}, {CIFAR}10) and show that it can both improve accuracy and signiﬁcantly reduce the inference time of the network.},
-	eventtitle = {2016 23rd International Conference on Pattern Recognition ({ICPR})},
-	pages = {2464--2469},
-	booktitle = {2016 23rd International Conference on Pattern Recognition ({ICPR})},
-	publisher = {{IEEE}},
-	author = {Teerapittayanon, Surat and {McDanel}, Bradley and Kung, H.T.},
-	urldate = {2019-08-26},
-	date = {2016-12},
-	langid = {english},
-	file = {Teerapittayanon et al. - 2016 - BranchyNet Fast inference via early exiting from .pdf:C\:\\Users\\ajk\\Zotero\\storage\\SDJSRV5Z\\Teerapittayanon et al. - 2016 - BranchyNet Fast inference via early exiting from .pdf:application/pdf}
-}
-
-@article{eshratifar_bottlenet:_2019,
-	title = {{BottleNet}: A Deep Learning Architecture for Intelligent Mobile Cloud Computing Services},
-	url = {http://arxiv.org/abs/1902.01000},
-	shorttitle = {{BottleNet}},
-	abstract = {Recent studies have shown the latency and energy consumption of deep neural networks can be significantly improved by splitting the network between the mobile device and cloud. This paper introduces a new deep learning architecture, called {BottleNet}, for reducing the feature size needed to be sent to the cloud. Furthermore, we propose a training method for compensating for the potential accuracy loss due to the lossy compression of features before transmitting them to the cloud. {BottleNet} achieves on average 30× improvement in end-to-end latency and 40× improvement in mobile energy consumption compared to the cloud-only approach with negligible accuracy loss.},
-	journaltitle = {{arXiv}:1902.01000 [cs]},
-	author = {Eshratifar, Amir Erfan and Esmaili, Amirhossein and Pedram, Massoud},
-	urldate = {2019-08-26},
-	date = {2019-02-03},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1902.01000},
-	keywords = {Computer Science - Machine Learning, Computer Science - Distributed, Parallel, and Cluster Computing},
-	file = {Eshratifar et al. - 2019 - BottleNet A Deep Learning Architecture for Intell.pdf:C\:\\Users\\ajk\\Zotero\\storage\\VA7BJQTM\\Eshratifar et al. - 2019 - BottleNet A Deep Learning Architecture for Intell.pdf:application/pdf}
-}
-
-@article{song_collaborative_2018,
-	title = {Collaborative Learning for Deep Neural Networks},
-	url = {http://arxiv.org/abs/1805.11761},
-	abstract = {We introduce collaborative learning in which multiple classiﬁer heads of the same network are simultaneously trained on the same training data to improve generalization and robustness to label noise with no extra inference cost. It acquires the strengths from auxiliary training, multi-task learning and knowledge distillation. There are two important mechanisms involved in collaborative learning. First, the consensus of multiple views from different classiﬁer heads on the same example provides supplementary information as well as regularization to each classiﬁer, thereby improving generalization. Second, intermediate-level representation ({ILR}) sharing with backpropagation rescaling aggregates the gradient ﬂows from all heads, which not only reduces training computational complexity, but also facilitates supervision to the shared layers. The empirical results on {CIFAR} and {ImageNet} datasets demonstrate that deep neural networks learned as a group in a collaborative way signiﬁcantly reduce the generalization error and increase the robustness to label noise.},
-	journaltitle = {{arXiv}:1805.11761 [cs, stat]},
-	author = {Song, Guocong and Chai, Wei},
-	urldate = {2019-08-26},
-	date = {2018-05-29},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1805.11761},
-	keywords = {Computer Science - Machine Learning, Computer Science - Computer Vision and Pattern Recognition, Statistics - Machine Learning},
-	file = {Song and Chai - 2018 - Collaborative Learning for Deep Neural Networks.pdf:C\:\\Users\\ajk\\Zotero\\storage\\WUJEKLUH\\Song and Chai - 2018 - Collaborative Learning for Deep Neural Networks.pdf:application/pdf}
-}
-
-@article{song_collaborative_nodate,
-	title = {Collaborative Learning for Deep Neural Networks},
-	abstract = {We introduce collaborative learning in which multiple classiﬁer heads of the same network are simultaneously trained on the same training data to improve generalization and robustness to label noise with no extra inference cost. It acquires the strengths from auxiliary training, multi-task learning and knowledge distillation. There are two important mechanisms involved in collaborative learning. First, the consensus of multiple views from different classiﬁer heads on the same example provides supplementary information as well as regularization to each classiﬁer, thereby improving generalization. Second, intermediate-level representation ({ILR}) sharing with backpropagation rescaling aggregates the gradient ﬂows from all heads, which not only reduces training computational complexity, but also facilitates supervision to the shared layers. The empirical results on {CIFAR} and {ImageNet} datasets demonstrate that deep neural networks learned as a group in a collaborative way signiﬁcantly reduce the generalization error and increase the robustness to label noise.},
-	pages = {10},
-	author = {Song, Guocong and Chai, Wei},
-	langid = {english},
-	file = {Song and Chai - Collaborative Learning for Deep Neural Networks.pdf:C\:\\Users\\ajk\\Zotero\\storage\\86GVGZSM\\Song and Chai - Collaborative Learning for Deep Neural Networks.pdf:application/pdf}
-}
-
 @article{chatzopoulos_mobile_2017,
 	title = {Mobile Augmented Reality Survey: From Where We Are to Where We Go},
 	volume = {5},
@@ -152,7 +14,7 @@
 	urldate = {2019-08-22},
 	date = {2017},
 	langid = {english},
-	file = {Chatzopoulos et al. - 2017 - Mobile Augmented Reality Survey From Where We Are.pdf:C\:\\Users\\ajk\\Zotero\\storage\\7H78HKQF\\Chatzopoulos et al. - 2017 - Mobile Augmented Reality Survey From Where We Are.pdf:application/pdf}
+	file = {Chatzopoulos et al. - 2017 - Mobile Augmented Reality Survey From Where We Are.pdf:/home/ajk/Zotero/storage/7H78HKQF/Chatzopoulos et al. - 2017 - Mobile Augmented Reality Survey From Where We Are.pdf:application/pdf}
 }
 
 @inproceedings{huang_mobile_2012,
@@ -170,7 +32,7 @@
 	urldate = {2019-08-22},
 	date = {2012-08},
 	langid = {english},
-	file = {Huang et al. - 2012 - Mobile augmented reality based on cloud computing.pdf:C\:\\Users\\ajk\\Zotero\\storage\\DPGV8NAL\\Huang et al. - 2012 - Mobile augmented reality based on cloud computing.pdf:application/pdf}
+	file = {Huang et al. - 2012 - Mobile augmented reality based on cloud computing.pdf:/home/ajk/Zotero/storage/DPGV8NAL/Huang et al. - 2012 - Mobile augmented reality based on cloud computing.pdf:application/pdf}
 }
 
 @inproceedings{liu_dare:_2018,
@@ -189,7 +51,7 @@
 	urldate = {2019-08-22},
 	date = {2018-09},
 	langid = {english},
-	file = {Liu and Han - 2018 - DARE Dynamic Adaptive Mobile Augmented Reality wi.pdf:C\:\\Users\\ajk\\Zotero\\storage\\9FXHMG58\\Liu and Han - 2018 - DARE Dynamic Adaptive Mobile Augmented Reality wi.pdf:application/pdf}
+	file = {Liu and Han - 2018 - DARE Dynamic Adaptive Mobile Augmented Reality wi.pdf:/home/ajk/Zotero/storage/9FXHMG58/Liu and Han - 2018 - DARE Dynamic Adaptive Mobile Augmented Reality wi.pdf:application/pdf}
 }
 
 @article{akherfi_mobile_2018,
@@ -208,7 +70,7 @@
 	urldate = {2019-08-22},
 	date = {2018-01},
 	langid = {english},
-	file = {Akherfi et al. - 2018 - Mobile cloud computing for computation offloading.pdf:C\:\\Users\\ajk\\Zotero\\storage\\RN9DKK9F\\Akherfi et al. - 2018 - Mobile cloud computing for computation offloading.pdf:application/pdf}
+	file = {Akherfi et al. - 2018 - Mobile cloud computing for computation offloading.pdf:/home/ajk/Zotero/storage/RN9DKK9F/Akherfi et al. - 2018 - Mobile cloud computing for computation offloading.pdf:application/pdf}
 }
 
 @article{khan_survey_2014,
@@ -226,7 +88,7 @@
 	urldate = {2019-08-22},
 	date = {2014},
 	langid = {english},
-	file = {Khan et al. - 2014 - A Survey of Mobile Cloud Computing Application Mod.pdf:C\:\\Users\\ajk\\Zotero\\storage\\FP24FFN3\\Khan et al. - 2014 - A Survey of Mobile Cloud Computing Application Mod.pdf:application/pdf}
+	file = {Khan et al. - 2014 - A Survey of Mobile Cloud Computing Application Mod.pdf:/home/ajk/Zotero/storage/FP24FFN3/Khan et al. - 2014 - A Survey of Mobile Cloud Computing Application Mod.pdf:application/pdf}
 }
 
 @article{everingham_pascal_2010,
@@ -244,7 +106,7 @@
 	urldate = {2019-08-22},
 	date = {2010-06},
 	langid = {english},
-	file = {Everingham et al. - 2010 - The Pascal Visual Object Classes (VOC) Challenge.pdf:C\:\\Users\\ajk\\Zotero\\storage\\G7XLVEKC\\Everingham et al. - 2010 - The Pascal Visual Object Classes (VOC) Challenge.pdf:application/pdf}
+	file = {Everingham et al. - 2010 - The Pascal Visual Object Classes (VOC) Challenge.pdf:/home/ajk/Zotero/storage/G7XLVEKC/Everingham et al. - 2010 - The Pascal Visual Object Classes (VOC) Challenge.pdf:application/pdf}
 }
 
 @article{zou_object_2019,
@@ -260,7 +122,7 @@
 	eprinttype = {arxiv},
 	eprint = {1905.05055},
 	keywords = {Computer Science - Computer Vision and Pattern Recognition},
-	file = {Zou et al. - 2019 - Object Detection in 20 Years A Survey.pdf:C\:\\Users\\ajk\\Zotero\\storage\\GRTHFJJ8\\Zou et al. - 2019 - Object Detection in 20 Years A Survey.pdf:application/pdf}
+	file = {Zou et al. - 2019 - Object Detection in 20 Years A Survey.pdf:/home/ajk/Zotero/storage/GRTHFJJ8/Zou et al. - 2019 - Object Detection in 20 Years A Survey.pdf:application/pdf}
 }
 
 @inproceedings{redmon_you_2016,
@@ -279,7 +141,7 @@
 	urldate = {2019-08-22},
 	date = {2016-06},
 	langid = {english},
-	file = {Redmon et al. - 2016 - You Only Look Once Unified, Real-Time Object Dete.pdf:C\:\\Users\\ajk\\Zotero\\storage\\C5QM7YGV\\Redmon et al. - 2016 - You Only Look Once Unified, Real-Time Object Dete.pdf:application/pdf}
+	file = {Redmon et al. - 2016 - You Only Look Once Unified, Real-Time Object Dete.pdf:/home/ajk/Zotero/storage/C5QM7YGV/Redmon et al. - 2016 - You Only Look Once Unified, Real-Time Object Dete.pdf:application/pdf}
 }
 
 @article{liu_ssd:_2016,
@@ -298,7 +160,7 @@
 	eprinttype = {arxiv},
 	eprint = {1512.02325},
 	keywords = {Computer Science - Computer Vision and Pattern Recognition},
-	file = {Liu et al. - 2016 - SSD Single Shot MultiBox Detector.pdf:C\:\\Users\\ajk\\Zotero\\storage\\C94N3WCT\\Liu et al. - 2016 - SSD Single Shot MultiBox Detector.pdf:application/pdf}
+	file = {Liu et al. - 2016 - SSD Single Shot MultiBox Detector.pdf:/home/ajk/Zotero/storage/C94N3WCT/Liu et al. - 2016 - SSD Single Shot MultiBox Detector.pdf:application/pdf}
 }
 
 @article{sandler_mobilenetv2:_2018,
@@ -314,7 +176,7 @@
 	eprinttype = {arxiv},
 	eprint = {1801.04381},
 	keywords = {Computer Science - Computer Vision and Pattern Recognition},
-	file = {Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:C\:\\Users\\ajk\\Zotero\\storage\\DCUGD8XB\\Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:application/pdf}
+	file = {Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:/home/ajk/Zotero/storage/DCUGD8XB/Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:application/pdf}
 }
 
 @article{dean_large_nodate,
@@ -323,10 +185,10 @@
 	pages = {9},
 	author = {Dean, Jeffrey and Corrado, Greg and Monga, Rajat and Chen, Kai and Devin, Matthieu and Mao, Mark and Ranzato, Marc'aurelio and Senior, Andrew and Tucker, Paul and Yang, Ke and Le, Quoc V and Ng, Andrew Y},
 	langid = {english},
-	file = {Dean et al. - Large Scale Distributed Deep Networks.pdf:C\:\\Users\\ajk\\Zotero\\storage\\2S2NKMFU\\Dean et al. - Large Scale Distributed Deep Networks.pdf:application/pdf}
+	file = {Dean et al. - Large Scale Distributed Deep Networks.pdf:/home/ajk/Zotero/storage/2S2NKMFU/Dean et al. - Large Scale Distributed Deep Networks.pdf:application/pdf}
 }
 
-@inproceedings{teerapittayanon_distributed_2017-1,
+@inproceedings{teerapittayanon_distributed_2017,
 	location = {Atlanta, {GA}, {USA}},
 	title = {Distributed Deep Neural Networks Over the Cloud, the Edge and End Devices},
 	isbn = {978-1-5386-1792-2},
@@ -341,7 +203,7 @@
 	urldate = {2019-08-22},
 	date = {2017-06},
 	langid = {english},
-	file = {Teerapittayanon et al. - 2017 - Distributed Deep Neural Networks Over the Cloud, t.pdf:C\:\\Users\\ajk\\Zotero\\storage\\A4QIEKK3\\Teerapittayanon et al. - 2017 - Distributed Deep Neural Networks Over the Cloud, t.pdf:application/pdf}
+	file = {Teerapittayanon et al. - 2017 - Distributed Deep Neural Networks Over the Cloud, t.pdf:/home/ajk/Zotero/storage/A4QIEKK3/Teerapittayanon et al. - 2017 - Distributed Deep Neural Networks Over the Cloud, t.pdf:application/pdf}
 }
 
 @article{courbariaux_binaryconnect:_2015,
@@ -356,8 +218,8 @@
 	langid = {english},
 	eprinttype = {arxiv},
 	eprint = {1511.00363},
-	keywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing, Computer Science - Computer Vision and Pattern Recognition},
-	file = {Courbariaux et al. - 2015 - BinaryConnect Training Deep Neural Networks with .pdf:C\:\\Users\\ajk\\Zotero\\storage\\FPAS4UN2\\Courbariaux et al. - 2015 - BinaryConnect Training Deep Neural Networks with .pdf:application/pdf}
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing},
+	file = {Courbariaux et al. - 2015 - BinaryConnect Training Deep Neural Networks with .pdf:/home/ajk/Zotero/storage/FPAS4UN2/Courbariaux et al. - 2015 - BinaryConnect Training Deep Neural Networks with .pdf:application/pdf}
 }
 
 @article{zhou_edge_2019,
@@ -375,7 +237,7 @@
 	urldate = {2019-08-22},
 	date = {2019-08},
 	langid = {english},
-	file = {Zhou et al. - 2019 - Edge Intelligence Paving the Last Mile of Artific.pdf:C\:\\Users\\ajk\\Zotero\\storage\\UF4HPULQ\\Zhou et al. - 2019 - Edge Intelligence Paving the Last Mile of Artific.pdf:application/pdf}
+	file = {Zhou et al. - 2019 - Edge Intelligence Paving the Last Mile of Artific.pdf:/home/ajk/Zotero/storage/UF4HPULQ/Zhou et al. - 2019 - Edge Intelligence Paving the Last Mile of Artific.pdf:application/pdf}
 }
 
 @article{mach_mobile_2017,
@@ -394,7 +256,7 @@
 	urldate = {2019-08-22},
 	date = {2017},
 	langid = {english},
-	file = {Mach and Becvar - 2017 - Mobile Edge Computing A Survey on Architecture an.pdf:C\:\\Users\\ajk\\Zotero\\storage\\DIDJK74Y\\Mach and Becvar - 2017 - Mobile Edge Computing A Survey on Architecture an.pdf:application/pdf}
+	file = {Mach and Becvar - 2017 - Mobile Edge Computing A Survey on Architecture an.pdf:/home/ajk/Zotero/storage/DIDJK74Y/Mach and Becvar - 2017 - Mobile Edge Computing A Survey on Architecture an.pdf:application/pdf}
 }
 
 @inproceedings{liu_edge_2018,
@@ -412,7 +274,7 @@
 	urldate = {2019-08-22},
 	date = {2018-04},
 	langid = {english},
-	file = {Liu et al. - 2018 - An Edge Network Orchestrator for Mobile Augmented .pdf:C\:\\Users\\ajk\\Zotero\\storage\\Q8K9S35Q\\Liu et al. - 2018 - An Edge Network Orchestrator for Mobile Augmented .pdf:application/pdf}
+	file = {Liu et al. - 2018 - An Edge Network Orchestrator for Mobile Augmented .pdf:/home/ajk/Zotero/storage/Q8K9S35Q/Liu et al. - 2018 - An Edge Network Orchestrator for Mobile Augmented .pdf:application/pdf}
 }
 
 @article{huang_distributed_2018,
@@ -427,7 +289,7 @@
 	urldate = {2019-08-22},
 	date = {2018-11-29},
 	langid = {english},
-	file = {Huang et al. - 2018 - Distributed Deep Learning-based Offloading for Mob.pdf:C\:\\Users\\ajk\\Zotero\\storage\\NHDB8GSQ\\Huang et al. - 2018 - Distributed Deep Learning-based Offloading for Mob.pdf:application/pdf}
+	file = {Huang et al. - 2018 - Distributed Deep Learning-based Offloading for Mob.pdf:/home/ajk/Zotero/storage/NHDB8GSQ/Huang et al. - 2018 - Distributed Deep Learning-based Offloading for Mob.pdf:application/pdf}
 }
 
 @article{shi_edge_2016,
@@ -446,7 +308,7 @@
 	urldate = {2019-08-22},
 	date = {2016-10},
 	langid = {english},
-	file = {Shi et al. - 2016 - Edge Computing Vision and Challenges.pdf:C\:\\Users\\ajk\\Zotero\\storage\\QW5JS9YX\\Shi et al. - 2016 - Edge Computing Vision and Challenges.pdf:application/pdf}
+	file = {Shi et al. - 2016 - Edge Computing Vision and Challenges.pdf:/home/ajk/Zotero/storage/QW5JS9YX/Shi et al. - 2016 - Edge Computing Vision and Challenges.pdf:application/pdf}
 }
 
 @inproceedings{yu_computation_2017,
@@ -465,7 +327,7 @@
 	urldate = {2019-08-22},
 	date = {2017-10},
 	langid = {english},
-	file = {Yu et al. - 2017 - Computation offloading for mobile edge computing .pdf:C\:\\Users\\ajk\\Zotero\\storage\\LHP3PAZM\\Yu et al. - 2017 - Computation offloading for mobile edge computing .pdf:application/pdf}
+	file = {Yu et al. - 2017 - Computation offloading for mobile edge computing .pdf:/home/ajk/Zotero/storage/LHP3PAZM/Yu et al. - 2017 - Computation offloading for mobile edge computing .pdf:application/pdf}
 }
 
 @article{mao_survey_2017,
@@ -484,7 +346,7 @@
 	urldate = {2019-08-22},
 	date = {2017},
 	langid = {english},
-	file = {Mao et al. - 2017 - A Survey on Mobile Edge Computing The Communicati.pdf:C\:\\Users\\ajk\\Zotero\\storage\\YWHDJ5C4\\Mao et al. - 2017 - A Survey on Mobile Edge Computing The Communicati.pdf:application/pdf}
+	file = {Mao et al. - 2017 - A Survey on Mobile Edge Computing The Communicati.pdf:/home/ajk/Zotero/storage/YWHDJ5C4/Mao et al. - 2017 - A Survey on Mobile Edge Computing The Communicati.pdf:application/pdf}
 }
 
 @article{skala_scalable_2015,
@@ -496,7 +358,183 @@
 	author = {Skala, Karolj and Davidovic, Davor and Afgan, Enis and Sovic, Ivan},
 	date = {2015},
 	langid = {english},
-	file = {Skala et al. - 2015 - Scalable Distributed Computing Hierarchy Cloud, F.pdf:C\:\\Users\\ajk\\Zotero\\storage\\7BCBE8R2\\Skala et al. - 2015 - Scalable Distributed Computing Hierarchy Cloud, F.pdf:application/pdf}
+	file = {Skala et al. - 2015 - Scalable Distributed Computing Hierarchy Cloud, F.pdf:/home/ajk/Zotero/storage/7BCBE8R2/Skala et al. - 2015 - Scalable Distributed Computing Hierarchy Cloud, F.pdf:application/pdf}
+}
+
+@article{song_collaborative_nodate,
+	title = {Collaborative Learning for Deep Neural Networks},
+	abstract = {We introduce collaborative learning in which multiple classiﬁer heads of the same network are simultaneously trained on the same training data to improve generalization and robustness to label noise with no extra inference cost. It acquires the strengths from auxiliary training, multi-task learning and knowledge distillation. There are two important mechanisms involved in collaborative learning. First, the consensus of multiple views from different classiﬁer heads on the same example provides supplementary information as well as regularization to each classiﬁer, thereby improving generalization. Second, intermediate-level representation ({ILR}) sharing with backpropagation rescaling aggregates the gradient ﬂows from all heads, which not only reduces training computational complexity, but also facilitates supervision to the shared layers. The empirical results on {CIFAR} and {ImageNet} datasets demonstrate that deep neural networks learned as a group in a collaborative way signiﬁcantly reduce the generalization error and increase the robustness to label noise.},
+	pages = {10},
+	author = {Song, Guocong and Chai, Wei},
+	langid = {english},
+	file = {Song and Chai - Collaborative Learning for Deep Neural Networks.pdf:/home/ajk/Zotero/storage/86GVGZSM/Song and Chai - Collaborative Learning for Deep Neural Networks.pdf:application/pdf}
+}
+
+@article{song_collaborative_2018,
+	title = {Collaborative Learning for Deep Neural Networks},
+	url = {http://arxiv.org/abs/1805.11761},
+	abstract = {We introduce collaborative learning in which multiple classiﬁer heads of the same network are simultaneously trained on the same training data to improve generalization and robustness to label noise with no extra inference cost. It acquires the strengths from auxiliary training, multi-task learning and knowledge distillation. There are two important mechanisms involved in collaborative learning. First, the consensus of multiple views from different classiﬁer heads on the same example provides supplementary information as well as regularization to each classiﬁer, thereby improving generalization. Second, intermediate-level representation ({ILR}) sharing with backpropagation rescaling aggregates the gradient ﬂows from all heads, which not only reduces training computational complexity, but also facilitates supervision to the shared layers. The empirical results on {CIFAR} and {ImageNet} datasets demonstrate that deep neural networks learned as a group in a collaborative way signiﬁcantly reduce the generalization error and increase the robustness to label noise.},
+	journaltitle = {{arXiv}:1805.11761 [cs, stat]},
+	author = {Song, Guocong and Chai, Wei},
+	urldate = {2019-08-26},
+	date = {2018-05-29},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1805.11761},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Statistics - Machine Learning},
+	file = {Song and Chai - 2018 - Collaborative Learning for Deep Neural Networks.pdf:/home/ajk/Zotero/storage/WUJEKLUH/Song and Chai - 2018 - Collaborative Learning for Deep Neural Networks.pdf:application/pdf}
+}
+
+@article{eshratifar_bottlenet:_2019,
+	title = {{BottleNet}: A Deep Learning Architecture for Intelligent Mobile Cloud Computing Services},
+	url = {http://arxiv.org/abs/1902.01000},
+	shorttitle = {{BottleNet}},
+	abstract = {Recent studies have shown the latency and energy consumption of deep neural networks can be significantly improved by splitting the network between the mobile device and cloud. This paper introduces a new deep learning architecture, called {BottleNet}, for reducing the feature size needed to be sent to the cloud. Furthermore, we propose a training method for compensating for the potential accuracy loss due to the lossy compression of features before transmitting them to the cloud. {BottleNet} achieves on average 30× improvement in end-to-end latency and 40× improvement in mobile energy consumption compared to the cloud-only approach with negligible accuracy loss.},
+	journaltitle = {{arXiv}:1902.01000 [cs]},
+	author = {Eshratifar, Amir Erfan and Esmaili, Amirhossein and Pedram, Massoud},
+	urldate = {2019-08-26},
+	date = {2019-02-03},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1902.01000},
+	keywords = {Computer Science - Machine Learning, Computer Science - Distributed, Parallel, and Cluster Computing},
+	file = {Eshratifar et al. - 2019 - BottleNet A Deep Learning Architecture for Intell.pdf:/home/ajk/Zotero/storage/VA7BJQTM/Eshratifar et al. - 2019 - BottleNet A Deep Learning Architecture for Intell.pdf:application/pdf}
+}
+
+@inproceedings{teerapittayanon_branchynet:_2016,
+	location = {Cancun},
+	title = {{BranchyNet}: Fast inference via early exiting from deep neural networks},
+	isbn = {978-1-5090-4847-2},
+	url = {http://ieeexplore.ieee.org/document/7900006/},
+	doi = {10.1109/ICPR.2016.7900006},
+	shorttitle = {{BranchyNet}},
+	abstract = {Deep neural networks are state of the art methods for many learning tasks due to their ability to extract increasingly better features at each network layer. However, the improved performance of additional layers in a deep network comes at the cost of added latency and energy usage in feedforward inference. As networks continue to get deeper and larger, these costs become more prohibitive for real-time and energy-sensitive applications. To address this issue, we present {BranchyNet}, a novel deep network architecture that is augmented with additional side branch classiﬁers. The architecture allows prediction results for a large portion of test samples to exit the network early via these branches when samples can already be inferred with high conﬁdence. {BranchyNet} exploits the observation that features learned at an early layer of a network may often be sufﬁcient for the classiﬁcation of many data points. For more difﬁcult samples, which are expected less frequently, {BranchyNet} will use further or all network layers to provide the best likelihood of correct prediction. We study the {BranchyNet} architecture using several well-known networks ({LeNet}, {AlexNet}, {ResNet}) and datasets ({MNIST}, {CIFAR}10) and show that it can both improve accuracy and signiﬁcantly reduce the inference time of the network.},
+	eventtitle = {2016 23rd International Conference on Pattern Recognition ({ICPR})},
+	pages = {2464--2469},
+	booktitle = {2016 23rd International Conference on Pattern Recognition ({ICPR})},
+	publisher = {{IEEE}},
+	author = {Teerapittayanon, Surat and {McDanel}, Bradley and Kung, H.T.},
+	urldate = {2019-08-26},
+	date = {2016-12},
+	langid = {english},
+	file = {Teerapittayanon et al. - 2016 - BranchyNet Fast inference via early exiting from .pdf:/home/ajk/Zotero/storage/SDJSRV5Z/Teerapittayanon et al. - 2016 - BranchyNet Fast inference via early exiting from .pdf:application/pdf}
+}
+
+@article{stoica_berkeley_2017,
+	title = {A Berkeley View of Systems Challenges for {AI}},
+	url = {http://arxiv.org/abs/1712.05855},
+	abstract = {With the increasing commoditization of computer vision, speech recognition and machine translation systems and the widespread deployment of learning-based back-end technologies such as digital advertising and intelligent infrastructures, {AI} (Arti cial Intelligence) has moved from research labs to production. ese changes have been made possible by unprecedented levels of data and computation, by methodological advances in machine learning, by innovations in systems so ware and architectures, and by the broad accessibility of these technologies.},
+	journaltitle = {{arXiv}:1712.05855 [cs]},
+	author = {Stoica, Ion and Song, Dawn and Popa, Raluca Ada and Patterson, David and Mahoney, Michael W. and Katz, Randy and Joseph, Anthony D. and Jordan, Michael and Hellerstein, Joseph M. and Gonzalez, Joseph E. and Goldberg, Ken and Ghodsi, Ali and Culler, David and Abbeel, Pieter},
+	urldate = {2019-09-02},
+	date = {2017-12-15},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1712.05855},
+	keywords = {Computer Science - Artificial Intelligence},
+	file = {Stoica et al. - 2017 - A Berkeley View of Systems Challenges for AI.pdf:/home/ajk/Zotero/storage/XWTWHH3J/Stoica et al. - 2017 - A Berkeley View of Systems Challenges for AI.pdf:application/pdf}
+}
+
+@article{he_deep_2015,
+	title = {Deep Residual Learning for Image Recognition},
+	url = {http://arxiv.org/abs/1512.03385},
+	abstract = {Deeper neural networks are more difﬁcult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the {ImageNet} dataset we evaluate residual nets with a depth of up to 152 layers—8× deeper than {VGG} nets [41] but still having lower complexity. An ensemble of these residual nets achieves 3.57\% error on the {ImageNet} test set. This result won the 1st place on the {ILSVRC} 2015 classiﬁcation task. We also present analysis on {CIFAR}-10 with 100 and 1000 layers.},
+	journaltitle = {{arXiv}:1512.03385 [cs]},
+	author = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+	urldate = {2019-09-04},
+	date = {2015-12-10},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1512.03385},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+	file = {He et al. - 2015 - Deep Residual Learning for Image Recognition.pdf:/home/ajk/Zotero/storage/ZLU3X59T/He et al. - 2015 - Deep Residual Learning for Image Recognition.pdf:application/pdf}
+}
+
+@article{yosinski_how_2014,
+	title = {How transferable are features in deep neural networks?},
+	url = {http://arxiv.org/abs/1411.1792},
+	abstract = {Many deep neural networks trained on natural images exhibit a curious phenomenon in common: on the ﬁrst layer they learn features similar to Gabor ﬁlters and color blobs. Such ﬁrst-layer features appear not to be speciﬁc to a particular dataset or task, but general in that they are applicable to many datasets and tasks. Features must eventually transition from general to speciﬁc by the last layer of the network, but this transition has not been studied extensively. In this paper we experimentally quantify the generality versus speciﬁcity of neurons in each layer of a deep convolutional neural network and report a few surprising results. Transferability is negatively affected by two distinct issues: (1) the specialization of higher layer neurons to their original task at the expense of performance on the target task, which was expected, and (2) optimization difﬁculties related to splitting networks between co-adapted neurons, which was not expected. In an example network trained on {ImageNet}, we demonstrate that either of these two issues may dominate, depending on whether features are transferred from the bottom, middle, or top of the network. We also document that the transferability of features decreases as the distance between the base task and target task increases, but that transferring features even from distant tasks can be better than using random features. A ﬁnal surprising result is that initializing a network with transferred features from almost any number of layers can produce a boost to generalization that lingers even after ﬁne-tuning to the target dataset.},
+	journaltitle = {{arXiv}:1411.1792 [cs]},
+	author = {Yosinski, Jason and Clune, Jeff and Bengio, Yoshua and Lipson, Hod},
+	urldate = {2019-09-16},
+	date = {2014-11-06},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1411.1792},
+	keywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing},
+	file = {Yosinski et al. - 2014 - How transferable are features in deep neural netwo.pdf:/home/ajk/Zotero/storage/JIFRNQES/Yosinski et al. - 2014 - How transferable are features in deep neural netwo.pdf:application/pdf}
+}
+
+@article{masters_revisiting_nodate,
+	title = {Revisiting Small Batch Training for Deep Neural Networks},
+	volume = {abs/1804.07612},
+	url = {http://arxiv.org/abs/1804.07612},
+	author = {Masters, Dominic and Luschi, Carlos},
+	urldate = {2018-08-13},
+	file = {1804.07612.pdf:/home/ajk/Zotero/storage/RMHUUJQ3/1804.07612.pdf:application/pdf}
+}
+
+@article{loshchilov_sgdr:_2016,
+	title = {{SGDR}: Stochastic Gradient Descent with Warm Restarts},
+	url = {http://arxiv.org/abs/1608.03983},
+	shorttitle = {{SGDR}},
+	abstract = {Restart techniques are common in gradient-free optimization to deal with multimodal functions. Partial warm restarts are also gaining popularity in gradient-based optimization to improve the rate of convergence in accelerated gradient schemes to deal with ill-conditioned functions. In this paper, we propose a simple warm restart technique for stochastic gradient descent to improve its anytime performance when training deep neural networks. We empirically study its performance on the {CIFAR}-10 and {CIFAR}-100 datasets, where we demonstrate new state-of-the-art results at 3.14\% and 16.21\%, respectively. We also demonstrate its advantages on a dataset of {EEG} recordings and on a downsampled version of the {ImageNet} dataset. Our source code is available at https://github.com/loshchil/{SGDR}},
+	journaltitle = {{arXiv}:1608.03983 [cs, math]},
+	author = {Loshchilov, Ilya and Hutter, Frank},
+	urldate = {2019-09-23},
+	date = {2016-08-13},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1608.03983},
+	keywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing, Mathematics - Optimization and Control},
+	file = {Loshchilov og Hutter - 2016 - SGDR Stochastic Gradient Descent with Warm Restar.pdf:/home/ajk/Zotero/storage/8ET8UWKA/Loshchilov og Hutter - 2016 - SGDR Stochastic Gradient Descent with Warm Restar.pdf:application/pdf}
+}
+
+@article{kingma_adam:_2014,
+	title = {Adam: A Method for Stochastic Optimization},
+	url = {http://arxiv.org/abs/1412.6980},
+	shorttitle = {Adam},
+	abstract = {We introduce Adam, an algorithm for ﬁrst-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efﬁcient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss {AdaMax}, a variant of Adam based on the inﬁnity norm.},
+	journaltitle = {{arXiv}:1412.6980 [cs]},
+	author = {Kingma, Diederik P. and Ba, Jimmy},
+	urldate = {2019-09-23},
+	date = {2014-12-22},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1412.6980},
+	keywords = {Computer Science - Machine Learning},
+	file = {Kingma og Ba - 2014 - Adam A Method for Stochastic Optimization.pdf:/home/ajk/Zotero/storage/FN4U3UGE/Kingma og Ba - 2014 - Adam A Method for Stochastic Optimization.pdf:application/pdf}
+}
+
+@article{cubuk_autoaugment:_2018,
+	title = {{AutoAugment}: Learning Augmentation Policies from Data},
+	url = {http://arxiv.org/abs/1805.09501},
+	shorttitle = {{AutoAugment}},
+	abstract = {Data augmentation is an effective technique for improving the accuracy of modern image classiﬁers. However, current data augmentation implementations are manually designed. In this paper, we describe a simple procedure called {AutoAugment} to automatically search for improved data augmentation policies. In our implementation, we have designed a search space where a policy consists of many subpolicies, one of which is randomly chosen for each image in each mini-batch. A sub-policy consists of two operations, each operation being an image processing function such as translation, rotation, or shearing, and the probabilities and magnitudes with which the functions are applied. We use a search algorithm to ﬁnd the best policy such that the neural network yields the highest validation accuracy on a target dataset. Our method achieves state-of-the-art accuracy on {CIFAR}-10, {CIFAR}-100, {SVHN}, and {ImageNet} (without additional data). On {ImageNet}, we attain a Top-1 accuracy of 83.5\% which is 0.4\% better than the previous record of 83.1\%. On {CIFAR}-10, we achieve an error rate of 1.5\%, which is 0.6\% better than the previous state-of-theart. Augmentation policies we ﬁnd are transferable between datasets. The policy learned on {ImageNet} transfers well to achieve signiﬁcant improvements on other datasets, such as Oxford Flowers, Caltech-101, Oxford-{IIT} Pets, {FGVC} Aircraft, and Stanford Cars.},
+	journaltitle = {{arXiv}:1805.09501 [cs, stat]},
+	author = {Cubuk, Ekin D. and Zoph, Barret and Mane, Dandelion and Vasudevan, Vijay and Le, Quoc V.},
+	urldate = {2019-09-23},
+	date = {2018-05-24},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1805.09501},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Statistics - Machine Learning},
+	file = {Cubuk m.fl. - 2018 - AutoAugment Learning Augmentation Policies from D.pdf:/home/ajk/Zotero/storage/VQSTXHB2/Cubuk m.fl. - 2018 - AutoAugment Learning Augmentation Policies from D.pdf:application/pdf}
+}
+
+@article{perez_effectiveness_2017,
+	title = {The Effectiveness of Data Augmentation in Image Classification using Deep Learning},
+	url = {http://arxiv.org/abs/1712.04621},
+	abstract = {In this paper, we explore and compare multiple solutions to the problem of data augmentation in image classiﬁcation. Previous work has demonstrated the effectiveness of data augmentation through simple techniques, such as cropping, rotating, and ﬂipping input images. We artiﬁcially constrain our access to data to a small subset of the {ImageNet} dataset, and compare each data augmentation technique in turn. One of the more successful data augmentations strategies is the traditional transformations mentioned above. We also experiment with {GANs} to generate images of different styles. Finally, we propose a method to allow a neural net to learn augmentations that best improve the classiﬁer, which we call neural augmentation. We discuss the successes and shortcomings of this method on various datasets.},
+	journaltitle = {{arXiv}:1712.04621 [cs]},
+	author = {Perez, Luis and Wang, Jason},
+	urldate = {2019-09-23},
+	date = {2017-12-13},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1712.04621},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+	file = {Perez og Wang - 2017 - The Effectiveness of Data Augmentation in Image Cl.pdf:/home/ajk/Zotero/storage/2H2SMSN4/Perez og Wang - 2017 - The Effectiveness of Data Augmentation in Image Cl.pdf:application/pdf}
 }
 
 @article{shorten_survey_2019,
@@ -514,77 +552,67 @@
 	urldate = {2019-09-23},
 	date = {2019-12},
 	langid = {english},
-	file = {Shorten og Khoshgoftaar - 2019 - A survey on Image Data Augmentation for Deep Learn.pdf:C\:\\Users\\ajk\\Zotero\\storage\\753MNRMT\\Shorten og Khoshgoftaar - 2019 - A survey on Image Data Augmentation for Deep Learn.pdf:application/pdf}
+	file = {Shorten og Khoshgoftaar - 2019 - A survey on Image Data Augmentation for Deep Learn.pdf:/home/ajk/Zotero/storage/753MNRMT/Shorten og Khoshgoftaar - 2019 - A survey on Image Data Augmentation for Deep Learn.pdf:application/pdf}
 }
 
-@article{wang_effectiveness_nodate,
-	title = {The Effectiveness of Data Augmentation in Image Classiﬁcation using Deep Learning},
-	abstract = {In this paper, we explore and compare multiple solutions to the problem of data augmentation in image classiﬁcation. Previous work has demonstrated the effectiveness of data augmentation through simple techniques, such as cropping, rotating, and ﬂipping input images. We artiﬁcially constrain our access to data to a small subset of the {ImageNet} dataset, and compare each data augmentation technique in turn. One of the more successful data augmentations strategies is the traditional transformations mentioned above. We also experiment with {GANs} to generate images of different styles. Finally, we propose a method to allow a neural net to learn augmentations that best improve the classiﬁer, which we call neural augmentation. We discuss the successes and shortcomings of this method on various datasets.},
-	pages = {8},
-	author = {Wang, Jason and Mall, Serra and Perez, Luis},
-	langid = {english},
-	file = {Wang m.fl. - The Effectiveness of Data Augmentation in Image Cl.pdf:C\:\\Users\\ajk\\Zotero\\storage\\NGV9C6W7\\Wang m.fl. - The Effectiveness of Data Augmentation in Image Cl.pdf:application/pdf}
+@inproceedings{lecun_lecun-98.pdf_1998,
+	title = {lecun-98.pdf},
+	volume = {86},
+	url = {http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf},
+	doi = {10.1109/5.726791},
+	series = {11},
+	eventtitle = {{IEEE}},
+	pages = {2278--2324},
+	booktitle = {Gradient-Based Learning Applied to Document Recognition},
+	publisher = {{IEEE}},
+	author = {{LeCun}, Yann and Bottou, Léon and Bengio, Yoshua and Haffner, Patrick},
+	urldate = {2019-09-24},
+	date = {1998-11},
+	file = {lecun-98.pdf:/home/ajk/Zotero/storage/AWUVWAFU/lecun-98.pdf:application/pdf}
 }
 
-@article{perez_effectiveness_2017,
-	title = {The Effectiveness of Data Augmentation in Image Classification using Deep Learning},
-	url = {http://arxiv.org/abs/1712.04621},
-	abstract = {In this paper, we explore and compare multiple solutions to the problem of data augmentation in image classiﬁcation. Previous work has demonstrated the effectiveness of data augmentation through simple techniques, such as cropping, rotating, and ﬂipping input images. We artiﬁcially constrain our access to data to a small subset of the {ImageNet} dataset, and compare each data augmentation technique in turn. One of the more successful data augmentations strategies is the traditional transformations mentioned above. We also experiment with {GANs} to generate images of different styles. Finally, we propose a method to allow a neural net to learn augmentations that best improve the classiﬁer, which we call neural augmentation. We discuss the successes and shortcomings of this method on various datasets.},
-	journaltitle = {{arXiv}:1712.04621 [cs]},
-	author = {Perez, Luis and Wang, Jason},
-	urldate = {2019-09-23},
-	date = {2017-12-13},
+@article{krizhevsky_imagenet_2017,
+	title = {{ImageNet} classification with deep convolutional neural networks},
+	volume = {60},
+	issn = {00010782},
+	url = {http://dl.acm.org/citation.cfm?doid=3098997.3065386},
+	doi = {10.1145/3065386},
+	abstract = {We trained a large, deep convolutional neural network to classify the 1.2 million high-resolution images in the {ImageNet} {LSVRC}-2010 contest into the 1000 different classes. On the test data, we achieved top-1 and top-5 error rates of 37.5\% and 17.0\% which is considerably better than the previous state-of-the-art. The neural network, which has 60 million parameters and 650,000 neurons, consists of ﬁve convolutional layers, some of which are followed by max-pooling layers, and three fully-connected layers with a ﬁnal 1000-way softmax. To make training faster, we used non-saturating neurons and a very efﬁcient {GPU} implementation of the convolution operation. To reduce overﬁtting in the fully-connected layers we employed a recently-developed regularization method called “dropout” that proved to be very effective. We also entered a variant of this model in the {ILSVRC}-2012 competition and achieved a winning top-5 test error rate of 15.3\%, compared to 26.2\% achieved by the second-best entry.},
+	pages = {84--90},
+	number = {6},
+	journaltitle = {Communications of the {ACM}},
+	shortjournal = {Commun. {ACM}},
+	author = {Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E.},
+	urldate = {2019-09-24},
+	date = {2017-05-24},
 	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1712.04621},
-	keywords = {Computer Science - Computer Vision and Pattern Recognition},
-	file = {Perez og Wang - 2017 - The Effectiveness of Data Augmentation in Image Cl.pdf:C\:\\Users\\ajk\\Zotero\\storage\\2H2SMSN4\\Perez og Wang - 2017 - The Effectiveness of Data Augmentation in Image Cl.pdf:application/pdf}
+	file = {Krizhevsky et al. - 2017 - ImageNet classification with deep convolutional ne.pdf:/home/ajk/Zotero/storage/2I6MP5RR/Krizhevsky et al. - 2017 - ImageNet classification with deep convolutional ne.pdf:application/pdf}
 }
 
-@article{cubuk_autoaugment:_2018,
-	title = {{AutoAugment}: Learning Augmentation Policies from Data},
-	url = {http://arxiv.org/abs/1805.09501},
-	shorttitle = {{AutoAugment}},
-	abstract = {Data augmentation is an effective technique for improving the accuracy of modern image classiﬁers. However, current data augmentation implementations are manually designed. In this paper, we describe a simple procedure called {AutoAugment} to automatically search for improved data augmentation policies. In our implementation, we have designed a search space where a policy consists of many subpolicies, one of which is randomly chosen for each image in each mini-batch. A sub-policy consists of two operations, each operation being an image processing function such as translation, rotation, or shearing, and the probabilities and magnitudes with which the functions are applied. We use a search algorithm to ﬁnd the best policy such that the neural network yields the highest validation accuracy on a target dataset. Our method achieves state-of-the-art accuracy on {CIFAR}-10, {CIFAR}-100, {SVHN}, and {ImageNet} (without additional data). On {ImageNet}, we attain a Top-1 accuracy of 83.5\% which is 0.4\% better than the previous record of 83.1\%. On {CIFAR}-10, we achieve an error rate of 1.5\%, which is 0.6\% better than the previous state-of-theart. Augmentation policies we ﬁnd are transferable between datasets. The policy learned on {ImageNet} transfers well to achieve signiﬁcant improvements on other datasets, such as Oxford Flowers, Caltech-101, Oxford-{IIT} Pets, {FGVC} Aircraft, and Stanford Cars.},
-	journaltitle = {{arXiv}:1805.09501 [cs, stat]},
-	author = {Cubuk, Ekin D. and Zoph, Barret and Mane, Dandelion and Vasudevan, Vijay and Le, Quoc V.},
-	urldate = {2019-09-23},
-	date = {2018-05-24},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1805.09501},
-	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Statistics - Machine Learning},
-	file = {Cubuk m.fl. - 2018 - AutoAugment Learning Augmentation Policies from D.pdf:C\:\\Users\\ajk\\Zotero\\storage\\VQSTXHB2\\Cubuk m.fl. - 2018 - AutoAugment Learning Augmentation Policies from D.pdf:application/pdf}
+@article{lecun_mnist_2010,
+	title = {{MNIST} handwritten digit database},
+	url = {http://yann.lecun.com/exdb/mnist/},
+	author = {{LeCun}, Yann and Cortes, Corinna},
+	urldate = {2016-01-14},
+	date = {2010},
+	keywords = {{MSc} \_checked character\_recognition mnist network neural}
 }
 
-@article{kingma_adam:_2014,
-	title = {Adam: A Method for Stochastic Optimization},
-	url = {http://arxiv.org/abs/1412.6980},
-	shorttitle = {Adam},
-	abstract = {We introduce Adam, an algorithm for ﬁrst-order gradient-based optimization of stochastic objective functions, based on adaptive estimates of lower-order moments. The method is straightforward to implement, is computationally efﬁcient, has little memory requirements, is invariant to diagonal rescaling of the gradients, and is well suited for problems that are large in terms of data and/or parameters. The method is also appropriate for non-stationary objectives and problems with very noisy and/or sparse gradients. The hyper-parameters have intuitive interpretations and typically require little tuning. Some connections to related algorithms, on which Adam was inspired, are discussed. We also analyze the theoretical convergence properties of the algorithm and provide a regret bound on the convergence rate that is comparable to the best known results under the online convex optimization framework. Empirical results demonstrate that Adam works well in practice and compares favorably to other stochastic optimization methods. Finally, we discuss {AdaMax}, a variant of Adam based on the inﬁnity norm.},
-	journaltitle = {{arXiv}:1412.6980 [cs]},
-	author = {Kingma, Diederik P. and Ba, Jimmy},
-	urldate = {2019-09-23},
-	date = {2014-12-22},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1412.6980},
-	keywords = {Computer Science - Machine Learning},
-	file = {Kingma og Ba - 2014 - Adam A Method for Stochastic Optimization.pdf:C\:\\Users\\ajk\\Zotero\\storage\\FN4U3UGE\\Kingma og Ba - 2014 - Adam A Method for Stochastic Optimization.pdf:application/pdf}
+@article{krizhevsky_cifar-10_nodate,
+	title = {{CIFAR}-10 (Canadian Institute for Advanced Research)},
+	url = {http://www.cs.toronto.edu/ kriz/cifar.html},
+	abstract = {The {CIFAR}-10 dataset consists of 60000 32x32 colour images in 10 classes, with 6000 images per class. There are 50000 training images and 10000 test images. The dataset is divided into five training batches and one test batch, each with 10000 images. The test batch contains exactly 1000 randomly-selected images from each class. The training batches contain the remaining images in random order, but some training batches may contain more images from one class than another. Between them, the training batches contain exactly 5000 images from each class.},
+	author = {Krizhevsky, Alex and Nair, Vinod and Hinton, Geoffrey},
+	keywords = {Dataset}
 }
 
-@article{loshchilov_sgdr:_2016,
-	title = {{SGDR}: Stochastic Gradient Descent with Warm Restarts},
-	url = {http://arxiv.org/abs/1608.03983},
-	shorttitle = {{SGDR}},
-	abstract = {Restart techniques are common in gradient-free optimization to deal with multimodal functions. Partial warm restarts are also gaining popularity in gradient-based optimization to improve the rate of convergence in accelerated gradient schemes to deal with ill-conditioned functions. In this paper, we propose a simple warm restart technique for stochastic gradient descent to improve its anytime performance when training deep neural networks. We empirically study its performance on the {CIFAR}-10 and {CIFAR}-100 datasets, where we demonstrate new state-of-the-art results at 3.14\% and 16.21\%, respectively. We also demonstrate its advantages on a dataset of {EEG} recordings and on a downsampled version of the {ImageNet} dataset. Our source code is available at https://github.com/loshchil/{SGDR}},
-	journaltitle = {{arXiv}:1608.03983 [cs, math]},
-	author = {Loshchilov, Ilya and Hutter, Frank},
-	urldate = {2019-09-23},
-	date = {2016-08-13},
-	langid = {english},
-	eprinttype = {arxiv},
-	eprint = {1608.03983},
-	keywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing, Mathematics - Optimization and Control},
-	file = {Loshchilov og Hutter - 2016 - SGDR Stochastic Gradient Descent with Warm Restar.pdf:C\:\\Users\\ajk\\Zotero\\storage\\8ET8UWKA\\Loshchilov og Hutter - 2016 - SGDR Stochastic Gradient Descent with Warm Restar.pdf:application/pdf}
+@article{russakovsky_imagenet_2015,
+	title = {{ImageNet} Large Scale Visual Recognition Challenge},
+	volume = {115},
+	doi = {10.1007/s11263-015-0816-y},
+	pages = {211--252},
+	number = {3},
+	journaltitle = {International Journal of Computer Vision ({IJCV})},
+	author = {Russakovsky, Olga and Deng, Jia and Su, Hao and Krause, Jonathan and Satheesh, Sanjeev and Ma, Sean and Huang, Zhiheng and Karpathy, Andrej and Khosla, Aditya and Bernstein, Michael and Berg, Alexander C. and Fei-Fei, Li},
+	date = {2015}
 }
