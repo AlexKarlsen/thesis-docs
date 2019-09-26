@@ -5,7 +5,10 @@ One may argue, that the two datasets used for benchmarking are not applicable to
 
 
 
-This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. ResNet50 is built up of 50 layers divided into 4 blocks. Table \ref{tbl:resnet50} describes the block and layers of the ResNet architecture. 
+This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. ResNet50 is built up of 50 layers divided into 16 residual blocks. A residual block is...
+
+
+The architecture is further divided into 4 convolutional blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the ResNet architecture. 
 
 \pagebreak
     \begin{longtabu}{>{\bfseries}X|X[c]|X[4c]}

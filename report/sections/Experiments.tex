@@ -21,7 +21,9 @@ Even though the model fails to generalize, the experiment still produce interest
 
 \subsection{Optimizer}
 
-The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. \gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which also implement strategies to avoid being stuck in local minimas. 
+The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
+
+\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which also implement strategies to avoid being stuck in local minimas. 
 
 \gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
 
@@ -33,7 +35,7 @@ The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. \g
 
 \subsection{Image Augmentation}
 
-A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples.  
+A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples \cite{goodfellow_deep_2016}.  
 
 \begin{figure}[H]
 	\centering
