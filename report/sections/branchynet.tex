@@ -12,13 +12,13 @@ This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image s
 		\caption[ResNet50 description]{ResNet50 description. The table describes the blocks of ResNet50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
 		\toprule
 		\rowfont{\bfseries}
-		Block name & Output size & Layer description \tabularnewline
+		Conv block & Output size & Layer description \tabularnewline
 		\hline
 		\endfirsthead
 		\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:resnet50}:}} continued}\\
 		\toprule
 		\rowfont{\bfseries}
-		Layer name & Output size & Layer description \tabularnewline
+		Conv block & Output size & Layer description \tabularnewline
 		\hline
 		\endhead % all the lines above this will be repeated on every page
 		\hline
@@ -70,7 +70,7 @@ This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image s
 	\vspace{-20pt} \textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (ResNet18, ResNet34, ResNet50, Resnet101 and ResNet152)}
 
 
-The Branchy-ResNet50 makes use of the blocks defined by table \ref{tbl:resnet50} as placement for early exiting points. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network. Figure \ref{fig:b-resnet} visualizes the early exiting model B-ResNet50.
+The Branchy-ResNet50 makes use of the conv blocks defined by table \ref{tbl:resnet50} as placement for early exiting points. In contrast to BottleNet, that evaluate network splitting after each of the 16 residual blocks. For the early exit to make sense, we need to go deep enough, that the model is actually able to correctly predict some input samples, hence the conv blocks have been chosen. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network. Figure \ref{fig:b-resnet} visualizes the early exiting model B-ResNet50.
 
 \begin{figure}
 	\centering
