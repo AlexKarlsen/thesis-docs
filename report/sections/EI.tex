@@ -17,7 +17,7 @@ Inference architectures for edge-centric \gls{ei} application and services can b
 	\subfloat[Edge-based\label{fig:edge-based}]{\includegraphics[width=.2\linewidth]{figures/models/edge}}
 	\subfloat[Edge-Device mode\label{fig:edge-device-mode}]{\includegraphics[width=.2\linewidth]{figures/models/edge_device}}
 	\subfloat[Edge-Cloud mode\label{fig:edge-cloud-mode}]{\includegraphics[width=.37\linewidth]{figures/models/edge_cloud}}
-	\caption[Edge-centric arcchitectures]{Edge Archtitectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partially execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partially execution. }
+	\caption[Edge-centric architectures]{Edge Architectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partially execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partially execution. }
 \end{figure}
 
 \begin{description}
@@ -57,25 +57,17 @@ Technologies for distributed \gls{dnn} inference includes:
 
 \begin{description}
 	\item[Model Compression] description \cite{courbariaux_binaryconnect:_2015}
-	\item[Model Partition] Splitting a model to run on both cloud for Edge-Device mode is an inherent nature of sequential \gls{dnn}s, that at any layer can be stopped. The intermediate output are transferred over the network and continued at the next layer on an edge server. Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning scheduler, that uses knowledge of the individual layers of the \gls{dnn} to effectively reduce inference latency. Communication latency is the bottleneck in an offloading application, hence a smaller representation of the input data is needed, however the layers producing a smaller output than the original input typically lies deep within the network. Neurosurgeon construct regression models for layer execution time and  output data size of the layers of a \gls{dnn}, to decide the best partition of the \gls{dnn} based on networking condition. The work is based on \gls{mcc} and shows, that the conventional cloud-only approach is insufficient due to different networking technologies and mobile device is becoming \gls{gpu} enabled. 
-	% Evidently moving computation to the edge reduces the communication latency. 
+	\item[Model Partition]
 	
-	Another effort to reduce communication overhead of network splitting is adding feature compression of intermediate features before offloading to cloud \cite{choi_deep_2018}. The paper shows, that lossless compression have no impact on accuracy, however bit saving is limited. Lossy compression, on the other hand, results in 70\% bit savings, however also affects accuracy and require compression-aware training to compensate. The follow up paper \cite{choi_near-lossless_2018} propose compression techniques for deep features and achieve significant better bit saving, than conventional image compression algorithms. 
+	\item[Model Early-Exit] 
 	
-	BottleNet \cite{eshratifar_bottlenet:_2019} is a novel neural network module. Client-side it consists of a reduction unit and a compressor and server-side of a decompressor and restoration unit. The reduction unit creates a smaller representation of intermediate result by applying spatial- and channel-wise convolution. The compressor uses lossy \gls{jpeg} compression, that are decompressed server-side. The restoration unit apply deconvolution to restore the intermediate feature back to the required dimensionality for the next layer in the network. BottleNet is able to achieve 84$\times$ bit savings compared to cloud-only approach with less than 2\% degradation of accuracy caused by lossy compression with compression-aware training. Under good networking condition, the evaluation of BottleNet shows, that the best split is after the first residual block, which give a 8$\times$ speed up compared to cloud-only approach using WiFi.
-	
-	\item[Model Early-Exit] BranchyNet
-	
-	Note: \cite{park_big/little_2015} examines other ways to define exiting threshold. Although it is a model selection approach.
-	 \cite{teerapittayanon_branchynet:_2016} proposed by \citeauthor{teerapittayanon_branchynet:_2016} is an early exiting framework for fast inference of a \gls{dnn}. The work states, that typically samples can be accurately classified using less \gls{dnn} layers which can improve the inference time, if a sample cannot be classified with proper confidence more layers can be used to obtain a more confident prediction. The framework shows promising results of reduced inference time, added regularization via joint optimization of exiting points and mitigation of vanishing gradients. The result are based on three well-known \gls{dnn} architectures; LeNet \cite{lecun_lecun-98.pdf_1998}, AlexNet \cite{krizhevsky_imagenet_2017} and ResNet \cite{he_deep_2015}, modified to implement the BranchyNet framework, and to accommodate the MNIST \cite{lecun_mnist_2010} and Cifar-10 \cite{krizhevsky_cifar-10_nodate} datasets.  
-	
-	The architecture is suited for \gls{p2p} applications and adaptive to fit any aforementioned \gls{ei} architectures, as it supports network splitting. It can run Device-based, Edge-based and be split to run distributed on device, edge or cloud.
-	
-	\gls{ddnn} \cite{teerapittayanon_distributed_2017} also proposed by \citeauthor{teerapittayanon_distributed_2017}, extend upon BranchyNet,  to  create a distributed computing hierarchy over cloud, edge and end devices. The work shows benefits from distributed computing to provide fault tolerance when end devices are failing.
 	
 	\item[Edge Caching] description
 	\item[Input Filtering] description
-	\item[Model Selection] description
+	
+	\item[Model Selection] 
+	
+	
 	\item[Support for Multi-Tenancy] description
 	\item[Application-specific Optimization] description
 	\item[Knowlegde Transfer Learning] student-teacher training 

@@ -1,10 +1,27 @@
 
-\section{Training BranchyResNet}
+\section{Training Branchy-ResNet}
 
-The B-ResNet is trained on the ILSVRC2012 dataset \cite{russakovsky_imagenet_2015}. The model is trained on a single \gls{gpu} GTX1080 with 8Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. The network weights are initialized as pre-trained ImageNet \cite{russakovsky_imagenet_2015}, to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network classifiers are rough-tuned by freezing the model feature extractor for X epoch with a learning rate of Y. The entire network is then made trainable and trained for Z epochs.
+The model is trained on a single \gls{gpu} GTX1080 with 8Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. Transfer learning are used  to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network is initialized with weight pre-trained on the ImageNet dataset. The training progress is visualized in figure \ref{fig:B-resnet-miniimagenet-10}
+
+\paragraph{MiniImagenet10}
+
+The B-ResNet50 is trained on a subset of the ImageNet ILSVRC2012 dataset \cite{russakovsky_imagenet_2015} to reduce training time, but still being able to justify the BranchyNet framework. The subset contains all samples 10 randomly sampled classes, instead of the 1000 classes from the entire dataset. The dataset is inspired by MiniImageNet \cite{vinyals_matching_2016}, that uses a subset of 100 classes with 600 samples for each class.
 
 \begin{figure}
-	
+	\centering
+	\captionsetup[subfigure]{justification=centering}
+	\subfloat[Train loss\label{fig:B-resnet-miniimagenet10-train-loss}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_train_loss_miniimagenet10.png}}
+	\subfloat[Test loss \label{fig:B-resnet-miniimagenet10-test-loss}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_test_loss_miniimagenet10.png}}
+	\hfill
+	\subfloat[Train accuracy\label{fig:B-resnet-miniimagenet10-train-acc}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_train_acc_miniimagenet10.png}}
+	\subfloat[Test accuracy\label{fig:B-resnet-miniimagenet10-test-acc}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_test_acc_miniimagenet10.png}}
+	\caption[B-ResNet MiniImageNet10 Training summary]{Training summary shows the progression of model attributes over times of epochs, \protect\subref{fig:B-resnet-miniimagenet10-train-loss} train loss, \protect\subref{fig:B-resnet-miniimagenet10-test-loss} test loss, \protect\subref{fig:B-resnet-miniimagenet10-train-acc} train accuracy, \protect\subref{fig:B-resnet-miniimagenet10-test-acc}, test accuracy.}
+	\label{fig:B-resnet-miniimagenet-10}
+\end{figure}
+
+\paragraph{Pascal VOC}
+
+\begin{figure}
 	\centering
 	\captionsetup[subfigure]{justification=centering}
 	\subfloat[Train loss\label{fig:B-resnet-voc-train-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_loss_VOC.png}}
@@ -18,6 +35,8 @@ The B-ResNet is trained on the ILSVRC2012 dataset \cite{russakovsky_imagenet_201
 Visualizing the training progression, clearly indicates that model overfitting to the training data. When a model overfits it suffers to generalize the true underlying distribution of the data. This can be caused by insufficient number of training samples or too complex a model. Since the model has shown promising results in image classification task previously, we can conclude, that the dataset is too sparse.
 
 Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
+
+
 
 \subsection{Optimizer}
 
@@ -63,3 +82,9 @@ Offloading tasks over the network, irregardless fully or partially requires a tr
 Fully offloading \gls{jpeg} compressed images for classification require no losses for human-readability. Sending intermediate features of a \gls{dnn} may not be as intolerant to losses and might be able to function with the far more lightweight \gls{udp}. In current research literature the choice of \gls{tcp} seems given in advance.  
 
 In this experiment the \gls{tcp} transmission time and retransmission rate is investigated under different communication environments. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/tcp/tcpoverhead}
+	\caption[TCP retransmission overhead]{TCP retransmission overhead}
+\end{figure}

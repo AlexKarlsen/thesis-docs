@@ -106,23 +106,31 @@
 \usepackage{multirow}
 
 
-%\makeatletter
-%\def\tabu@verticalmeasure{\everypar{}%
-%	\unless\ifnum\currentgrouptype=14 \let\tabu@currentgrouptype\currentgrouptype\fi
-%	\ifnum \tabu@currentgrouptype>12         % 14=semi-simple, 15=math shift group
-%	\setbox\tabu@box =\hbox\bgroup
-%	\let\tabu@verticalspacing \tabu@verticalsp@lcr
-%	\d@llarbegin                % after \hbox ...
-%	\else
-%	\edef\tabu@temp{\ifnum\tabu@currentgrouptype=5\vtop
-%		\else\ifnum\tabu@currentgrouptype=12\vcenter
-%		\else\vbox\fi\fi}%
-%	\setbox\tabu@box \hbox\bgroup$\tabu@temp \bgroup
-%	\let\tabu@verticalspacing \tabu@verticalsp@pmb
-%	\fi
-%}
-%\makeatother
 
+
+\usepackage{ifplatform}
+
+
+\ifwindows
+
+\makeatletter
+\def\tabu@verticalmeasure{\everypar{}%
+	\unless\ifnum\currentgrouptype=14 \let\tabu@currentgrouptype\currentgrouptype\fi
+	\ifnum \tabu@currentgrouptype>12         % 14=semi-simple, 15=math shift group
+	\setbox\tabu@box =\hbox\bgroup
+	\let\tabu@verticalspacing \tabu@verticalsp@lcr
+	\d@llarbegin                % after \hbox ...
+	\else
+	\edef\tabu@temp{\ifnum\tabu@currentgrouptype=5\vtop
+		\else\ifnum\tabu@currentgrouptype=12\vcenter
+		\else\vbox\fi\fi}%
+	\setbox\tabu@box \hbox\bgroup$\tabu@temp \bgroup
+	\let\tabu@verticalspacing \tabu@verticalsp@pmb
+	\fi
+}
+\makeatother
+
+\fi
 
 \usepackage[export]{adjustbox}
 \usepackage{graphicx}
@@ -181,7 +189,16 @@
 %
 \usepackage[acronym]{glossaries}
 \usepackage{glossary-mcols}
-\makenoidxglossaries
+
+
+\usepackage{xparse}
+\DeclareDocumentCommand{\newdualentry}{ O{} O{} m m m m } {
+	\newglossaryentry{gls-#3}{name={#5},text={#5\glsadd{#3}},
+		description={#6},#1
+	}
+	\makenoidxglossaries
+	\newacronym[see={[Glossary:]{gls-#3}},#2]{#3}{#4}{#5\glsadd{gls-#3}}
+}
 
 \loadglsentries{_tex/glossary}
 

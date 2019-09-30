@@ -1,6 +1,15 @@
-\chapter{Theory}
+\hypertarget{theory}{%
+	\chapter{Theory}\label{ch:theory}}
+\thispagestyle{fancy}
 
-\section{\gls{mec}}
+\section{Edge Computing}
+
+The primal purpose of edge computing reduce latency of real-time applications and improve reliability. Data processing is done in closer proximity to end-users, the shortened communication path leads to a reduction in communication latency. Edge computing seeks to distibute computing resources and data storage in contrast to the last decade centralization of these resources by cloud computing \cite{shi_edge_2016}. Edge computing is envisioned to reliably serve the ever growing number of billions upon billions of connected mobile and \gls{iot} devices. By 2020 Cisco Internet Business Solutions Group, 50 billion things is predicted to be connected to the internet.  As our end-devices keep getting more resourceful and the amount of data generated at the edge is expected to overwhelm cloud data centers and exhaust available bandwidth, edge computing is a possible and necessary step. Furthermore a major concern of cloud computing is the protection of data ensuring data privacy. Edge computing can may address this concern, as no data is expected to leave the network, as all processing is done at the network edge. (Maybe add the push and pull factors of \cite{zhou_edge_2019}) 
+
+Cloud computing have been the de facto standard for \gls{ai} application, as \gls{ai} require tremendous amount of data and computing resources in order to train the self learning algorithms. Real-time applications like \gls{ar}/\gls{vr}, Autonomous Vehicles and Personal Assistant have latency requirements beyond the promises of cloud computing \cite{bibid}. Inference latency can be reduced by moving execution to the edge of the network. Our mobile devices are getting more resourceful and nowadays not uncommon to have a smartphone equipped with a \gls{gpu}. Research ave shown, that the conventional cloud-only approach is actually slower than a mobile-only execution \cite{kang_neurosurgeon:_2017}.
+
+\cite{karlsen_prototyping_nodate} review edge-based offloading and show significant latency improvement by offloading from \gls{cpu}-enabled end devices to \gls{gpu}-enabled edge server. 
+
 
 Mobile computing, \gls{mcc}, \gls{iot} \gls{ei}
 
@@ -20,3 +29,5 @@ training, inference, convolution layers, weights, transfer learning
 
 
 Cloud Intelligence, Edge Intelligence, Device Intelligence, Collaborative Intelligence
+
+\input{sections/EI.tex}
