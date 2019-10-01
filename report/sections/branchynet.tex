@@ -5,14 +5,14 @@ One may argue, that the two datasets used for benchmarking are not applicable to
 
 
 
-This thesis studies BranchyNet on state-of-the-art \gls{dnn} ResNet50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. ResNet50 is built up of 50 layers divided into 16 residual blocks. A residual block is...
+This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. \gls{resnet}50 is built up of 50 layers divided into 16 residual blocks. A residual block is...
 
 
-The architecture is further divided into 4 convolutional blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the ResNet architecture. 
+The architecture is further divided into 4 convolutional blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
 
 \pagebreak
     \begin{longtabu}{>{\bfseries}X|X[c]|X[4c]}
-		\caption[ResNet50 description]{ResNet50 description. The table describes the blocks of ResNet50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
+		\caption[\gls{resnet}50 description]{\gls{resnet}50 description. The table describes the blocks of \gls{resnet}50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
 		\toprule
 		\rowfont{\bfseries}
 		Conv block & Output size & Layer description \tabularnewline
@@ -70,15 +70,15 @@ The architecture is further divided into 4 convolutional blocks, each of which d
 		Classifier & \multicolumn2{c}{Avg. Pool, 1000-d fc, Softmax} \tabularnewline
 		\bottomrule
 	\end{longtabu}
-	\vspace{-20pt} \textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (ResNet18, ResNet34, ResNet50, Resnet101 and ResNet152)}
+	\vspace{-20pt} \textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (\gls{resnet}18, \gls{resnet}34, \gls{resnet}50, \gls{resnet}101 and \gls{resnet}152)}
 
 
-The Branchy-ResNet50 makes use of the conv blocks defined by table \ref{tbl:resnet50} as placement for early exiting points. In contrast to BottleNet, that evaluate network splitting after each of the 16 residual blocks. For the early exit to make sense, we need to go deep enough, that the model is actually able to correctly predict some input samples, hence the conv blocks have been chosen. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network. Figure \ref{fig:b-resnet} visualizes the early exiting model B-ResNet50.
+The Branchy-\gls{resnet}50 makes use of the conv blocks defined by table \ref{tbl:resnet50} as placement for early exiting points. In contrast to BottleNet, that evaluate network splitting after each of the 16 residual blocks. For the early exit to make sense, we need to go deep enough, that the model is actually able to correctly predict some input samples, hence the conv blocks have been chosen. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network. Figure \ref{fig:b-resnet} visualizes the early exiting model B-\gls{resnet}50.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/BResNet}
-	\caption[B-ResNet architecture]{Branchy-ResNet50: ResNet50 extended to implement the BranchyNet framework. The figure illustrates how classification confidence grows, as we go deeper in the model. The first exit actually fails to classify the elephant. }
+	\caption[B-\gls{resnet} architecture]{Branchy-\gls{resnet}50: \gls{resnet}50 extended to implement the BranchyNet framework. The figure illustrates how classification confidence grows, as we go deeper in the model. The first exit actually fails to classify the elephant. }
 	\label{fig:b-resnet}
 \end{figure}
 

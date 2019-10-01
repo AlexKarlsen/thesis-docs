@@ -1,52 +1,17 @@
-\newglossaryentry{latex}
-{
-	name=latex,
-	description={Is a mark up language specially suited for 
-		scientific documents}
-}
-
-\newglossaryentry{maths}
-{
-	name=mathematics,
-	description={Mathematics is what mathematicians do}
-}
-
-\newglossaryentry{formula}
-{
-	name=formula,
-	description={A mathematical expression}
-}
-
 \newglossaryentry{python3}
 {
 	name=Python 3,
 	description={A programming language used extensively in Data Science}
 }
 
-\newacronym{dl}{DL}{Deep Learning}
-
-
-\newglossaryentry{keras}
-{
-	name=Keras,
-	description={A Python Deep Learning \acrshort{api}}
-}
-\newglossaryentry{tensorflow}
-{
-	name=Tensorflow,
-	description={A Python Computational Graph Framework}
-}
 \newglossaryentry{jetson}
 {
 	name=Jetson TX2,
 	description={NVIDIA manufactured development board for accelerated computing}
 }
-\newglossaryentry{colab}
-{
-	name=Google Colab,
-	description={Google Colaboratory, a cloud based solution for running Deep Neural Network on GPU clusters}
-}
 
+
+%% dnn layers
 \newglossaryentry{relu}
 {
 	name=ReLU,
@@ -59,12 +24,21 @@
 	description={A widely used activation function for the last layer of a neural network. The activation function outputs probabilities for the sample belonging to a certain class, i.e. it tells the certainty of the prediction.}
 }
 
-\newglossaryentry{rest api}
+%% 'classic' architectures
+\newglossaryentry{resnet}
 {
-	name=REST API,
-	description={An API architecture following the RESTful principles}
+	name={ResNet},
+	description={Deep neural network build up of residual blocks. The ResNet comes in different depths (ResNet18, ResNet34, ResNet50, ResNet101 and Resnet152)}
 }
 
+\newglossaryentry{densenet}
+{
+	name={DenseNet},
+	description={Deep neural network build of densely connected block. The DenseNet comes in different depths (DenseNet-121 DenseNet-169 DenseNet-201 DenseNet-264)}
+}
+
+
+%% novel architecures
 \newglossaryentry{branchynet}
 {
 	name={BranchyNet},
@@ -87,6 +61,11 @@
 	{DDNN}
 	{Distributed Deep Neural Network}
 	{An early exiting framework for deep neural network distributed over heterogeneous computing resources}
+	
+\newdualentry{dl}
+	{DL}
+	{Deep learning}
+	{Deep learning is a branch of Machine Learning utilizing deep neural networks}
 
 \newacronym{gan}{GAN}{Generative Adverserial Network}
 \newacronym{gans}{GANs}{Generative Adverserial Networks}
