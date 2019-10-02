@@ -1,12 +1,12 @@
 \section{Related work}
 
-Over the last couple of years an increasing interest in reducing the inference time of intelligent applications to extend to real-time applications...
+Over the last couple of years an increasing interest in reducing the inference time of intelligent applications to extend to real-time applications. To improve inference latency on a model-basis, efforts have been made in designing \gls{dnn}s, that efficiently runs on mobile device. Commonly for \gls{mobilenet} \cite{howard_mobilenets:_2017}, \gls{mobilenetv2} \cite{sandler_mobilenetv2:_2018}, \gls{shufflenet} \cite{zhang_shufflenet:_2017} and \gls{shufflenetv2} \cite{ma_shufflenet_2018} are all aiming to efficiently reducing the number of parameters, without compromising model accuracy by designing novel \gls{dnn} architectures.   
 
-\subsection{Model optimization} 
+Other efforts to reduce inference latency involve model compression. 
 
-Architectural: MobileNet, ShuffleNet
+\subsection{Model Compression}
 
-Compression: \cite{courbariaux_binaryconnect:_2015}
+Weight pruning probably the most widespread model compression technique improves model inference latency by removal of redundant weights. Another compression technique is quantization, which represents weight of a \gls{dnn} using a more compact format than 32-bit floating point. One of these efforts are \gls{bnn} \cite{courbariaux_binarized_2016}, which uses binarized weights and activations. In a \gls{bnn} most arithmetic operations are replaced with bit-wise operations, thus greatly improving the power-efficiency and inference latency. The impact of compression is application dependent and can be applied to any \gls{dnn}. Other approaches specifically related to edge computing aiming to reduce inference latency, is model partitioning between end device and edge server. 
 
 \subsection{Model Partitioning}
 
@@ -14,7 +14,7 @@ Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning schedu
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/models/offloading}
+	\includegraphics[width=\linewidth]{figures/models/partitioning}
 	\caption[Model partitioning]{Edge-Device model partitioning run part of the model on-device and offload the rest to edge processing. Network partitioning utilize the assumption, that at some later point in the \gls{dnn} a smaller representation of the data is found, illustrated by the gradually decreasing model layers, to reduce the communication bottleneck. }
 	\label{fig:offlaoding}
 \end{figure}
@@ -34,7 +34,7 @@ To obtain faster inference Big/Little \gls{dnn} \cite{park_big/little_2015} is s
 
 \begin{figure}
 	\centering
-	\includegraphics[width=.5\linewidth]{figures/models/big_little_dnn}
+	\includegraphics[width=\linewidth]{figures/models/big_little_dnn}
 	\caption[Big/Little \gls{dnn} architecture]{Big/Little \gls{dnn}, a hybrid edge architecture. An on-device model is used to selectively offload to a more complex model hosted on an edge server.}
 	\label{fig:big/little-dnn}
 \end{figure}
@@ -43,11 +43,15 @@ If the prediction confidence of the little model is unsatisfactory, a decision i
 
 \subsection{Model Early Exit}
 
-\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} proposed by \citeauthor{teerapittayanon_branchynet:_2016} is an early exiting framework for fast inference of a \gls{dnn}. The work states, that typically samples can be accurately classified using less \gls{dnn} layers which can improve the inference time, if a sample cannot be classified with proper confidence more layers can be used to obtain a more confident prediction. The framework shows promising results of reduced inference time, added regularization via joint optimization of exiting points and mitigation of vanishing gradients. The result are based on three well-known \gls{dnn} architectures; LeNet \cite{lecun_lecun-98.pdf_1998}, AlexNet \cite{krizhevsky_imagenet_2017} and \gls{resnet} \cite{he_deep_2015}, modified to implement the \gls{branchynet} framework, and to accommodate the MNIST \cite{lecun_mnist_2010} and Cifar-10 \cite{krizhevsky_cifar-10_nodate} datasets.  
+\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} proposed by \citeauthor{teerapittayanon_branchynet:_2016} is an early exiting framework for fast inference of a \gls{dnn}. The work states, that typically samples can be accurately classified using less \gls{dnn} layers which can improve the inference time, if a sample cannot be classified with proper confidence more layers can be used to obtain a more confident prediction. The framework shows promising results of reduced inference time, added regularization via joint optimization of exiting points and mitigation of vanishing gradients. The result are based on three well-known \gls{dnn} architectures; \gls{lenet} \cite{lecun_lecun-98.pdf_1998}, \gls{alexnet} \cite{krizhevsky_imagenet_2017} and \gls{resnet} \cite{he_deep_2015}, modified to implement the \gls{branchynet} framework, and to accommodate the MNIST \cite{lecun_mnist_2010} and Cifar-10 \cite{krizhevsky_cifar-10_nodate} datasets.  
 
 \gls{ddnn} \cite{teerapittayanon_distributed_2017} also proposed by \citeauthor{teerapittayanon_distributed_2017}, extend upon \gls{branchynet} framework and show, that the architecture is suited for network partitioning. They propose a distributed computing hierarchy over cloud, edge and end devices. The work shows benefits from distributed computing to provide fault tolerance when end devices are failing. and I should mention other stuff... However \gls{ddnn} focuses on a cluster of end devices collaboratively solving a classification challenge, \gls{branchynet} on the other hand is more suited for \gls{p2p} applications and adaptively fit aforementioned \gls{ei} architectures, including device-only, edge-only and the collaborative edge-device architecture by network partitioning.
 
 
 Using early exiting where a smaller representation of input data is obtained, thus less data must be offloaded to the edge server
 
-\gls{msdnet} \cite{huang_multi-scale_2017} is a novel \gls{dnn} architecture specifically designed for early exiting. It extend upon the \gls{densenet} \cite{huang_densely_2016} architecture, which they show to be more suitable for early exiting than the poputlar \gls{resnet} architecture, because of its unique densely connected blocks, which uses features from earlier layers for final classification. The combination of very general and increasingly more specific and complex feature are shown to be important for early exiting models. \gls{msdnet} uses the densely connected layers along with multi-scale path to further improve early layers accuracy, thus promoting early exiting.
+\gls{msdnet} \cite{huang_multi-scale_2017} is a novel \gls{dnn} architecture specifically designed for early exiting. It extends upon the \gls{densenet} \cite{huang_densely_2016} architecture. Experiments in \cite{huang_multi-scale_2017} show densely connected layers to be more suitable for early exiting than the popular \gls{resnet} architecture build of residual blocks. Densely connected block uses a concatenation of features from all layers for final classification. The combination of  general feature and increasingly more specific and complex features are shown to be important for early exiting models. \gls{msdnet} uses the densely connected layers along with multi-scale paths. The unique design of multi-scale densely connected blocks shows further improvement on early exiting.
+
+\section{Our contribution}
+
+We look at combining early exiting with model partitioning. 

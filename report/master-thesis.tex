@@ -14,8 +14,10 @@
 	\input{sections/preface.tex}
 	\setcounter{page}{1}
 	\input{sections/abstract.tex}
+	\addcontentsline{toc}{chapter}{Abstract}
     \setglossarystyle{mcolindex}
     \printnoidxglossary[type=\acronymtype]%,numberedsection=autolabel]
+    \addcontentsline{toc}{chapter}{Acronyms}
     %\pagebreak
     \tableofcontents
     \pagenumbering{arabic}
@@ -23,7 +25,7 @@
     \input{sections/introduction.tex}
     \input{sections/theory.tex}
     \input{sections/relatedwork.tex}
-    \input{sections/architecture.tex}
+    \input{sections/earlyexiting.tex}
     \input{sections/results.tex}
     %\input{sections/Experiments.tex}
     %\input{sections/document.tex}
