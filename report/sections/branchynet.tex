@@ -1,21 +1,39 @@
 \section{BranchyNet}
 
+\begin{figure}
+	branchynet framework
+\end{figure}
 
-One may argue, that the two datasets used for benchmarking are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples.
+Proposed by \citeauthor{teerapittayanon_branchynet:_2016} \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} is a method to reduce inference latency by letting samples, that can be classified early on exit the model.
+
+\paragraph{BranchyNet Training Framework}
+
+The network is trained solving the joint-optimization problem is defined as the weighted sum of each branch-prediction.
+
+\begin{align*}
+L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
+\end{align*}
+
+Where the loss function is the softmax cross-entropy objective.
+The weighted sum loss is back-propagated to optimize the weights of the network. 
+
+The paper uses the \gls{mnist} and \gls{cifar10} datasets for benchmarking. One may argue, that the two datasets used for benchmarking are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples. This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}50 and \gls{densenet}-121 on a subset of the \gls{ilsvrc2012} dataset. \gls{ilsvrc2012} contains 1.2 million images with an average size of 400 $\times$ 350 pixels.
+
+Our assumption is running a model on device up to a certain exit, if the model can classify with high enough confidence, the sample is exited. However, if confidence is too poor, the intermediate result is offloaded to an edge server to perform final classification.  
+
+\section{ResNet}
+
+\gls{resnet} is built of residual blocks. A residual block is...
 
 
-
-This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}50 fo image size 224x224 images, only modified to accommodate early exiting of the BranchyNet framework. \gls{resnet}50 is built up of 50 layers divided into 16 residual blocks. A residual block is...
-
-
-The architecture is further divided into 4 convolutional blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
+The architecture is further divided into 4 resolution blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
 
 \pagebreak
-    \begin{longtabu}{>{\bfseries}X|X[c]|X[4c]}
+    \begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
 		\caption[\gls{resnet}50 description]{\gls{resnet}50 description. The table describes the blocks of \gls{resnet}50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
 		\toprule
 		\rowfont{\bfseries}
-		Conv block & Output size & Layer description \tabularnewline
+		Resolution block & Output size & Layer description \tabularnewline
 		\hline
 		\endfirsthead
 		\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:resnet50}:}} continued}\\
@@ -73,7 +91,11 @@ The architecture is further divided into 4 convolutional blocks, each of which d
 	\vspace{-20pt} \textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (\gls{resnet}18, \gls{resnet}34, \gls{resnet}50, \gls{resnet}101 and \gls{resnet}152)}
 
 
-The Branchy-\gls{resnet}50 makes use of the conv blocks defined by table \ref{tbl:resnet50} as placement for early exiting points. In contrast to BottleNet, that evaluate network splitting after each of the 16 residual blocks. For the early exit to make sense, we need to go deep enough, that the model is actually able to correctly predict some input samples, hence the conv blocks have been chosen. After each block, the intermediate features are fed to a pooling-layer and a fully-connected classifier. The prediction results are stored and the networks intermediate features are further processed until the end of the original network. Figure \ref{fig:b-resnet} visualizes the early exiting model B-\gls{resnet}50.
+\section{Branchy-ResNet}
+
+The early exits of Branchy-\gls{resnet}50 is placed immediately after a resolution block, as 1) we have to go deep enough, that the model is actually able to correctly predict some input samples. 2) we wish a smaller representation of the input and within a resolution block the data size is unchanged. Hence if offloading after a resolution block 2) is fulfilled and we must by experiment determine how deep within the model exits should be in order to classify some portion of input.
+
+For each exit, the intermediate features are fed to a pooling-layer and a fully-connected softmax classifier. If the output of the  softmax classifier is acceptable the sample is exited. Figure \ref{fig:b-resnet} visualizes the early exiting model B-\gls{resnet}50.
 
 \begin{figure}
 	\centering
@@ -83,14 +105,93 @@ The Branchy-\gls{resnet}50 makes use of the conv blocks defined by table \ref{tb
 \end{figure}
 
 
+\section{DenseNet}
 
-\paragraph{BranchyNet Training Framework}
+The \gls{densenet} is built of densely connected block. A densely connected block is characterizes by...
 
-The network is trained solving the joint-optimization problem is defined as the weighted sum of each branch-prediction.
+Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet} architecture. 
 
-\begin{align*}
-	L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
-\end{align*}
+\pagebreak
+\begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
+	\caption[\gls{densenet}-121 description]{\gls{densenet}-121 description. The table describes the blocks of \gls{densenet}-121. $k$ is the growth rate of the DenseBlock. A typical setting is $k=32$ yielding 256, 512 and 1024 output channels for denseblock(1-3) respectively. The transition layer downsamples the output channel by a factor of 2, thus the number of input channels for DenseBlock(2-4) becomes 128, 256 and 512 respectively.} \label{tbl:densenet121} \\
+	\toprule
+	\rowfont{\bfseries}
+	Layers & Output size & Layer description \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:resnet50}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Layers & Output size & Layer description \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Convolution & $112\times 112$& $7\times 7, \:\mathrm{stride}\: 2$ \tabularnewline \hline
+	Pooling & $56\times 56$& $3\times 3, \:\mathrm{maxpool},\:  \mathrm{stride}\: 2$ \tabularnewline \hline
+	\multirow{3}{*}{DenseBlock (1)} 	& \multirow{3}{*}{$56 \times 56$} & \multirow{3}{*}{
+		$\begin{bmatrix}
+		1 \times 1, k \\ 3 \times 3, k \\
+		\end{bmatrix} \times 6$ }		\tabularnewline										
+	& &  	\tabularnewline
+	& & 	\tabularnewline
+	\hline
+	
+	Transition  	& $56 \times 56$ & $1 \times 1\: \mathrm{conv}$ \tabularnewline \tabucline{2-3}							
+	Layer (1) & $28\times 28$ & $2\times 2\: \mathrm{average\: pool,\: stride}\: 2$	\tabularnewline
+	
+	\hline
+	
+	\multirow{3}{*}{DenseBlock (2)} 	& \multirow{3}{*}{$28 \times 28$} & \multirow{3}{*}{
+		$\begin{bmatrix}
+		1 \times 1, k \\ 3 \times 3, k \\
+		\end{bmatrix} \times 12$ }		\tabularnewline										
+	& &  	\tabularnewline
+	& & 	\tabularnewline
+	\hline
 
-Where the loss function is the softmax cross-entropy objective.
-The weighted sum loss is back-propagated to optimize the weights of the network. 
+	Transition  	& $28 \times 28$ & $1 \times 1\: \mathrm{conv}$ \tabularnewline \tabucline{2-3}							
+	Layer (2) & $14\times 14$ & $2\times 2\: \mathrm{average\: pool,\: stride}\: 2$	\tabularnewline
+
+	\hline
+	
+	\multirow{3}{*}{DenseBlock (3)} 	& \multirow{3}{*}{$14 \times 14$} & \multirow{3}{*}{
+		$\begin{bmatrix}
+		1 \times 1, k \\ 3 \times 3, k \\
+		\end{bmatrix} \times 24$ }		\tabularnewline										
+	& &  	\tabularnewline
+	& & 	\tabularnewline
+	\hline
+	
+	Transition  	& $14 \times 14$ & $1 \times 1\: \mathrm{conv}$ \tabularnewline \tabucline{2-3}							
+	Layer (3) & $7\times 7$ & $2\times 2\: \mathrm{average\: pool,\: stride}\: 2$	\tabularnewline
+	
+	\hline
+	
+	\multirow{3}{*}{DenseBlock (4)} 	& \multirow{3}{*}{$7 \times 7$} & \multirow{3}{*}{
+		$\begin{bmatrix}
+		1 \times 1, k \\ 3 \times 3, k \\
+		\end{bmatrix} \times 16$ }		\tabularnewline										
+	& &  	\tabularnewline
+	& & 	\tabularnewline
+	\hline
+	
+	Classification  	& $1 \times 1$ & $7 \times 7\: \mathrm{global\: average\: pool}$ \tabularnewline \tabucline{2-3}							
+	Layer &  \multicolumn2{c}{Avg. Pool, 1000-d fc, Softmax} \tabularnewline
+	\bottomrule
+\end{longtabu}
+\vspace{-20pt} \textit{Source: \citetitle{huang_densely_2016}, by \citeauthor{huang_densely_2016} \cite{huang_densely_2016}, describes a full list of Densely Connected Networks (\gls{densenet}-121, \gls{densenet}-169, \gls{densenet}-201 and \gls{densenet}-264)}
+
+\section{Branchy-DenseNet}
+
+In the same fashion as B-ResNet early exits have been placed to construct B-DenseNet. The exits are placed after a DenseBlock to obtain feature of sufficient quality and exiting as quickly as possible. If used in Edge-Device mode and the confidence was insufficient the transition layer after the DenseBlock is executed, before data is being preprocess for offloading. 
+
+\section{Multi-Scale DenseNet}
+
+In contrast to \gls{branchynet}, \gls{msdnet} is a model specifically designed for early exiting.
+
+
+
