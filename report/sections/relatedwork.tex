@@ -36,7 +36,8 @@ Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning schedu
 Another effort to reduce communication overhead of network splitting is adding feature compression of intermediate features before offloading to cloud \cite{choi_deep_2018}. The paper shows, that lossless compression have no impact on accuracy, however bit saving is rather limited. Lossy compression, on the other hand, results in 70\% bit savings, however also affects accuracy and require compression-aware training to compensate. The follow up paper \cite{choi_near-lossless_2018} propose compression techniques for deep features and achieve significant better bit saving, than conventional image compression algorithms.
 
 \begin{figure}
-	compression
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/compressed}
 	\caption[Feature compression]{Feature compression}
 \end{figure}
 
@@ -56,7 +57,8 @@ The collaborative scheme between end device and edge servers shows improvements 
 Model selection is an approach to reduce inference by selecting an appropriately accurate model, hence not using an unnecessarily deep model, if a shallower model should be satisfiable. In \cite{bolukbasi_adaptive_2017} a model selection framework is proposed. The framework stacks three increasingly deeper and more accurate models on top of each other; \gls{alexnet}, \gls{googlenet} and \gls{resnet}50. 
 
 \begin{figure}
-	adaptive nets
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/adaptive}
 	\caption[Adaptive Neural Network]{Adaptive Neural Network using model selection}
 \end{figure}
 
@@ -80,7 +82,8 @@ Model early exiting is a way to handle the latency-accuracy trade-off, by reduci
 Cascading neural networks \cite{leroux_resource-constrained_2015} by \citeauthor{leroux_resource-constrained_2015} proposes an early exiting framework by adding a cascade of intermediate classifiers, that allow some sample to exit the model early, hence improving inference time. \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} proposed by \citeauthor{teerapittayanon_branchynet:_2016} is an early exiting framework for existing state-of-the-art model, that allow for fast inference. The paper proposes a novel joint optimization of the all output branches which shows added regularization to the model weights. The framework shows promising results of reduced inference time. The result are based on three well-known \gls{dnn} architectures; \gls{lenet} \cite{lecun_lecun-98.pdf_1998}, \gls{alexnet} \cite{krizhevsky_imagenet_2017} and \gls{resnet} \cite{he_deep_2015}, modified to implement the \gls{branchynet} framework, and to accommodate the MNIST \cite{lecun_mnist_2010} and Cifar-10 \cite{krizhevsky_cifar-10_nodate} datasets.
 
 \begin{figure}
-	branchynet
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/branchy}
 	\caption[BranchyNet Architecture]{BranchyNet Architecture}
 \end{figure}
 
@@ -91,7 +94,8 @@ The distributed cascading neural network and \gls{ddnn} is basically alike, howe
 Cascading neural network \cite{leroux_cascading_2017} on the other hand is more focused on reducing inference time of a single \gls{dnn} with early exiting, which is more suitable for mobile \gls{p2p} applications, however still cascaded/distributed over a computing hierarchy. Training the cascaded neural network is no different than training any other early exiting model, however in \cite{leroux_cascading_2017}, they freeze the network weights and only train the softmax classifiers, whereas in \cite{teerapittayanon_branchynet:_2016} show, that training the model's weights benefit from the joint optimization in the form of added regularization and obtaining early features more suited for early exiting. In the cascading neural network \cite{leroux_cascading_2017}, early exiting and network partitioning point can be chosen depending available networking bandwidth, yet the exit and partition point is assigned statically and evaluated at two different settings, where the point is placed at two different depths. 
 
 \begin{figure}
-	DDNN or cascaded network
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/cascaded}
 	\caption[Cascaded \gls{dnn} over a computing hierarchy]{Cascaded \gls{dnn} over a computing hierarchy}
 \end{figure}
 
