@@ -44,7 +44,8 @@ Another effort to reduce communication overhead of network splitting is adding f
 \gls{bottlenet} \cite{eshratifar_bottlenet:_2019} is a novel neural network module. Client-side it consists of a reduction unit and a compressor unit and server-side of a decompressor unit and restoration unit. The reduction unit creates a smaller representation of intermediate result by applying spatial- and channel-wise convolution. The compressor uses lossy \gls{jpeg} compression, that are decompressed server-side. The restoration unit apply deconvolution to restore the intermediate feature back to the required dimensionality for the next layer in the network.
 
 \begin{figure}
-	bottlenet unit
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/bottlenet}
 	\caption[BottleNet Unit]{BottleNet Unit}
 \end{figure}
 
@@ -104,15 +105,32 @@ Another proposal Edgent \cite{li_edge_2018} by \citeauthor{li_edge_2018} is a fr
 On a per model level \citeauthor{huang_multi-scale_2017} have in \cite{huang_multi-scale_2017} investigated different state-of-the-art architectures for early exiting. They have found, that  densely connected layers of \gls{densenet} \cite{huang_densely_2016} are more suitable for early exiting than the popular \gls{resnet} architecture build of residual blocks. Densely connected block uses a concatenation of features from all layers for final classification. The combination of  general feature and increasingly more specific and complex features are shown to be important for early exiting models. This finding have been used to come of with a novel \gls{dnn} archtiecture specifically designed for early exiting. \gls{msdnet} \cite{huang_multi-scale_2017} uses the densely connected layers along with multi-scale paths. The unique design of multi-scale densely connected blocks shows further improvement on early exiting.
 
 \begin{figure}
-	MSDNet
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/msdnet}
 	\caption[\gls{msdnet} Architecture]{\gls{msdnet} Architecture}
 \end{figure}
 
 \subsection{Model Layer Skipping}
 
-Other approaches to reduce inference time of \gls{dnn} involve mechanism for skipping certain layers. SkipNet \cite{wang_skipnet:_2017} is a framework for adding dynamic decision for skipping layers. The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. SkipNet is trained using a hybrid of supervised learning and reinforcement learning. The classification is learnt as a usual supervised problem using labeled data. The skipping policies are learnt using reinforcement learning by rewarding decision, that have little impact on classification accuracy. The work shows, that only a small fraction of inputs actually require extremely deep models, thus being able to reduce computational cost by 30\% of \gls{resnet}101 on \gls{ilsvrc2012}. 
+Other approaches to reduce inference time of \gls{dnn} involve mechanism for skipping certain layers. SkipNet \cite{wang_skipnet:_2017} is a framework for adding dynamic decision for skipping layers. 
 
-BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies, however instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use. The skipping network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode although neither architecture support early exiting or cascading, but would be useful in a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the policy network run by an end device would selective choose among a smaller model on device or a larger model on an edge server to avoid wasteful execution of a smaller model.
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/skipnet}
+	\caption[SkipNet]{SkipNet}
+\end{figure}
+
+The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. SkipNet is trained using a hybrid of supervised learning and reinforcement learning. The classification is learnt as a usual supervised problem using labeled data. The skipping policies are learnt using reinforcement learning by rewarding decision, that have little impact on classification accuracy. The work shows, that only a small fraction of inputs actually require extremely deep models, thus being able to reduce computational cost by 30\% of \gls{resnet}101 on \gls{ilsvrc2012}. 
+
+BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies, however instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/blockdrop}
+	\caption[BlockDrop]{BlockDrop}
+\end{figure}
+
+The policy network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode although neither architecture support early exiting or cascading, but would be useful in a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the policy network run by an end device would selective choose among a smaller model on device or a larger model on an edge server to avoid wasteful execution of a smaller model.
 
 \section{Our contribution}
 
