@@ -122,7 +122,7 @@ Other approaches to reduce inference time of \gls{dnn} involve mechanism for ski
 
 The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. SkipNet is trained using a hybrid of supervised learning and reinforcement learning. The classification is learnt as a usual supervised problem using labeled data. The skipping policies are learnt using reinforcement learning by rewarding decision, that have little impact on classification accuracy. The work shows, that only a small fraction of inputs actually require extremely deep models, thus being able to reduce computational cost by 30\% of \gls{resnet}101 on \gls{ilsvrc2012}. 
 
-BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies, however instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use.
+BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies. However, instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use. BlockDrop is in fact a model selection framework, where the selection of models are learnt rather than tested. 
 
 \begin{figure}
 	\centering
