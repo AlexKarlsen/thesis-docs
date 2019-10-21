@@ -1,17 +1,17 @@
 \include{_tex/preamble}
 \begin{document}
 	\input{sections/titlepage.tex}
-	\clearpage
-	\clearpage % end title page
+	%\clearpage
 	% Empty page after title page
 	\begingroup
 	\pagestyle{empty}
 	\null
 	\newpage
+	\input{sections/preface.tex}
 	\endgroup
 	\pagenumbering{Roman}
 	\justify
-	\input{sections/preface.tex}
+	
 	\setcounter{page}{1}
 	\input{sections/abstract.tex}
 	\addcontentsline{toc}{chapter}{Abstract}

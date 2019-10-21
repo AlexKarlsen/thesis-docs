@@ -10,22 +10,22 @@ This thesis mainly focuses on the inference process and will not address edge-sp
 
 Inference architectures for edge-centric \gls{ei} application and services can be categories into four main models \cite{zhou_edge_2019}:
 
-\begin{figure}
-	\centering
-	\captionsetup[subfigure]{justification=centering}
-	\subfloat[Device-based\label{fig:device-based}]{\includegraphics[width=.2\linewidth]{figures/models/device}}
-	\subfloat[Edge-based\label{fig:edge-based}]{\includegraphics[width=.2\linewidth]{figures/models/edge}}
-	\subfloat[Edge-Device mode\label{fig:edge-device-mode}]{\includegraphics[width=.2\linewidth]{figures/models/edge_device}}
-	\subfloat[Edge-Cloud mode\label{fig:edge-cloud-mode}]{\includegraphics[width=.37\linewidth]{figures/models/edge_cloud}}
-	\caption[Edge-centric architectures]{Edge Architectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partially execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partially execution. }
-\end{figure}
-
-\begin{description}
-	\item[Device-based Mode] end device obtain model from edge server. The end-device then acquires input data and performs model inference. Since all computation is done on the end device, performance is solely reliant on the end device's computing resources.  
-	\item[Edge-based Mode] end device acquires input data. The input data is transferred to an edge server, which performs model inference and send the prediction results to the end device. The performance relies on edge server computing resources and network bandwidth.
-	\item[Edge-Device Mode] end device acquires input data and performs partially model inference. The intermediate data is transferred to an edge server which finalizes model inference. The performance relies on end device's and edge server computing resource, network bandwidth and edge server workload. 
-	\item[Edge-Cloud Mode] resemble edge-device mode, however the model inference task is now partitioned between edge server and cloud data centers. The model is now reliant on edge server and data center computing resources, but even more reliant on \gls{wan} transmission rate between edge and cloud. 
-\end{description}
+%\begin{figure}
+%	\centering
+%	\captionsetup[subfigure]{justification=centering}
+%	\subfloat[Device-based\label{fig:device-based}]{\includegraphics[width=.2\linewidth]{figures/models/device}}
+%	\subfloat[Edge-based\label{fig:edge-based}]{\includegraphics[width=.2\linewidth]{figures/models/edge}}
+%	\subfloat[Edge-Device mode\label{fig:edge-device-mode}]{\includegraphics[width=.2\linewidth]{figures/models/edge_device}}
+%	\subfloat[Edge-Cloud mode\label{fig:edge-cloud-mode}]{\includegraphics[width=.37\linewidth]{figures/models/edge_cloud}}
+%	\caption[Edge-centric architectures]{Edge Architectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partially execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partially execution. }
+%\end{figure}
+%
+%\begin{description}
+%	\item[Device-based Mode] end device obtain model from edge server. The end-device then acquires input data and performs model inference. Since all computation is done on the end device, performance is solely reliant on the end device's computing resources.  
+%	\item[Edge-based Mode] end device acquires input data. The input data is transferred to an edge server, which performs model inference and send the prediction results to the end device. The performance relies on edge server computing resources and network bandwidth.
+%	\item[Edge-Device Mode] end device acquires input data and performs partially model inference. The intermediate data is transferred to an edge server which finalizes model inference. The performance relies on end device's and edge server computing resource, network bandwidth and edge server workload. 
+%	\item[Edge-Cloud Mode] resemble edge-device mode, however the model inference task is now partitioned between edge server and cloud data centers. The model is now reliant on edge server and data center computing resources, but even more reliant on \gls{wan} transmission rate between edge and cloud. 
+%\end{description}
 
 \subsection{Performance Metrics}
 
