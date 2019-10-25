@@ -21,7 +21,9 @@ The paper uses the \gls{mnist} and \gls{cifar10} datasets for benchmarking. One 
 
 Our assumption is running a model on device up to a certain exit, if the model can classify with high enough confidence, the sample is exited. However, if confidence is too poor, the intermediate result is offloaded to an edge server to perform final classification.  
 
-\section{ResNet}
+\subsection{Branchy-ResNet}
+
+In this section the design of Branchy-\gls{resnet} is explained. First is the building blocks of a residual network explained followed by the design of B-\gls{resnet}. 
 
 \gls{resnet} is built of residual blocks. A residual block is...
 
@@ -90,9 +92,6 @@ The architecture is further divided into 4 resolution blocks, each of which down
 	\end{longtabu}
 	\vspace{-20pt} \color{caption-color}{\textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (\gls{resnet}18, \gls{resnet}34, \gls{resnet}50, \gls{resnet}101 and \gls{resnet}152)}}\color{main-color}
 
-
-\section{Branchy-ResNet}
-
 The early exits of Branchy-\gls{resnet}50 is placed immediately after a resolution block, as 1) we have to go deep enough, that the model is actually able to correctly predict some input samples. 2) we wish a smaller representation of the input and within a resolution block the data size is unchanged. Hence if offloading after a resolution block 2) is fulfilled and we must by experiment determine how deep within the model exits should be in order to classify some portion of input.
 
 For each exit, the intermediate features are fed to a pooling-layer and a fully-connected softmax classifier. If the output of the  softmax classifier is acceptable the sample is exited. Figure \ref{fig:b-resnet} visualizes the early exiting model B-\gls{resnet}50.
@@ -105,7 +104,10 @@ For each exit, the intermediate features are fed to a pooling-layer and a fully-
 \end{figure}
 
 
-\section{DenseNet}
+\subsection{Branchy-DenseNet}
+
+In this section the design of Branchy-\gls{densenet} is explained. First is the building blocks of a dense network explained followed by the design of B-\gls{densenet}.
+
 
 The \gls{densenet} is built of densely connected block. A densely connected block is characterizes by...
 
@@ -185,11 +187,10 @@ Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet}
 \end{longtabu}
 \vspace{-20pt} \color{caption-color}{\textit{Source: \citetitle{huang_densely_2016}, by \citeauthor{huang_densely_2016} \cite{huang_densely_2016}, describes a full list of Densely Connected Networks (\gls{densenet}-121, \gls{densenet}-169, \gls{densenet}-201 and \gls{densenet}-264)}} \color{main-color}
 
-\section{Branchy-DenseNet}
 
 In the same fashion as B-ResNet early exits have been placed to construct B-DenseNet. The exits are placed after a DenseBlock to obtain feature of sufficient quality and exiting as quickly as possible. If used in Edge-Device mode and the confidence was insufficient the transition layer after the DenseBlock is executed, before data is being preprocess for offloading. 
 
-\section{Multi-Scale DenseNet}
+\section{MSDNet}
 
 In contrast to \gls{branchynet}, \gls{msdnet} is a model specifically designed for early exiting.
 

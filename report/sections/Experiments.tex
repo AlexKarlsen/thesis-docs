@@ -1,78 +1,70 @@
 
-\section{Training Branchy-ResNet}
+\section{BranchyNet Training}
 
-The model is trained on a single \gls{gpu} GTX1080 with 8Gb memory. Typically a batch size of 32 is chosen, however smaller batch size, have shown better generalization performance \cite{masters_revisiting_nodate}, thus a batch size of 16 is chosen, which also is maximum to prevent memory exhaustion and still have descent training times. Transfer learning are used  to reduce model convergence time and improve model accuracy \cite{yosinski_how_2014}. The network is initialized with weight pre-trained on the ImageNet dataset. The training progress is visualized in figure \ref{fig:B-resnet-miniimagenet-10}
+%\begin{figure}
+%	\centering
+%	\captionsetup[subfigure]{justification=centering}
+%	\subfloat[Train loss\label{fig:B-resnet-miniimagenet10-train-loss}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_train_loss_miniimagenet10.png}}
+%	\subfloat[Test loss \label{fig:B-resnet-miniimagenet10-test-loss}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_test_loss_miniimagenet10.png}}
+%	\hfill
+%	\subfloat[Train accuracy\label{fig:B-resnet-miniimagenet10-train-acc}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_train_acc_miniimagenet10.png}}
+%	\subfloat[Test accuracy\label{fig:B-resnet-miniimagenet10-test-acc}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_test_acc_miniimagenet10.png}}
+%	\caption[B-ResNet MiniImageNet10 Training summary]{Training summary shows the progression of model attributes over times of epochs, \protect\subref{fig:B-resnet-miniimagenet10-train-loss} train loss, \protect\subref{fig:B-resnet-miniimagenet10-test-loss} test loss, \protect\subref{fig:B-resnet-miniimagenet10-train-acc} train accuracy, \protect\subref{fig:B-resnet-miniimagenet10-test-acc}, test accuracy.}
+%	\label{fig:B-resnet-miniimagenet-10}
+%\end{figure}
 
-\paragraph{MiniImagenet10}
-
-The B-ResNet50 is trained on a subset of the ImageNet ILSVRC2012 dataset \cite{russakovsky_imagenet_2015} to reduce training time, but still being able to justify the BranchyNet framework. The subset contains all samples 10 randomly sampled classes, instead of the 1000 classes from the entire dataset. The dataset is inspired by MiniImageNet \cite{vinyals_matching_2016}, that uses a subset of 100 classes with 600 samples for each class.
-
-\begin{figure}
-	\centering
-	\captionsetup[subfigure]{justification=centering}
-	\subfloat[Train loss\label{fig:B-resnet-miniimagenet10-train-loss}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_train_loss_miniimagenet10.png}}
-	\subfloat[Test loss \label{fig:B-resnet-miniimagenet10-test-loss}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_test_loss_miniimagenet10.png}}
-	\hfill
-	\subfloat[Train accuracy\label{fig:B-resnet-miniimagenet10-train-acc}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_train_acc_miniimagenet10.png}}
-	\subfloat[Test accuracy\label{fig:B-resnet-miniimagenet10-test-acc}]{\includegraphics[width=.49\textwidth]{figures/bresnet_mini10/BResNet_test_acc_miniimagenet10.png}}
-	\caption[B-ResNet MiniImageNet10 Training summary]{Training summary shows the progression of model attributes over times of epochs, \protect\subref{fig:B-resnet-miniimagenet10-train-loss} train loss, \protect\subref{fig:B-resnet-miniimagenet10-test-loss} test loss, \protect\subref{fig:B-resnet-miniimagenet10-train-acc} train accuracy, \protect\subref{fig:B-resnet-miniimagenet10-test-acc}, test accuracy.}
-	\label{fig:B-resnet-miniimagenet-10}
-\end{figure}
-
-\paragraph{Pascal VOC}
+Training B-\gls{resnet} and B-\gls{densenet} shows the importance of the densely connected layers for an early exiting model. The early exits of B-\gls{densenet} have a higher accuracy compared to B-\gls{resnet}, however B-\gls{resnet} have a higher end-accuracy, see figure \ref{fig:b-net-miniimagenet-100}. 
 
 \begin{figure}
 	\centering
 	\captionsetup[subfigure]{justification=centering}
-	\subfloat[Train loss\label{fig:B-resnet-voc-train-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_loss_VOC.png}}
-	\subfloat[Test loss \label{fig:B-resnet-voc-test-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_test_loss_VOC.png}}
-	\hfill
-	\subfloat[Train accuracy\label{fig:B-resnet-voc-train-acc}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_acc_VOC.png}}
-	\subfloat[Test accuracy\label{fig:B-resnet-voc-test-acc}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_test_acc_VOC.png}}
-	\caption[B-ResNet VOC Training summary]{Training summary shows the progression of model attributes over times of epochs, \protect\subref{fig:B-resnet-voc-train-loss} train loss, \protect\subref{fig:B-resnet-voc-test-loss} test loss, \protect\subref{fig:B-resnet-voc-train-acc} train accuracy, \protect\subref{fig:B-resnet-voc-test-acc}, test accuracy.}
+	\subfloat[B-Resnet\label{fig:B-resnet-miniimagenet100}]{\includegraphics[width=\linewidth]{figures/training_plots/resnet_miniimagenet100}}
+\end{figure}
+\begin{figure}
+	%\ContinuedFloat
+	\captionsetup[subfigure]{justification=centering}
+	\subfloat[B-DenseNet\label{fig:B-densenet-miniimagenet100}]{\includegraphics[width=\linewidth]{figures/training_plots/densenet_miniimagenet100}}
+	\caption[Training progress of BrancyNets]{Training progress for \protect\subref{fig:B-resnet-miniimagenet100} B-ResNet and \protect\subref{fig:B-densenet-miniimagenet100} B-DenseNet} 
+	\label{fig:b-net-miniimagenet-100}
 \end{figure}
 
-Visualizing the training progression, clearly indicates that model overfitting to the training data. When a model overfits it suffers to generalize the true underlying distribution of the data. This can be caused by insufficient number of training samples or too complex a model. Since the model has shown promising results in image classification task previously, we can conclude, that the dataset is too sparse.
+%\paragraph{Pascal VOC}
+%
+%\begin{figure}
+%	\centering
+%	\captionsetup[subfigure]{justification=centering}
+%	\subfloat[Train loss\label{fig:B-resnet-voc-train-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_loss_VOC.png}}
+%	\subfloat[Test loss \label{fig:B-resnet-voc-test-loss}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_test_loss_VOC.png}}
+%	\hfill
+%	\subfloat[Train accuracy\label{fig:B-resnet-voc-train-acc}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_train_acc_VOC.png}}
+%	\subfloat[Test accuracy\label{fig:B-resnet-voc-test-acc}]{\includegraphics[width=.49\textwidth]{figures/BResNetVOC/BResNet_test_acc_VOC.png}}
+%	\caption[B-ResNet VOC Training summary]{Training summary shows the progression of model attributes over times of epochs, \protect\subref{fig:B-resnet-voc-train-loss} train loss, \protect\subref{fig:B-resnet-voc-test-loss} test loss, \protect\subref{fig:B-resnet-voc-train-acc} train accuracy, \protect\subref{fig:B-resnet-voc-test-acc}, test accuracy.}
+%\end{figure}
+%
+%Visualizing the training progression, clearly indicates that model overfitting to the training data. When a model overfits it suffers to generalize the true underlying distribution of the data. This can be caused by insufficient number of training samples or too complex a model. Since the model has shown promising results in image classification task previously, we can conclude, that the dataset is too sparse.
+%
+%Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
 
-Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
-
-
-
-\subsection{Optimizer}
-
-The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
-
-\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which also implement strategies to avoid being stuck in local minimas. 
-
-\gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
+\section{Inference Time Analysis}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/lr.png}
-	\caption[Cosine Annealing Learning Rate]{Cosine Annealing Learning Rate} \label{fig:cosineannealing}
+	\includegraphics[width=\linewidth]{figures/threshold_plots/timing_densenet100}
+	\caption[Inference Analysis B-DenseNet]{Inference Analysis B-DenseNet}
 \end{figure}
 
-\subsection{Image Augmentation}
+\section{Threshold Analysis}
 
-A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples \cite{goodfellow_deep_2016}.  
+In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. Figure \ref{fig:thresholds} compares the performance of each exit on all samples.
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/augmentation/augmentation_high_resolution.png}
-	\caption[Image Augmentaion Example]{Image Augmentation of an elephant}
-	\label{fig:augmentation}
+	\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_densenet}
+	\caption[Threshold Comparison]{Threshold comparison of confidence threshold and score margin threshold.}
+	\label{fig:thresholds}
 \end{figure}
 
-Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant. 
-
-New methods have been proposed where image transformations are learned to improve generalization e.g. AutoAugment \cite{cubuk_autoaugment:_2018}. 
-
-Other methods involves actually enlarging the training dataset by synthetically creating more data using a \gls{gan}. \gls{gan}s can help overcome limited data given the available training data or a 3D model, by artificially constructing new samples in different background, light setting and from alternate perspectives.
-
-Methods that do not cover enriching the available training, but alters the learning procedure are called regularization and covers; weight decay, dropout, batch normalization etc. 
-
-
-\section{Training DDNN}
+The \emph{score-margin} has more desirable traits, as less samples are incorrectly exited at lower threshold, only at the expense of a few additional samples not exited. Thus more suitable for application, that can slack a bit on accuracy to meet a latency constraint. Henceforth the \emph{score-margin} threshold are used.   
 
 \section{Transport Protocol} 
 

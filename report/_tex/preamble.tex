@@ -42,7 +42,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames*,table}{xcolor}
 %
-\documentclass[a4paper]{scrreprt}
+\documentclass[a4paper, listof=nochaptergap]{scrreprt}
 \usepackage{lmodern}
 \usepackage{setspace}
 
@@ -178,11 +178,12 @@
 %
 % Bibliography
 %
-\usepackage[backend=bibtex,style=ieee,natbib=true]{biblatex} %added
+\usepackage[backend=bibtex,style=ieee,natbib=true, citestyle=numeric-comp]{biblatex} %added
 \addbibresource{_tex/biblio.bib}
 %\usepackage[numbers]{natbib}
 %\renewcommand{\bibsection}{}
 %\bibliographystyle{ieee}
+
 
 %
 % Glossary and abbreviations
