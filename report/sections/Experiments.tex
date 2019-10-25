@@ -13,13 +13,16 @@
 %	\label{fig:B-resnet-miniimagenet-10}
 %\end{figure}
 
-Training B-\gls{resnet} and B-\gls{densenet} shows the importance of the densely connected layers for an early exiting model. The early exits of B-\gls{densenet} have a higher accuracy compared to B-\gls{resnet}, however B-\gls{resnet} have a higher end-accuracy, see figure \ref{fig:b-net-miniimagenet-100}. 
+Training B-\gls{resnet} and B-\gls{densenet} shows the importance of the densely connected layers for an early exiting model. The early exits of B-\gls{densenet} have a higher accuracy compared to B-\gls{resnet}, however B-\gls{resnet} last two exits are more accurate, see figure \ref{fig:b-net-miniimagenet-100}. 
 
 \begin{figure}
 	\centering
 	\captionsetup[subfigure]{justification=centering}
 	\subfloat[B-Resnet\label{fig:B-resnet-miniimagenet100}]{\includegraphics[width=\linewidth]{figures/training_plots/resnet_miniimagenet100}}
 \end{figure}
+
+The two last exits of \gls{resnet} are almost equally accurate. The resolution block of exit-2 are very deep, and the features becomes optimized for this classifier, hence not much gain in accuracy is obtained by running the early exit model all the way to the end. \gls{densenet} on the other hand always have an accuracy gain by continuing the inference process.    
+
 \begin{figure}
 	%\ContinuedFloat
 	\captionsetup[subfigure]{justification=centering}
@@ -48,9 +51,10 @@ Training B-\gls{resnet} and B-\gls{densenet} shows the importance of the densely
 \section{Inference Time Analysis}
 
 \begin{figure}
+	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\includegraphics[width=\linewidth]{figures/threshold_plots/timing_densenet100}
-	\caption[Inference Analysis B-DenseNet]{Inference Analysis B-DenseNet}
+	\includegraphics[width=\linewidth]{figures/threshold_plots/timing}
+	\caption[Inference Analysis]{Inference Analysis}
 \end{figure}
 
 \section{Threshold Analysis}
@@ -58,8 +62,16 @@ Training B-\gls{resnet} and B-\gls{densenet} shows the importance of the densely
 In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. Figure \ref{fig:thresholds} compares the performance of each exit on all samples.
 
 \begin{figure}
+	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_densenet}
+	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
+
+\end{figure}
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+%	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
+	\subfloat[DenseNet\label{fig:threshold_densenet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_densenet100}}
 	\caption[Threshold Comparison]{Threshold comparison of confidence threshold and score margin threshold.}
 	\label{fig:thresholds}
 \end{figure}

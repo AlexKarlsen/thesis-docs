@@ -7,21 +7,27 @@
 	\pagestyle{empty}
 	\null
 	\newpage
+	\setcounter{page}{1}
 	\input{sections/preface.tex}
 	\endgroup
-	\pagenumbering{Roman}
+	%\pagenumbering{Roman}
 	\justify
 	
-	\setcounter{page}{1}
+	
 	\input{sections/abstract.tex}
 	\addcontentsline{toc}{chapter}{Abstract}
     \setglossarystyle{mcolindex}
     \printnoidxglossary[type=\acronymtype]%,numberedsection=autolabel]
     \addcontentsline{toc}{chapter}{Acronyms}
-    %\pagebreak
+    
+    %\pagenumbering{arabic}
+    
     \tableofcontents
-    \pagenumbering{arabic}
+    
+    
     \pagebreak
+
+    
     \input{sections/introduction.tex}
     \input{sections/relatedwork.tex}
     \input{sections/theory.tex}

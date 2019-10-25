@@ -179,15 +179,6 @@
 	file = {Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:/home/ajk/Zotero/storage/DCUGD8XB/Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:application/pdf}
 }
 
-@article{dean_large_nodate,
-	title = {Large Scale Distributed Deep Networks},
-	abstract = {Recent work in unsupervised feature learning and deep learning has shown that being able to train large models can dramatically improve performance. In this paper, we consider the problem of training a deep network with billions of parameters using tens of thousands of {CPU} cores. We have developed a software framework called {DistBelief} that can utilize computing clusters with thousands of machines to train large models. Within this framework, we have developed two algorithms for large-scale distributed training: (i) Downpour {SGD}, an asynchronous stochastic gradient descent procedure supporting a large number of model replicas, and (ii) Sandblaster, a framework that supports a variety of distributed batch optimization procedures, including a distributed implementation of L-{BFGS}. Downpour {SGD} and Sandblaster L-{BFGS} both increase the scale and speed of deep network training. We have successfully used our system to train a deep network 30x larger than previously reported in the literature, and achieves state-of-the-art performance on {ImageNet}, a visual object recognition task with 16 million images and 21k categories. We show that these same techniques dramatically accelerate the training of a more modestly- sized deep network for a commercial speech recognition service. Although we focus on and report performance of these methods as applied to training large neural networks, the underlying algorithms are applicable to any gradient-based machine learning algorithm.},
-	pages = {9},
-	author = {Dean, Jeffrey and Corrado, Greg and Monga, Rajat and Chen, Kai and Devin, Matthieu and Mao, Mark and Ranzato, Marc'aurelio and Senior, Andrew and Tucker, Paul and Yang, Ke and Le, Quoc V and Ng, Andrew Y},
-	langid = {english},
-	file = {Dean et al. - Large Scale Distributed Deep Networks.pdf:/home/ajk/Zotero/storage/2S2NKMFU/Dean et al. - Large Scale Distributed Deep Networks.pdf:application/pdf}
-}
-
 @inproceedings{teerapittayanon_distributed_2017,
 	location = {Atlanta, {GA}, {USA}},
 	title = {Distributed Deep Neural Networks Over the Cloud, the Edge and End Devices},
@@ -481,9 +472,6 @@
 	author = {Masters, Dominic and Luschi, Carlos},
 	urldate = {2018-08-13},
 	file = {1804.07612.pdf:/home/ajk/Zotero/storage/RMHUUJQ3/1804.07612.pdf:application/pdf}
-}
-
-@inproceedings{noauthor_notitle_nodate
 }
 
 @inproceedings{deng_imagenet:_2009,
@@ -1236,4 +1224,47 @@
 	eprint = {1602.07360},
 	keywords = {Computer Science - Artificial Intelligence, Computer Science - Computer Vision and Pattern Recognition},
 	file = {Iandola et al. - 2016 - SqueezeNet AlexNet-level accuracy with 50x fewer .pdf:/home/ajk/Zotero/storage/9YRQ8NVL/Iandola et al. - 2016 - SqueezeNet AlexNet-level accuracy with 50x fewer .pdf:application/pdf}
+}
+
+@article{bengio_practical_2012,
+	title = {Practical recommendations for gradient-based training of deep architectures},
+	url = {http://arxiv.org/abs/1206.5533},
+	abstract = {Learning algorithms related to artificial neural networks and in particular for Deep Learning may seem to involve many bells and whistles, called hyper-parameters. This chapter is meant as a practical guide with recommendations for some of the most commonly used hyper-parameters, in particular in the context of learning algorithms based on back-propagated gradient and gradient-based optimization. It also discusses how to deal with the fact that more interesting results can be obtained when allowing one to adjust many hyper-parameters. Overall, it describes elements of the practice used to successfully and efficiently train and debug large-scale and often deep multi-layer neural networks. It closes with open questions about the training difficulties observed with deeper architectures.},
+	journaltitle = {{arXiv}:1206.5533 [cs]},
+	author = {Bengio, Yoshua},
+	urldate = {2019-10-25},
+	date = {2012-09-16},
+	eprinttype = {arxiv},
+	eprint = {1206.5533},
+	note = {version: 2},
+	keywords = {Computer Science - Machine Learning},
+	file = {arXiv Fulltext PDF:/home/ajk/Zotero/storage/RZ8ZDN38/Bengio - 2012 - Practical recommendations for gradient-based train.pdf:application/pdf;arXiv.org Snapshot:/home/ajk/Zotero/storage/AQIWU38I/1206.html:text/html}
+}
+
+@incollection{dean_large_2012,
+	title = {Large Scale Distributed Deep Networks},
+	url = {http://papers.nips.cc/paper/4687-large-scale-distributed-deep-networks.pdf},
+	pages = {1223--1231},
+	booktitle = {Advances in Neural Information Processing Systems 25},
+	publisher = {Curran Associates, Inc.},
+	author = {Dean, Jeffrey and Corrado, Greg and Monga, Rajat and Chen, Kai and Devin, Matthieu and Mao, Mark and Ranzato, Marc\{{\textbackslash}textbackslash\}textquotesingle aurelio and Senior, Andrew and Tucker, Paul and Yang, Ke and Le, Quoc V. and Ng, Andrew Y.},
+	editor = {Pereira, F. and Burges, C. J. C. and Bottou, L. and Weinberger, K. Q.},
+	urldate = {2019-10-25},
+	date = {2012},
+	file = {NIPS Full Text PDF:/home/ajk/Zotero/storage/H7L2Y4ZD/Dean et al. - 2012 - Large Scale Distributed Deep Networks.pdf:application/pdf;NIPS Snapshot:/home/ajk/Zotero/storage/Q5DTE2UF/4687-large-scale-distributed-deep-networks.html:text/html}
+}
+
+@article{kornblith_better_2019,
+	title = {Do Better {ImageNet} Models Transfer Better?},
+	url = {http://arxiv.org/abs/1805.08974},
+	abstract = {Transfer learning is a cornerstone of computer vision, yet little work has been done to evaluate the relationship between architecture and transfer. An implicit hypothesis in modern computer vision research is that models that perform better on {ImageNet} necessarily perform better on other vision tasks. However, this hypothesis has never been systematically tested. Here, we compare the performance of 16 classiﬁcation networks on 12 image classiﬁcation datasets. We ﬁnd that, when networks are used as ﬁxed feature extractors or ﬁne-tuned, there is a strong correlation between {ImageNet} accuracy and transfer accuracy (r = 0.99 and 0.96, respectively). In the former setting, we ﬁnd that this relationship is very sensitive to the way in which networks are trained on {ImageNet}; many common forms of regularization slightly improve {ImageNet} accuracy but yield penultimate layer features that are much worse for transfer learning. Additionally, we ﬁnd that, on two small ﬁne-grained image classiﬁcation datasets, pretraining on {ImageNet} provides minimal beneﬁts, indicating the learned features from {ImageNet} do not transfer well to ﬁne-grained tasks. Together, our results show that {ImageNet} architectures generalize well across datasets, but {ImageNet} features are less general than previously suggested.},
+	journaltitle = {{arXiv}:1805.08974 [cs, stat]},
+	author = {Kornblith, Simon and Shlens, Jonathon and Le, Quoc V.},
+	urldate = {2019-10-25},
+	date = {2019-06-17},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1805.08974},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Statistics - Machine Learning},
+	file = {Kornblith et al. - 2019 - Do Better ImageNet Models Transfer Better.pdf:/home/ajk/Zotero/storage/68KJ7V5E/Kornblith et al. - 2019 - Do Better ImageNet Models Transfer Better.pdf:application/pdf}
 }
