@@ -1,2 +1,135 @@
-    \addchap{Appendix}
+    %\addchap{Appendix}
     \appendix
+    \clearpage % or \cleardoublepage
+    \appendixpage
+    \addappheadtotoc
+    % code to show appendices at section level in TOC
+    \chapassect
+    \begin{appendices}
+    	\chapter{MiniImageNet100}
+    	
+    	\begin{longtabu}{X|X[4]}
+    		\caption[\gls{min100} description]{\gls{min100} description.} \label{tbl:min100} \tabularnewline
+    		\toprule
+    		\rowfont{\bfseries}
+    		Class Label & Synset \tabularnewline
+    		\hline
+    		\endfirsthead
+    		\multicolumn{2}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:min100}:}} continued}\tabularnewline
+    		\toprule
+    		\rowfont{\bfseries}
+    		Class Label & Synset \tabularnewline
+    		\hline
+    		\endhead % all the lines above this will be repeated on every page
+    		\hline
+    		\multicolumn{2}{@{}l}{continued \ldots}\tabularnewline
+    		\endfoot
+    		\hline
+    		\endlastfoot
+    		n01443537 &                                                                                                goldfish, Carassius auratus \tabularnewline
+    		n01518878 &                                                                                                  ostrich, Struthio camelus \tabularnewline
+    		n01532829 &                                                                                  house finch, linnet, Carpodacus mexicanus \tabularnewline
+    		n01580077 &                                                                                                                        jay \tabularnewline
+    		n01688243 &                                                                                       frilled lizard, Chlamydosaurus kingi \tabularnewline
+    		n01753488 &                                                          horned viper, cerastes, sand viper, horned asp, Cerastes cornutus \tabularnewline
+    		n01784675 &                                                                                                                  centipede \tabularnewline
+    		n01795545 &                                                                                                               black grouse \tabularnewline
+    		n01796340 &                                                                                                                  ptarmigan \tabularnewline
+    		n01843383 &                                                                                                                     toucan \tabularnewline
+    		n01855032 &                                                                                    red-breasted merganser, Mergus serrator \tabularnewline
+    		n01860187 &                                                                                                 black swan, Cygnus atratus \tabularnewline
+    		n01877812 &                                                                                                    wallaby, brush kangaroo \tabularnewline
+    		n02007558 &                                                                                                                   flamingo \tabularnewline
+    		n02028035 &                                                                                                   redshank, Tringa totanus \tabularnewline
+    		n02051845 &                                                                                                                    pelican \tabularnewline
+    		n02056570 &                                                                                       king penguin, Aptenodytes patagonica \tabularnewline
+    		n02074367 &                                                                                                       dugong, Dugong dugon \tabularnewline
+    		n02085782 &                                                                                                           Japanese spaniel \tabularnewline
+    		n02088094 &                                                                                                       Afghan hound, Afghan \tabularnewline
+    		n02088632 &                                                                                                                   bluetick \tabularnewline
+    		n02091635 &                                                                                                    otterhound, otter hound \tabularnewline
+    		n02093647 &                                                                                                         Bedlington terrier \tabularnewline
+    		n02099429 &                                                                                                     curly-coated retriever \tabularnewline
+    		n02102318 &                                                                             cocker spaniel, English cocker spaniel, cocker \tabularnewline
+    		n02105412 &                                                                                                                     kelpie \tabularnewline
+    		n02105641 &                                                                                              Old English sheepdog, bobtail \tabularnewline
+    		n02106382 &                                                                                Bouvier des Flandres, Bouviers des Flandres \tabularnewline
+    		n02108551 &                                                                                                            Tibetan mastiff \tabularnewline
+    		n02110063 &                                                                                       malamute, malemute, Alaskan malamute \tabularnewline
+    		n02112706 &                                                                                                          Brabancon griffon \tabularnewline
+    		n02113023 &                                                                                             Pembroke, Pembroke Welsh corgi \tabularnewline
+    		n02123045 &                                                                                                           tabby, tabby cat \tabularnewline
+    		n02124075 &                                                                                                               Egyptian cat \tabularnewline
+    		n02177972 &                                                                                                                     weevil \tabularnewline
+    		n02403003 &                                                                                                                         ox \tabularnewline
+    		n02415577 &                            bighorn, bighorn sheep, cimarron, Rocky Mountain bighorn, Rocky Mountain sheep, Ovis canadensis \tabularnewline
+    		n02445715 &                                                                                                 skunk, polecat, wood pussy \tabularnewline
+    		n02484975 &                                                                                                      guenon, guenon monkey \tabularnewline
+    		n02497673 &                                                                             Madagascar cat, ring-tailed lemur, Lemur catta \tabularnewline
+    		n02788148 &                                                                       bannister, banister, balustrade, balusters, handrail \tabularnewline
+    		n02814860 &                                                                                   beacon, lighthouse, beacon light, pharos \tabularnewline
+    		n02823750 &                                                                                                                 beer glass \tabularnewline
+    		n02877765 &                                                                                                                  bottlecap \tabularnewline
+    		n02906734 &                                                                                                                      broom \tabularnewline
+    		n02916936 &                                                                                                           bulletproof vest \tabularnewline
+    		n02917067 &                                                                                                       bullet train, bullet \tabularnewline
+    		n02939185 &                                                                                                          caldron, cauldron \tabularnewline
+    		n02950826 &                                                                                                                     cannon \tabularnewline
+    		n02966193 &                                                                 carousel, carrousel, merry-go-round, roundabout, whirligig \tabularnewline
+    		n02977058 &  cash machine, cash dispenser, automated teller machine, automatic teller machine, automated teller, automatic teller, ATM \tabularnewline
+    		n02992211 &                                                                                                         cello, violoncello \tabularnewline
+    		n03063689 &                                                                                                                  coffeepot \tabularnewline
+    		n03110669 &                                                                                               cornet, horn, trumpet, trump \tabularnewline
+    		n03126707 &                                                                                                                      crane \tabularnewline
+    		n03131574 &                                                                                                                  crib, cot \tabularnewline
+    		n03179701 &                                                                                                                       desk \tabularnewline
+    		n03259280 &                                                                                                                 Dutch oven \tabularnewline
+    		n03424325 &                                                                                            gasmask, respirator, gas helmet \tabularnewline
+    		n03447447 &                                                                                                                    gondola \tabularnewline
+    		n03476684 &                                                                                                                 hair slide \tabularnewline
+    		n03598930 &                                                                                                              jigsaw puzzle \tabularnewline
+    		n03657121 &                                                                                                       lens cap, lens cover \tabularnewline
+    		n03673027 &                                                                                                         liner, ocean liner \tabularnewline
+    		n03692522 &                                                                                                      loupe, jewelers loupe \tabularnewline
+    		n03710193 &                                                                                                        mailbox, letter box \tabularnewline
+    		n03794056 &                                                                                                                  mousetrap \tabularnewline
+    		n03837869 &                                                                                                                    obelisk \tabularnewline
+    		n03874599 &                                                                                                                    padlock \tabularnewline
+    		n03902125 &                                                                                                     pay-phone, pay-station \tabularnewline
+    		n03903868 &                                                                                                pedestal, plinth, footstall \tabularnewline
+    		n03930313 &                                                                                                       picket fence, paling \tabularnewline
+    		n03958227 &                                                                                                                plastic bag \tabularnewline
+    		n03976467 &                                                                                      Polaroid camera, Polaroid Land camera \tabularnewline
+    		n04009552 &                                                                                                                  projector \tabularnewline
+    		n04067472 &                                                                                                                       reel \tabularnewline
+    		n04086273 &                                                                                             revolver, six-gun, six-shooter \tabularnewline
+    		n04136333 &                                                                                                                     sarong \tabularnewline
+    		n04141076 &                                                                                                             sax, saxophone \tabularnewline
+    		n04147183 &                                                                                                                   schooner \tabularnewline
+    		n04153751 &                                                                                                                      screw \tabularnewline
+    		n04179913 &                                                                                                             sewing machine \tabularnewline
+    		n04204238 &                                                                                                            shopping basket \tabularnewline
+    		n04238763 &                                                                                                      slide rule, slipstick \tabularnewline
+    		n04239074 &                                                                                                               sliding door \tabularnewline
+    		n04254120 &                                                                                                             soap dispenser \tabularnewline
+    		n04258138 &                                                                                 solar dish, solar collector, solar furnace \tabularnewline
+    		n04398044 &                                                                                                                     teapot \tabularnewline
+    		n04486054 &                                                                                                             triumphal arch \tabularnewline
+    		n04501370 &                                                                                                                  turnstile \tabularnewline
+    		n04507155 &                                                                                                                   umbrella \tabularnewline
+    		n04548280 &                                                                                                                 wall clock \tabularnewline
+    		n06359193 &                                                                                     web site, website, internet site, site \tabularnewline
+    		n07716906 &                                                                                                           spaghetti squash \tabularnewline
+    		n07720875 &                                                                                                                bell pepper \tabularnewline
+    		n07754684 &                                                                                                       jackfruit, jak, jack \tabularnewline
+    		n07871810 &                                                                                                        meat loaf, meatloaf \tabularnewline
+    		n09246464 &                                                                                                      cliff, drop, drop-off \tabularnewline
+    		n09256479 &                                                                                                                 coral reef \tabularnewline
+    		n13133613 &                                                                                                      ear, spike, capitulum \tabularnewline
+    		\bottomrule
+    	\end{longtabu}
+    	
+    \end{appendices}
+    
+    
+    

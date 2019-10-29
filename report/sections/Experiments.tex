@@ -31,6 +31,7 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 	\label{fig:b-net-miniimagenet-100}
 \end{figure}
 
+
 %\paragraph{Pascal VOC}
 %
 %\begin{figure}
@@ -64,19 +65,40 @@ In this experiment the MiniImageNet100 validation set have been used to evaluate
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
+	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
 
 \end{figure}
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
 %	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
-	\subfloat[DenseNet\label{fig:threshold_densenet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_densenet100}}
+	\subfloat[DenseNet\label{fig:threshold_densenet}]{\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_densenet100}}
 	\caption[Threshold Comparison]{Threshold comparison of confidence threshold and score margin threshold.}
 	\label{fig:thresholds}
 \end{figure}
 
-The \emph{score-margin} has more desirable traits, as less samples are incorrectly exited at lower threshold, only at the expense of a few additional samples not exited. Thus more suitable for application, that can slack a bit on accuracy to meet a latency constraint. Henceforth the \emph{score-margin} threshold are used.   
+The \emph{score-margin} has more desirable traits, as less samples are incorrectly exited at lower threshold, only at the expense of a few additional samples not exited. Thus more suitable for application, that can slack a bit on accuracy to meet a latency constraint. Henceforth the \emph{score-margin} threshold are used.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/threshold_plots/inference_threshold_test}
+	\caption{Score-Margin Exiting}
+	\label{fig:inferencethresholdtest}
+\end{figure}
+
+\section{Early Exiting vs. Conventional Inference}
+
+Conventional versions of the \gls{dnn}'s were trained on the \gls{min100}. The model were initialized with ImageNet weights. The models' feature extractor was frozen, hence only the classifier was trained. The models were used to compare with early exiting inference accuracy and latency, see figure \ref{fig:early_exit_vs_conv}.
+
+  \begin{figure}
+  	\captionsetup[subfigure]{justification=centering}
+  	\centering
+  	\includegraphics[width=\linewidth]{figures/threshold_plots/compare_exiting_vs_no_exiting}
+  	\caption[Architectural Comparison]{Architectural Comparison}
+  	\label{fig:early_exit_vs_conv}
+  \end{figure}
+
+The figure clearly states the accuracy-latency trade-off imposed by early exiting. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time. The \gls{resnet}. 
 
 \section{Transport Protocol} 
 
