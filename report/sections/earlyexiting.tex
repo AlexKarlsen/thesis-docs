@@ -241,9 +241,18 @@ In the same fashion as B-ResNet early exits have been placed to construct B-Dens
 
 \section{MSDNet}
 
-In contrast to \gls{branchynet}, \gls{msdnet} is a model specifically designed for early exiting.
+In contrast to the early exiting framework of \gls{branchynet} for any model comprised of stacking layers on top of each other, \gls{msdnet} \cite{huang_multi-scale_2017} is a \gls{dnn} specifically designed for early exiting. \gls{msdnet} takes advantage of densely connected layers and add multi-scale paths to further improve upon early exiting, see figure \ref{fig:msdnet}.
 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/msdnet}
+	\caption[\gls{msdnet} Architecture]{\gls{msdnet} Architecture, Source: \citetitle{huang_multi-scale_2017} \cite{huang_multi-scale_2017}}
+	\label{fig:msdnet}
+\end{figure}
 
+\gls{msdnet} addresses two main problems concerning early exiting. The first problem is the lack of coarse-level features in early classifiers. Traditional \gls{dnn}s uses stacking of layers to get coarse level features, which the early classifier lacks, thus giving unsatisfactory high error-rates. important for classification. Multi-scale feature maps addresses this issues by preserving high-resolution information and allow constructing coarse-level features for all classifiers in the network.
+
+The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely,thus harming the later and final classifiers. Their study reveals, that densely connected layers suffers mush less from intermediate classifiers, as a layer is connected to all previous layer and is therefore able to recover collapsed information.
 
 
 
