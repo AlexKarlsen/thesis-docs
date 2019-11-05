@@ -27,7 +27,13 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 	%\ContinuedFloat
 	\captionsetup[subfigure]{justification=centering}
 	\subfloat[B-DenseNet\label{fig:B-densenet-miniimagenet100}]{\includegraphics[width=\linewidth]{figures/training_plots/densenet_miniimagenet100}}
-	\caption[Training progress of BrancyNets]{Training progress for \protect\subref{fig:B-resnet-miniimagenet100} B-ResNet and \protect\subref{fig:B-densenet-miniimagenet100} B-DenseNet} 
+\end{figure}
+
+\begin{figure}
+	%\ContinuedFloat
+	\captionsetup[subfigure]{justification=centering}
+	\subfloat[MSDNet\label{fig:msdnet-miniimagenet100}]{\includegraphics[width=\linewidth]{figures/training_plots/msd_miniimagenet100}}
+	\caption[Training progress of BrancyNets]{Training progress for \protect\subref{fig:B-resnet-miniimagenet100} B-ResNet, \protect\subref{fig:B-densenet-miniimagenet100} B-DenseNet and \protect\subref{fig:msdnet-miniimagenet100} MSDNet} 
 	\label{fig:b-net-miniimagenet-100}
 \end{figure}
 
@@ -60,22 +66,113 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 
 \section{Threshold Analysis}
 
-In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. Figure \ref{fig:thresholds} compares the performance of each exit on all samples.
+In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples.
 
+\newcounter{imagenumber}
+\begin{minipage}{\textwidth}
 \begin{figure}
-	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
+	\paragraph{B-ResNet}
+	\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_legend}
+\end{figure}
 
-\end{figure}
-\begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
-%	\subfloat[ResNet\label{fig:threshold_resnet}]{\includegraphics[width=.8\linewidth]{figures/threshold_plots/threshold_analysis_resnet101}}
-	\subfloat[DenseNet\label{fig:threshold_densenet}]{\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_densenet100}}
-	\caption[Threshold Comparison]{Threshold comparison of confidence threshold and score margin threshold.}
-	\label{fig:thresholds}
-\end{figure}
+\begin{minipage}{0.5\textwidth}
+	\begin{figure}
+		\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+		\centering
+		\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+			
+			\subfloat[Exit-\arabic{imagenumber}\label{fig:confidence_resnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-resnet_confidence_\arabic{imagenumber}}}
+			\hfill
+		}
+		\caption[ResNet Confidence Threshold]{Confidence Threshold}
+		\label{fig:resnet_confidence}
+	\end{figure}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+	\begin{figure}
+		\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+		\centering
+		\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+			
+			\subfloat[Exit-\arabic{imagenumber}\label{fig:score-margin_resnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-resnet_score-margin_\arabic{imagenumber}}}
+			\hfill
+		}
+		\caption[ResNet Score-margin Threshold]{Score-margin Threshold}
+		\label{fig:resnet_score-margin}
+	\end{figure}
+\end{minipage}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+	\begin{figure}
+		\centering
+		\paragraph{B-DenseNet}
+	\end{figure}
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:confidence_dense_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-densenet_confidence_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[DenseNet Confidence Threshold]{Confidence Threshold}
+			\label{fig:densenet_confidence}
+		\end{figure}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:score-dense_resnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-densenet_score-margin_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[DenseNet Score-margin Threshold]{Score-margin Threshold}
+			\label{fig:densenet_score-margin}
+		\end{figure}
+	\end{minipage}
+\end{minipage}
+
+\noindent\makebox[\textwidth][c]{\begin{minipage}{0.9\textwidth}
+	\begingroup
+	\leftskip=0cm plus 0.5fil \rightskip=0cm plus -0.5fil
+	\parfillskip=0cm plus 1fil
+	\paragraph{MSDNet}\par
+	\endgroup
+	
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=0pt,captionskip=0pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 5}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:confidence_msd_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_msdnet_confidence_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[MSDNet Confidence Threshold]{Confidence Threshold}
+			\label{fig:msdnet_confidence}
+		\end{figure}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 5}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:score-msdnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_msdnet_score-margin_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[MSDNet Score-margin Threshold]{Score-margin Threshold}
+			\label{fig:msdnet_score-margin}
+		\end{figure}
+	\end{minipage}
+\end{minipage}}
+
+\ref{fig:}
 
 The \emph{score-margin} has more desirable traits, as less samples are incorrectly exited at lower threshold, only at the expense of a few additional samples not exited. Thus more suitable for application, that can slack a bit on accuracy to meet a latency constraint. Henceforth the \emph{score-margin} threshold are used.
 
