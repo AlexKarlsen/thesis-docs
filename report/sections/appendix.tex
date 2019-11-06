@@ -1,11 +1,22 @@
     %\addchap{Appendix}
     \appendix
+
     \clearpage % or \cleardoublepage
     \appendixpage
     \addappheadtotoc
     % code to show appendices at section level in TOC
     \chapassect
+    
+            \begingroup
+    \pagestyle{empty}
+
     \begin{appendices}
+    	    \printnoidxglossary[type=main, numberedsection=autolabel]
+    		\listoffigures
+    		\listoftables
+    		\setglossarystyle{listgroup}
+
+    	
     	\chapter{MiniImageNet100}
     	
     	\begin{longtabu}{X|X[4]}
@@ -130,6 +141,8 @@
     	\end{longtabu}
     	
     \end{appendices}
+\clearpage
+    \endgroup
     
     
     
