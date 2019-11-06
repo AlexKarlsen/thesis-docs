@@ -66,7 +66,7 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 
 \section{Threshold Analysis}
 
-In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples.
+In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test a plot of the two thresholds for all exit for the model. It shows the frequency of exited samples, that have been correctly classified (green) and incorrectly classified (red). As well as, samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit (blue). Along with a plot of the change in accuracy for the exit as the confidence grows (orange).  
 
 \newcounter{imagenumber}
 \begin{minipage}{\textwidth}
@@ -172,9 +172,9 @@ In this experiment the MiniImageNet100 validation set have been used to evaluate
 	\end{minipage}
 \end{minipage}}
 
-\ref{fig:}
+The aim is to find the metric, that reduces the amount of incorrectly exited samples (red). Whenever samples are exited incorrectly is reduces the models overall accuracy, if it could have been correctly classifed at later exit. A growing frequency of correctly exited samples (green) shows exactly this. Even though all samples will be classified at the last exit, hence no sample is in fact exited, thus it show the samples, that could not reach a confident score for the last exit. This means the accuracy for the last exit is not entirely correct in a test, where all samples are classified at the last exit, however this test was intended for finding the better metric not the exact accuracy for the models, this is the intention of another test \ref{label}.   
 
-The \emph{score-margin} has more desirable traits, as less samples are incorrectly exited at lower threshold, only at the expense of a few additional samples not exited. Thus more suitable for application, that can slack a bit on accuracy to meet a latency constraint. Henceforth the \emph{score-margin} threshold are used.
+Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited (red), only at the expense of a few additional samples not exited (blue). The results matches \cite{park_big/little_2015}, which show a stronger correlation to actually being able to correctly predict samples given the \emph{score-margin threshold}. Henceforth the \emph{score-margin threshold} are used.
 
 \begin{figure}
 	\centering
@@ -185,7 +185,34 @@ The \emph{score-margin} has more desirable traits, as less samples are incorrect
 
 \section{Early Exiting vs. Conventional Inference}
 
-Conventional versions of the \gls{dnn}'s were trained on the \gls{min100}. The model were initialized with ImageNet weights. The models' feature extractor was frozen, hence only the classifier was trained. The models were used to compare with early exiting inference accuracy and latency, see figure \ref{fig:early_exit_vs_conv}.
+Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the \gls{min100}. Transfer learning was used with ImageNet weights, the model are used as a feature extractor, hence all weights were frozen and only the linear classifier was trained. The conventional models were used to compare with early exiting inference accuracy and latency on X different platforms.
+
+
+\begin{longtabu}{>{\bfseries}X|X|X|X}
+	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC and NVIDIA Jetson TX2 Edge Computer} \label{tbl:platforms} \\
+	\toprule
+	\rowfont{\bfseries}
+	Platform & CPU & GPU & RAM  \tabularnewline
+	\bottomrule
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:platforms}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Platform & CPU & GPU & RAM  \tabularnewline
+	\bottomrule
+	\endhead % all the lines above this will be repeated on every page
+	\bottomrule
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Windows PC & Intel IX & 1080 & 16GB \tabularnewline
+	\hline
+	Jetson TX2 & some & some & some \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv}.
 
   \begin{figure}
   	\captionsetup[subfigure]{justification=centering}
