@@ -55,18 +55,10 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 %
 %Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
 
-\section{Inference Time Analysis}
-
-\begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
-	\includegraphics[width=\linewidth]{figures/threshold_plots/timing}
-	\caption[Inference Analysis]{Inference Analysis}
-\end{figure}
 
 \section{Threshold Analysis}
 
-In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test a plot of the two thresholds for all exit for the model. It shows the frequency of exited samples, that have been correctly classified (green) and incorrectly classified (red). As well as, samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit (blue). Along with a plot of the change in accuracy for the exit as the confidence grows (orange).  
+In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test a plot of the two thresholds for all exit for the model. It shows the frequency of exited samples, that have been correctly classified ({\color{sns-green}green}) and incorrectly classified ({\color{sns-red}red}). As well as, samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit ({\color{sns-blue}blue}). Along with a plot of the change in accuracy for the exit as the confidence grows ({\color{sns-orange}orange}).  
 
 \newcounter{imagenumber}
 \begin{minipage}{\textwidth}
@@ -172,9 +164,20 @@ In this experiment the MiniImageNet100 validation set have been used to evaluate
 	\end{minipage}
 \end{minipage}}
 
-The aim is to find the metric, that reduces the amount of incorrectly exited samples (red). Whenever samples are exited incorrectly is reduces the models overall accuracy, if it could have been correctly classifed at later exit. A growing frequency of correctly exited samples (green) shows exactly this. Even though all samples will be classified at the last exit, hence no sample is in fact exited, thus it show the samples, that could not reach a confident score for the last exit. This means the accuracy for the last exit is not entirely correct in a test, where all samples are classified at the last exit, however this test was intended for finding the better metric not the exact accuracy for the models, this is the intention of another test \ref{label}.   
+The aim is to find the metric, that reduces the amount of incorrectly exited samples ({\color{sns-red}red}). Whenever samples are exited incorrectly, overall accuracy of the models are reduced, if it could have been correctly classifed at later exit. The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits shows exactly this. Even though all samples will be classified at the last exit, hence no sample is in fact exited at this lat exit, thus it show the samples, that could not reach a confident score for the last exit. This means the accuracy for the last exit is not entirely correct. The end exit accuracy actually matches confidence threshold of 0.1 for all models, as no samples are not exited, see table \ref{tbl:earlyexitlastexit}.  
 
-Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited (red), only at the expense of a few additional samples not exited (blue). The results matches \cite{park_big/little_2015}, which show a stronger correlation to actually being able to correctly predict samples given the \emph{score-margin threshold}. Henceforth the \emph{score-margin threshold} are used.
+\begin{longtabu}{>{\bfseries}X|X}
+	\caption[Early exit models' last exit accuracy]{Early exit models' last exit accuracy}\label{tbl:earlyexitlastexit} \\
+	\toprule \rowfont{\bfseries}
+	Model & Accuracy \tabularnewline
+	\midrule
+	B-ResNet & 0.893 \tabularnewline
+	B-DenseNet & 0.873 \tabularnewline
+	MSDNet & 0.867 \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited (red), only at the expense of a few additional samples not exited ({\color{sns-blue}blue}). The results matches \cite{park_big/little_2015}, which show a stronger correlation to actually being able to correctly predict samples given the \emph{score-margin threshold}. Henceforth the \emph{score-margin threshold} are used.
 
 \begin{figure}
 	\centering
@@ -206,9 +209,9 @@ Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the
 	\endfoot
 	\hline
 	\endlastfoot
-	Windows PC & Intel IX & 1080 & 16GB \tabularnewline
+	Windows PC & Intel i5 & NVIDIA GeForce GTX 1080, 2560 CUDA cores & 16GB \tabularnewline
 	\hline
-	Jetson TX2 & some & some & some \tabularnewline
+	Jetson TX2 & ARM Cortex-A57 & NVIDIA Pascal GPU, 256 CUDA cores & 8GB \tabularnewline
 	\bottomrule
 \end{longtabu}
 
@@ -217,12 +220,33 @@ The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv
   \begin{figure}
   	\captionsetup[subfigure]{justification=centering}
   	\centering
-  	\includegraphics[width=\linewidth]{figures/threshold_plots/compare_exiting_vs_no_exiting}
-  	\caption[Architectural Comparison]{Architectural Comparison}
-  	\label{fig:early_exit_vs_conv}
+  	\subfloat[Window PC\label{fig:early_exit_vs_conv}]{\includegraphics[width=\linewidth]{figures/threshold_plots/compare_exiting_vs_no_exiting}}
+  	
+  	
   \end{figure}
 
+  \begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference}}
+	\caption[Architectural Comparison]{Architectural Comparison}
+\end{figure}
+
 The figure clearly states the accuracy-latency trade-off imposed by early exiting. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time. The \gls{resnet}. 
+
+\section{Inference Time Analysis}
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[Windows PC]{\includegraphics[width=\linewidth]{figures/threshold_plots/inference_time_distribution}}
+\end{figure}
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_time_distribution}}
+	\caption[Inference Time Distribution]{Inference Time Distribution}
+\end{figure}
 
 \section{Transport Protocol} 
 

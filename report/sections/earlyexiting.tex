@@ -255,6 +255,35 @@ In contrast to the early exiting framework of \gls{branchynet} for any model com
 The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely,thus harming the later and final classifiers. Their study reveals, that densely connected layers suffers mush less from intermediate classifiers, as a layer is connected to all previous layer and is therefore able to recover collapsed information.
 
 
+\section{Overall Comparison}
+
+
+\begin{longtabu}{>{\bfseries}X|X|X}
+	\caption[]{} \label{} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Parameters & G\gls{flop} \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Parameters & G\gls{flop} \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	B-ResNet & & \tabularnewline
+	B-DenseNet & & \tabularnewline
+	MSDNet & & \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+
+
 
 
 
