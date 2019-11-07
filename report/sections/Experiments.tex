@@ -229,10 +229,16 @@ The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv
 	\captionsetup[subfigure]{justification=centering}
 	\centering
 	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference}}
-	\caption[Architectural Comparison]{Architectural Comparison}
 \end{figure}
 
 The figure clearly states the accuracy-latency trade-off imposed by early exiting. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time. The \gls{resnet}. 
+
+  \begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[Jetson TX2 fine-grained\label{fig:jetson-fingrained}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_finegrained}}
+	\caption[]{}
+\end{figure}
 
 \section{Inference Time Analysis}
 
