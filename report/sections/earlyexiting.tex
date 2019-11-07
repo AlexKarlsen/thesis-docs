@@ -61,7 +61,7 @@ Information from earlier layers are preserved by the residual, which diminishes 
 
 Very deep residual networks comprised of up to 152 layers have also shown to be far more efficient requiring less \gls{flop}s, than \gls{vgg}16 comprised of only 16 layers, by introducing a bottleneck unit. The bottleneck reduces the dimensions by a $1 \times 1$ convolution, followed by a $3 \times 3$ convolution and then restoring the dimensions using a $1 \times 1$ convolution. 
 
-The residual layers proposed in \cite{} are grouped into 4 resolutions block with different number of layers (18, 34, 50, 101, 152) depending on the depth of the network. \gls{pytorch} provide implementations of these network. The networks can be trained from scratch or pretrained weights based on ImageNet can be downloaded. \gls{resnet}101 have been chosen for this project, as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}121 implementation and weights and also have roughly equal inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
+The residual layers proposed in \cite{he_deep_2015} are grouped into 4 resolutions block with different number of layers (18, 34, 50, 101, 152) depending on the depth of the network. \gls{pytorch} provide implementations of these network. The networks can be trained from scratch or pretrained weights based on ImageNet can be downloaded. \gls{resnet}101 have been chosen for this project, as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}121 implementation and weights and also have roughly equal inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
 
 
 The architecture is further divided into 4 resolution blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
@@ -257,6 +257,43 @@ In contrast to the early exiting framework of \gls{branchynet} for any model com
 \gls{msdnet} addresses two main problems concerning early exiting. The first problem is the lack of coarse-level features in early classifiers. Traditional \gls{dnn}s uses stacking of layers to get coarse level features, which the early classifier lacks, thus giving unsatisfactory high error-rates. important for classification. Multi-scale feature maps addresses this issues by preserving high-resolution information and allow constructing coarse-level features for all classifiers in the network.
 
 The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely,thus harming the later and final classifiers. Their study reveals, that densely connected layers suffers mush less from intermediate classifiers, as a layer is connected to all previous layer and is therefore able to recover collapsed information.
+
+
+\section{Overall Comparison}
+
+
+\begin{longtabu}{>{\bfseries}X|X[r]|X[r]|X[r]}
+	\caption[Model Parametric Comparison]{Model Parametric Comparison using \texttt{thop} \cite{zhu_thop_nodate}. The test is conducted by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models.}  \label{} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Layers & Parameters (M) & G\gls{flop} \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Layers & Parameters (M) & G\gls{flop} \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	ResNet & $ 101 $ & $ 42.705 $ & $ 7.864 $ \tabularnewline
+	\hline
+	DenseNet & $ 121 $ & $ 7.056 $ & $ 2.897 $ \tabularnewline
+	\hline
+	B-ResNet & $ 107 $ & $ 42.885 $ & $ 7.866 $ \tabularnewline
+	\hline
+	B-DenseNet & $ 127 $ & $ 7.236 $ & $ 2.898 $\tabularnewline
+	\hline
+	MSDNet & $ 24 $ & $ 23.958 $ & $ 1.374 $ \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+
+
 
 
 

@@ -32,9 +32,15 @@ Cloud Intelligence, Edge Intelligence, Device Intelligence, Collaborative Intell
 
 \input{sections/EI.tex}
 
-\section{Training Settings}
+\section{Practical Experiment Setup}
 
+All code is written in \gls{python} 3.7 \cite{van_rossum_python_1995} using the \gls{pytorch} 1.2
+framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 library \cite{marcel_torchvision_2010}. All code is available at:
+{\color{sns-grey}\url{https://github.com/AlexKarlsen/thesis-src}}. Trained models are available at: {\color{sns-grey}\url{https://drive.google.com/open?id=1EAl9qGxcm2U3kPhEsHp0HotgNn_LMWa1}} 
 
+\subsection{Training Settings}
+
+All training have been accomplished using a -workstation equipped with a NVIDIA GeForce 1080 GTX \gls{gpu} using CUDA 10.1 and cuDNN 7.6.3. 
 
 \paragraph{Optimizer}
 
@@ -73,7 +79,7 @@ A models ability generalize a specific classification problem has a close connec
 	\label{fig:augmentation}
 \end{figure}
 
-Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant. 
+Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant, achieved using \gls{imgaug} \cite{jung_imgaug:_nodate}. 
 
 New methods have been proposed where image transformations are learned to improve generalization e.g. AutoAugment \cite{cubuk_autoaugment:_2018}. 
 
@@ -83,4 +89,5 @@ Methods that do not cover enriching the available training, but alters the learn
 
 \paragraph{Transfer Learning}
 
-Transfer learning is the procedure of using a pre-trained model to train on a new dataset. Under the assumption, that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Transfer learning can reduce the needed time to learn general features and possibly learn better ones. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset, enables model to learn general features suitable for many other domains \cite{kornblith_better_2019}. Transfer learning are especially suited for when the new data domain is of limited quantity and when the similarities between the two data domains are strong. If the similarity is less strong a model can be partially trained, the shallow layers containing general features are frozen and only the deeper layers with more specialized features are fine-tuned for the new data domain \cite{li_cs231n:_2018}. 
+Transfer learning is the procedure of using a pre-trained model to train on a new dataset. Under the assumption, that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Transfer learning can reduce the needed time to learn general features and possibly learn better ones. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset, enables model to learn general features suitable for many other domains \cite{kornblith_better_2019}. Transfer learning are especially suited for when the new data domain is of limited quantity and when the similarities between the two data domains are strong. If the similarity is less strong a model can be partially trained, the shallow layers containing general features are frozen and only the deeper layers with more specialized features are fine-tuned for the new data domain \cite{li_cs231n:_2018}.
+
