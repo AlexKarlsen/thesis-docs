@@ -38,6 +38,70 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 \end{figure}
 
 
+\section{Inference Testing}
+
+In this test all validation samples are inferred to all three models. Each branch classifies the samples, but does not perform exit but continues the inference process. Figure \ref{fig:exit-accuracy} show the accuracy of each exit.  
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figures/inference_plots/exit_acc}
+	\caption[Model Inference Accuracy]{Model Inference Accuracy}
+	\label{fig:exit-accuracy}
+\end{figure}
+
+As expected the models become more accurate as we go deeper in the network. The features deep within the network have more discriminative characteristics. As stated in \cite{huang_multi-scale_2017} the densely connected features are important factors for obtaining intermediate classifiers with decent accuracy. The B-\gls{densenet} and \gls{msdnet} have as expected more accurate early classifiers, however the end-exit of B-\gls{resnet} achieves superior accuracy compared to the other models.
+
+Still about half the samples can be accurately classified at the very first exit, which justifies the assumption for \gls{branchynet} and we can expectedly save time but let samples exit prematurely, see figure \ref{fig:exit-time}
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figures/inference_plots/exit_time}
+	\caption[Model Inference Accuracy]{Model Inference Time}
+	\label{fig:exit-time}
+\end{figure}
+
+Figure \ref{fig:exit-time} shows the average inference time for a classification at the corresponding exit. If the model decides to exit earlier in the network, the figure shows the time savings achievable. The inference time is hardware dependent and a full model comparison cannot be made solely by this test, later tests compares the inference time of the models on different platforms, however the trend seems to be, that B-\gls{resnet} is the fastest, followed by B-\gls{densenet} an lastly \gls{msdnet}. Table \ref{tbl:early-exit} shows the accuracy and mean time in tabular form.
+
+\begin{longtabu}{>{\bfseries}X|X|X}
+	\caption[Early exit models' last exit accuracy]{Early exit models' last exit accuracy}\label{tbl:early-exit} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Accuracy & Mean Time (ms) \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:early-exit}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Accuracy & Mean Time (ms) \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	B-ResNet & \tabularnewline
+	\hspace{3mm} Exit-0 & 0.489 & 12.87 \tabularnewline
+	\hspace{3mm} Exit-1 & 0.703 & 18.61 \tabularnewline
+	\hspace{3mm} Exit-2 & 0.883 & 45.31 \tabularnewline
+	\hspace{3mm} Exit-3 & 0.893 & 49.45 \tabularnewline
+	\hline
+	B-DenseNet &  \tabularnewline
+	\hspace{3mm} Exit-0 & 0.545 & 17.96 \tabularnewline
+	\hspace{3mm} Exit-1 & 0.769 & 29.93 \tabularnewline
+	\hspace{3mm} Exit-2 & 0.841 & 51.56 \tabularnewline
+	\hspace{3mm} Exit-3 & 0.879 & 66.20 \tabularnewline
+	\hline
+	MSDNet & \tabularnewline
+	\hspace{3mm} Exit-0 & 0.755 & 38.43 \tabularnewline
+	\hspace{3mm} Exit-1 & 0.829 & 59.60 \tabularnewline
+	\hspace{3mm} Exit-2 & 0.859 & 75.70 \tabularnewline
+	\hspace{3mm} Exit-3 & 0.864 & 86.06 \tabularnewline
+	\hspace{3mm} Exit-4 & 0.867 & 91.63 \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+The challenge is to known when to let samples exit, which can either be done at random or using the output from the softmax function, which can be interpreted as a confidence metric for the prediction. In the next test, we evaluate the two mentioned confidence scores as a threshold for exiting. 
+
+
 %\paragraph{Pascal VOC}
 %
 %\begin{figure}
@@ -164,20 +228,11 @@ In this experiment the MiniImageNet100 validation set have been used to evaluate
 	\end{minipage}
 \end{minipage}}
 
-The aim is to find the metric, that reduces the amount of incorrectly exited samples ({\color{sns-red}red}). Whenever samples are exited incorrectly, overall accuracy of the models are reduced, if it could have been correctly classifed at later exit. The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits shows exactly this. Even though all samples will be classified at the last exit, hence no sample is in fact exited at this lat exit, thus it show the samples, that could not reach a confident score for the last exit. This means the accuracy for the last exit is not entirely correct. The end exit accuracy actually matches confidence threshold of 0.1 for all models, as no samples are not exited, see table \ref{tbl:earlyexitlastexit}.  
-
-\begin{longtabu}{>{\bfseries}X|X}
-	\caption[Early exit models' last exit accuracy]{Early exit models' last exit accuracy}\label{tbl:earlyexitlastexit} \\
-	\toprule \rowfont{\bfseries}
-	Model & Accuracy \tabularnewline
-	\midrule
-	B-ResNet & 0.893 \tabularnewline
-	B-DenseNet & 0.873 \tabularnewline
-	MSDNet & 0.867 \tabularnewline
-	\bottomrule
-\end{longtabu}
+The aim is to find the metric, that reduces the amount of incorrectly exited samples ({\color{sns-red}red}). Whenever samples are exited incorrectly, the overall accuracy of the models are reduced, if it could have been correctly classifed at later exit. The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits shows exactly this. As the threshold requirements are raised, it results in a higher accuracy for the exit, as the ratio between correctly exited and incorrectly exited grows. Even though all samples will be classified at the last exit, hence no sample is in fact exited at this last exit, still it shows the frequency of samples, that could not reach a confident score for the last exit. This means the accuracy for the last exit is not entirely correct.  Table \ref{tbl:early-exit} shows the accuracy of the exit, when all samples are exited at the exit. 
 
 Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited (red), only at the expense of a few additional samples not exited ({\color{sns-blue}blue}). The results matches \cite{park_big/little_2015}, which show a stronger correlation to actually being able to correctly predict samples given the \emph{score-margin threshold}. Henceforth the \emph{score-margin threshold} are used.
+
+The former test is conducted b stamping all samples whether it could have been exited at the exited and if would have been correct or not. The test does not take into account if samples have been exited, then not reaching a later exit, if a exit is very confident yet incorrect. In the next test, this is accommodated for.
 
 \begin{figure}
 	\centering
@@ -185,6 +240,8 @@ Generally \emph{score-margin} has more desirable traits, as less samples are inc
 	\caption{Score-Margin Exiting}
 	\label{fig:inferencethresholdtest}
 \end{figure}
+
+
 
 \section{Early Exiting vs. Conventional Inference}
 
@@ -252,6 +309,17 @@ The figure clearly states the accuracy-latency trade-off imposed by early exitin
 	\centering
 	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_time_distribution}}
 	\caption[Inference Time Distribution]{Inference Time Distribution}
+\end{figure}
+
+\section{Time Threshold}
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[GPU Workstation]{\includegraphics[width=\linewidth]{figures/threshold_plots/time_threshold_pc}}
+	\hfill
+	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/time_threshold_jetson}}
+	\caption[Time Threshold]{Time Threshold}
 \end{figure}
 
 \section{Transport Protocol} 
