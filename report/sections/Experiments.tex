@@ -300,13 +300,12 @@ The figure clearly states the accuracy-latency trade-off imposed by early exitin
 \section{Inference Time Analysis}
 
 \begin{figure}
-	\captionsetup[subfigure]{justification=centering}
+	\captionsetup[subfigure]{farskip=0pt,captionskip=0pt, justification=centering}
 	\centering
+	\subfloat{\includegraphics[width=.8\linewidth]{figures/threshold_plots/time_dist_legend}}
+	\hfill
 	\subfloat[Windows PC]{\includegraphics[width=\linewidth]{figures/threshold_plots/inference_time_distribution}}
-\end{figure}
-\begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
+	\hfill
 	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_time_distribution}}
 	\caption[Inference Time Distribution]{Inference Time Distribution}
 \end{figure}
