@@ -308,9 +308,12 @@ The figure clearly states the accuracy-latency trade-off imposed by early exitin
 	\hfill
 	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_time_distribution}}
 	\caption[Inference Time Distribution]{Inference Time Distribution}
+	\label{fig:inference-time-dist}
 \end{figure}
 
 \section{Time Threshold}
+
+For time-budgeted applications, where a classification must be derived within a timed threshold. We wish to maximize the accuracy subject to this time constraint. Figure \ref{fig:time-threshold} show the model accuracy under different time constraints and on different platforms.
 
 How to choose threshold?
 If given a time threshold, what accuracy are we then able to achieve? 
@@ -322,7 +325,25 @@ If given a time threshold, what accuracy are we then able to achieve?
 	\hfill
 	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/time_threshold_jetson}}
 	\caption[Time Threshold]{Time Threshold}
+	\label{fig:time-threshold}
 \end{figure}
+
+From figure \ref{fig:inference-time-dist} we know the inference time distribution for each exit on different hardwares. Given a time constraint, we can selective choose the exit with the best chance to provide a prediction within a certain time frame, similar to Edgent \cite{li_edge_2018}. The difference at first is we only focus on on-device or on-edge execution  with no collaboration, hence we do not need a regression model of the per layer execution of the \gls{dnn}. For device-only execution our only concern is the inference time on the specific hardware, a simple selection would be the exit with the largest inference time mean within the time constraint, as accuracy is monotically increasing over available time.
+\begin{maxi*}
+			{}{Reliabilty\sim\tau_{computation}}
+	{}{}
+	\addConstraint{\tau_{computation}}{\leq T}
+\end{maxi*}
+ In an edge-offloading scenario we must consider communication latency. If the available networking conditions are good a later exit can be chosen to improve the reliability, however in scenarios, where networking conditions are poor an earlier exit must be chosen to meet latency requirements. 
+ \begin{maxi*}
+ 	{}{Reliabilty\sim\tau_{computation}}
+ 	{}{}
+ 	\addConstraint{(\tau_{computation}+\tau_{communication})}{\leq T}
+ \end{maxi*}
+The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the locally obtained prediction from an earlier exit. 
+
+Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. Multiple early exits allows for successively sending back increasingly confident and reliable predictions, at a small overhead communication, the last received prediction would then be used by the application.    
+ 
 
 \section{Transport Protocol} 
 
