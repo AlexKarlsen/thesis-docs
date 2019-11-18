@@ -266,9 +266,10 @@ Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the
 	\endfoot
 	\hline
 	\endlastfoot
-	Windows PC & Intel i5 & NVIDIA GeForce GTX 1080, 2560 CUDA cores & 16GB \tabularnewline
+	Windows PC	& Intel i5 x gen.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
 	\hline
-	Jetson TX2 & ARM Cortex-A57 & NVIDIA Pascal GPU, 256 CUDA cores & 8GB \tabularnewline
+	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
+	NUC		  	& Intel i7 7th gen.	& None										& X GB \tabularnewline									
 	\bottomrule
 \end{longtabu}
 
@@ -277,15 +278,12 @@ The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv
   \begin{figure}
   	\captionsetup[subfigure]{justification=centering}
   	\centering
-  	\subfloat[Window PC\label{fig:early_exit_vs_conv}]{\includegraphics[width=\linewidth]{figures/threshold_plots/compare_exiting_vs_no_exiting}}
-  	
-  	
-  \end{figure}
-
-  \begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
-	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference}}
+  	\subfloat[Window PC\label{fig:early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/compare_exiting_vs_no_exiting}}
+  	\hfill
+	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference}}
+	\hfill
+	\subfloat[NUC\label{fig:nuc-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference}}
+	\caption[short text]{text}
 \end{figure}
 
 The figure clearly states the accuracy-latency trade-off imposed by early exiting. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time. The \gls{resnet}. 
@@ -299,14 +297,17 @@ The figure clearly states the accuracy-latency trade-off imposed by early exitin
 
 \section{Inference Time Analysis}
 
+\clearpage
 \begin{figure}
 	\captionsetup[subfigure]{farskip=0pt,captionskip=0pt, justification=centering}
 	\centering
-	\subfloat{\includegraphics[width=.8\linewidth]{figures/threshold_plots/time_dist_legend}}
+	\subfloat{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{figures/threshold_plots/time_dist_legend}}
 	\hfill
-	\subfloat[Windows PC]{\includegraphics[width=\linewidth]{figures/threshold_plots/inference_time_distribution}}
+	\subfloat[Windows PC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/inference_time_distribution}}
 	\hfill
-	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_time_distribution}}
+	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference_time_distribution}}
+	\hfill
+	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference_time_distribution}}
 	\caption[Inference Time Distribution]{Inference Time Distribution}
 	\label{fig:inference-time-dist}
 \end{figure}
@@ -321,9 +322,11 @@ If given a time threshold, what accuracy are we then able to achieve?
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\subfloat[GPU Workstation]{\includegraphics[width=\linewidth]{figures/threshold_plots/time_threshold_pc}}
+	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/time_threshold_pc}}
 	\hfill
-	\subfloat[Jetson TX2]{\includegraphics[width=\linewidth]{figures/threshold_plots/time_threshold_jetson}}
+	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/time_threshold_jetson}}
+	\hfill
+	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/time_threshold_nuc}}
 	\caption[Time Threshold]{Time Threshold}
 	\label{fig:time-threshold}
 \end{figure}
@@ -340,7 +343,7 @@ From figure \ref{fig:inference-time-dist} we know the inference time distributio
  	{}{}
  	\addConstraint{(\tau_{computation}+\tau_{communication})}{\leq T}
  \end{maxi*}
-The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the locally obtained prediction from an earlier exit. 
+The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the local obtained prediction from an earlier exit. 
 
 Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. Multiple early exits allows for successively sending back increasingly confident and reliable predictions, at a small overhead communication, the last received prediction would then be used by the application.    
  
