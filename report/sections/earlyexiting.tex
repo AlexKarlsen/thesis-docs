@@ -2,9 +2,7 @@
 	\chapter{Early Exiting}\label{ch:earlyexit}}
 \thispagestyle{fancy}
 
-
-
-Early exiting have shown promising result in \cite{teerapittayanon_branchynet:_2016, teerapittayanon_distributed_2017, huang_multi-scale_2017}. Early exiting relies on the assumption, that the majority of samples are easy to classify correctly. \gls{dnn}s have become deeper to accurately classify the more difficult samples.
+Early exiting \gls{dnn} draws inspiration from the face detection algorithm Viola-Jones \cite{viola_rapid_2001}. The idea is a stacking or cascaded of predictors, that increasingly build up confidence to detect faces. Early exiting \gls{dnn} likewise stacks multiple classifiers, and the algorithm, that can be terminated when a prediction with satisfying confidence is obtained. Early exiting \gls{dnn} have shown promising result in \cite{leroux_cascading_2017, teerapittayanon_branchynet:_2016, leroux_resource-constrained_2015, teerapittayanon_distributed_2017, huang_multi-scale_2017}. Early exiting relies on the assumption, that the majority of samples are easy to classify correctly, and that \gls{dnn}s only have become deeper to accurately classify more difficult samples.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -15,17 +13,21 @@ Early exiting have shown promising result in \cite{teerapittayanon_branchynet:_2
 	\label{fig:hardvseasydog}
 \end{figure}
 
+As figures \ref{fig:hardvseasydog} exemplifies, samples where the object is easily separated from the background, are not occluded, and are viewed from angles which makes it easier to classify. Contrary samples that are not, are harder, additionally if the sample, should be discriminated from classes, with similar features are difficult such as different dog breeds etc.  
 
-
-\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} is framework  for existing \gls{dnn}s, that allow samples, that can be classified earlier to exit the model, hence reducing the latency of computing all layer of the network.
+\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} or cascaded network \cite{leroux_resource-constrained_2015} are both frameworks for constructing \gls{dnn} with early exiting or stopping mechanisms. The difference between the two proposals are, cascaded network are seen as a general framework for adding intermediate classifiers after a layer, or a block of layer in a \gls{dnn}. \gls{branchynet} shows, that the framework can be applied to existing \gls{dnn} architectures. Commonly the two proposals addresses the same challenge of reducing the inference latency by not necessarily computing all layer of the network.
 
 \section{BranchyNet}
 
+The \gls{branchynet} framework, proposed by \citeauthor{teerapittayanon_branchynet:_2016} It is a framework aimed at reducing the inference time by a small cost in accuracy. The original framework proposed is an modification of \gls{alexnet}, but is easily extended to other architectures. 
+
 \begin{figure}
-	branchynet framework
+	\centering
+	\includegraphics[width=.3\linewidth]{figures/articles/branchynet}
+	\caption[Branchy AlexNet]{Branchy AlexNet, Source \citetitle{teerapittayanon_branchynet:_2016} \cite{teerapittayanon_branchynet:_2016}}
 \end{figure}
 
-Proposed by \citeauthor{teerapittayanon_branchynet:_2016} \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} is a method to reduce inference latency by letting samples, that can be classified early on exit the model.
+What benefits and result and observations have branchynet made? 
 
 \paragraph{BranchyNet Training Framework}
 
@@ -39,14 +41,13 @@ Where the loss function is the softmax cross-entropy objective.
 The weighted sum loss is back-propagated to optimize the weights of the network. 
 
 The paper uses the \gls{mnist} and \gls{cifar10} datasets for benchmarking. One may argue, that the two datasets used for benchmarking are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples. This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}50 and \gls{densenet}-121 on a subset of the ImageNet dataset. \gls{ilsvrc2012} contains 1.2 million images with an average size of 400 $\times$ 350 pixels.
-
-Our assumption is running a model on device up to a certain exit, if the model can classify with high enough confidence, the sample is exited. However, if confidence is too poor, the intermediate result is offloaded to an edge server to perform final classification.  
+  
 
 \subsection{Branchy-ResNet}
 
 In this section the design of Branchy-\gls{resnet} is explained. First is the building blocks of a residual network explained followed by the design of B-\gls{resnet}. 
 
-Depth of \gls{dnn} is of paramount importance to extract increasingly richer features from images to obtain highly accurate classification models cite{who}. Training very deep models with more than ten layer for convergence is not easy due to vanishing/exploding gradients. Residual Networks or \gls{resnet} \cite{he_deep_2015} have for long been the state-of-the-art network and won ILSVRC15 using 152 layers. The network is build of residual blocks, a novel \gls{dnn} layer designed for extremely deep networks. 
+Depth of \gls{dnn} is of paramount importance to extract increasingly richer features from images to obtain highly accurate classification models cite{who}. Training very deep models with more than ten layer for convergence is not easy due to vanishing/exploding gradients. Residual Networks or \gls{resnet} \cite{he_deep_2015} have for long been a state-of-the-art network and won ILSVRC15 using 152 layers. The network is build of residual blocks, a novel \gls{dnn} layer designed for extremely deep networks. 
 
 Instead of simply stacking convolutional layers as plain \gls{vgg} nets, residual network adds a shortcut connection, which skip a layer or a block of layers. The skip connection adds the identity of input to the output of the layers/block, see figure \ref{fig:residualblock}
 
@@ -66,7 +67,6 @@ The residual layers proposed in \cite{he_deep_2015} are grouped into 4 resolutio
 
 The architecture is further divided into 4 resolution blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
 
-\pagebreak
 \begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
 	\caption[\gls{resnet}50 description]{\gls{resnet}50 description. The table describes the blocks of \gls{resnet}50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
 	\toprule
@@ -144,7 +144,7 @@ For each exit, the intermediate features are fed to a pooling-layer and a fully-
 
 In this section the design of Branchy-\gls{densenet} is explained. First is the building blocks of a dense network explained followed by the design of B-\gls{densenet}.
 
-DenseNet \cite{huang_densely_2016} is build on the assumption, that many layers of \gls{resnet} have only a small contribution to the output and can in fact be dropped during training \cite{huang_densely_2016}. Instead of adding previously learned information to the output, \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to relearn redundant information. Figure \ref{fig:denseblock} show the dense connections, that combine features from previous layers and show how the features size grows throughout a densely connected block
+DenseNet \cite{huang_densely_2016} is build on the assumption, that many layers of a \gls{resnet} only have a small contribution to the output and can in fact be dropped during training \cite{huang_densely_2016}. Instead of adding previously learned information to the output, \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to relearn redundant information. Figure \ref{fig:denseblock} show the dense connections, that combine features from previous layers and show how the features size grows throughout a densely connected block
 
 \begin{figure}
 	\centering
@@ -153,7 +153,7 @@ DenseNet \cite{huang_densely_2016} is build on the assumption, that many layers 
 	\label{fig:denseblock}
 \end{figure}
 
-The densely connected layers are likewise residual network grouped into resolution block called dense blocks, but for \gls{densenet} intermediate transition layers are added between dense block to downsample the feature size. 
+The densely connected layers are similarly to residual network grouped into resolution block called dense blocks, but for \gls{densenet} intermediate transition layers are added between dense block to downsample the feature size. 
 
 \begin{figure}
 	\centering
@@ -293,7 +293,7 @@ The second problem is early classifiers interfere with later classifiers. The ea
 \end{longtabu}
 
 
-
+\input{sections/Experiments.tex}
 
 
 

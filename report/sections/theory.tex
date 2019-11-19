@@ -1,8 +1,14 @@
-\hypertarget{theory}{%
-	\chapter{Theory}\label{ch:theory}}
+\hypertarget{Edge Intelligence}{%
+	\chapter{Edge Intelligence}\label{ch:edgeintelligence}}
 \thispagestyle{fancy}
 
-\section{Edge Computing}
+The primary objective of \gls{ei} is to enable intelligence for mobile and \gls{iot} application, by reducing inference latency, energy consumption and memory footprint. Progress within \gls{ai} have been pushed by the achievement in tasks using \gls{dnn}, however deployment of \gls{dnn} in real applications have been limited to the cloud, as \gls{dnn} are computationally expensive and these \gls{dnn}s are getting deeper. The tendency are exemplified by the winner of ImageNet Challenge \cite{russakovsky_imagenet_2015}, that within a time span of four years the number of layers have grown from 8 to 152 layers. This have hindered development of intelligent mobile and \gls{iot} applications. Pushing execution of \gls{dnn}  to the edge allow for flexible execution of \gls{dnn}-based applications and services. Edge-centric architectures can be categories into four main modes \cite{zhou_edge_2019}.
+
+State-of-the-art \gls{dnn} are getting deeper i.e. adding more layer to the models to improve model accuracy, however the added amount of model parameters require additional computations, hence inference time is degraded \cite{bibid}. Conventionally intelligent mobile applications have been run in the cloud, introducing highly unreliable latency in \gls{wan}. As end-devices have become more powerful, smaller albeit less accurate \gls{ai} architectures have been proposed, however with the emergence of \gls{iot} less powerful devices, not able to run highly demanding algorithms are constantly being connected to the internet. Devices which work in application, that advantageously could benefit from intelligence. In order to find the right balance between primarily highly accurate \gls{mcc} and highly responsive mobile computing, a new computing paradigm emerges namely \gls{mec}.  
+
+The survey \citetitle{zhou_edge_2019} by \citet{zhou_edge_2019} review the current state within the research field of \gls{ei}. The survey includes training and inference of \gls{dnn} on the edge and categorizes several performance metrics for \gls{ei} applications and services. 
+
+This thesis mainly focuses on the inference process and will not address edge-specific training methods. In these next sections architectures, performance metrics and enabling technologies for edge-centric inference will be described.  
 
 The primary purpose of edge computing reduce latency of real-time applications and improve reliability. Data processing is done in closer proximity to end-users, the shortened communication path leads to a reduction in communication latency. Edge computing seeks to distibute computing resources and data storage in contrast to the last decade centralization of these resources by cloud computing \cite{shi_edge_2016}. Edge computing is envisioned to reliably serve the ever growing number of billions upon billions of connected mobile and \gls{iot} devices. By 2020 Cisco Internet Business Solutions Group, 50 billion things is predicted to be connected to the internet.  As our end-devices keep getting more resourceful and the amount of data generated at the edge is expected to overwhelm cloud data centers and exhaust available bandwidth, edge computing is a possible and necessary step. Furthermore a major concern of cloud computing is the protection of data ensuring data privacy. Edge computing can may address this concern, as no data is expected to leave the network, as all processing is done at the network edge. (Maybe add the push and pull factors of \cite{zhou_edge_2019}) 
 
@@ -13,13 +19,10 @@ Cloud computing have been the de facto standard for \gls{ai} application, as \gl
 
 Mobile computing, \gls{mcc}, \gls{iot} \gls{ei}
 
-\section{\gls{ai}}
 
 \gls{ml}, supervised learning
 
 \gls{cv}, recognition, localization, detection, segmentation
-
-\paragraph{\gls{dl}} 
 
 \gls{dl} is a branch of \gls{ml} utilizing \gls{dnn} as the core component to construct complex high accurate models. It has gained popularity, as it achieves state-of-the-art performance on various tasks, such as speech recognition, image classification and natural language processing. The tendency exemplified by the ImageNet Challenge \cite{russakovsky_imagenet_2015} is network are getting deeper. Within a time span of four years the number of layers have grown from 8 to 152 layers. 
 
@@ -30,64 +33,294 @@ training, inference, convolution layers, weights, transfer learning
 
 Cloud Intelligence, Edge Intelligence, Device Intelligence, Collaborative Intelligence
 
-\input{sections/EI.tex}
 
-\section{Practical Experiment Setup}
+%\begin{figure}
+%	\centering
+%	\captionsetup[subfigure]{justification=centering}
+%	\subfloat[Device-based\label{fig:device-based}]{\includegraphics[width=.2\linewidth]{figures/models/device}}
+%	\subfloat[Edge-based\label{fig:edge-based}]{\includegraphics[width=.2\linewidth]{figures/models/edge}}
+%	\subfloat[Edge-Device mode\label{fig:edge-device-mode}]{\includegraphics[width=.2\linewidth]{figures/models/edge_device}}
+%	\subfloat[Edge-Cloud mode\label{fig:edge-cloud-mode}]{\includegraphics[width=.37\linewidth]{figures/models/edge_cloud}}
+%	\caption[Edge-centric architectures]{Edge Architectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partially execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partially execution. }
+%\end{figure}
+%
+%\begin{description}
+%	\item[Device-based Mode] end device obtain model from edge server. The end-device then acquires input data and performs model inference. Since all computation is done on the end device, performance is solely reliant on the end device's computing resources.  
+%	\item[Edge-based Mode] end device acquires input data. The input data is transferred to an edge server, which performs model inference and send the prediction results to the end device. The performance relies on edge server computing resources and network bandwidth.
+%	\item[Edge-Device Mode] end device acquires input data and performs partially model inference. The intermediate data is transferred to an edge server which finalizes model inference. The performance relies on end device's and edge server computing resource, network bandwidth and edge server workload. 
+%	\item[Edge-Cloud Mode] resemble edge-device mode, however the model inference task is now partitioned between edge server and cloud data centers. The model is now reliant on edge server and data center computing resources, but even more reliant on \gls{wan} transmission rate between edge and cloud. 
+%\end{description}
 
-All code is written in \gls{python} 3.7 \cite{van_rossum_python_1995} using the \gls{pytorch} 1.2
-framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 library \cite{marcel_torchvision_2010}. All code is available at:
-{\color{sns-grey}\url{https://github.com/AlexKarlsen/thesis-src}}. Trained models are available at: {\color{sns-grey}\url{https://drive.google.com/open?id=1EAl9qGxcm2U3kPhEsHp0HotgNn_LMWa1}} 
+\section{Performance Metrics}
 
-\subsection{Training Settings}
+The aim of edge intelligence is to accommodate certain performance metrics:
 
-All training have been accomplished using a -workstation equipped with a NVIDIA GeForce 1080 GTX \gls{gpu} using CUDA 10.1 and cuDNN 7.6.3. 
+\begin{description}
+	\item[Latency] is defined as the overall time $T$ of the inference process, including from data is generated at the device, data transmission, preprocessing, model inference and postprocessing. For \gls{ei} real-time application, such as \gls{ar}/\gls{vr}, where stringent deadlines requirements must be met e.g. 100ms \cite{bibid}. Latency is affected by several factors; computing resources, data rate, model architecture and execution.
+	
+	\item[Accuracy] is defined as the ratio of correctly predicted input samples from the total number of inputs. 
+	\begin{align*}
+	\alpha = \frac{n_c}{N}
+	\end{align*}
+	Accuracy requirements are dependent on the \gls{ei} application, for instance autonomous vehicles require extreme accuracy with extremely low latency. The essential trade-off is how accurate a model can we use while still satisfying latency demands.  
+	
+	\item[Energy efficiency] end devices are typically battery powered, thus applications must be optimized for energy efficiency. Energy efficiency for offloading application is finding the right trade-off between computation and communication. The hardware of end-devices play a crucial role, it may be more sensible to have a device-only execution, if it's a powerful \gls{gpu} enabled mobile device. If it's a \gls{cpu}-only device, then naively offloading entire model inference may introduce a communication overhead in poor communication environments, hence a collaborative execution model between end-device and edge may be optimal. 
+	
+	\item[Communication overhead] is introduced whenever inference is offloaded for remote computation. Computational offloading is only sensible whenever time could be saved compared to local execution.
+	\begin{align*}
+	T_{local\: computation} > T_{remote\: computation} + T_{communication}
+	\end{align*}
+	Or if energy could be saved.
+	\begin{align*}
+	E_{local\: computation} > E_{communication}
+	\end{align*}
+	The energy impact of communication is highly dependent on the wireless technology, as is the overall latency. Cloud-offloading is highly dependent on unreliable and expensive \gls{wan} connection to a cloud data center, as high variation in network traffic and server workload occurs. Edge-offloading mitigates the impact of communication overhead, by solely depending on a more reliable \gls{lan} network connection to edge servers.  
+	
+	\item[Privacy] data generated by end devices might be confidential, hence not allowed to be processed by a data center unless confidentiality can be guaranteed. Privacy relies on how data is process within the \gls{ei} application. Offloading model input data, may be susceptible to interception, as it may be well understood by an adversary, however offloading intermediate data with no apparent meaning for humans may help improve the confidentiality of data.    
+	
+	\item[Memory footprint] reducing memory footprint of \gls{dnn} inference is important especially for mobile device. The mobile device do not have dedicate \gls{gpu} memory, hence \gls{dnn} application will have to compete with other applications running on both \gls{cpu} and \gls{gpu}. The resource hungry \gls{dnn} application will drain battery resources and potentially harm performance of coexisting applications. 
+	
+	\item[Confidence] Confidence and Score-Margin  
+\end{description}
 
-\paragraph{Optimizer}
+This work is mainly concerned the accuracy-latency trade-off for inference in \gls{ei} applications and services. Thus, it will primarily address technologies regarding these performance metrics, and refer to the survey for a broader perspective on all of the performance metrics for \gls{ei} applications and services. The centralized device-based and edge-based architectures are addressed by common \gls{dl} literature. The distributed inference models for \gls{ei} is a fairly recent and promising field of research for truly enabling \gls{ai} applications and services.
 
-The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
+According to \cite{zhou_edge_2019} there are 8 main effort to shorten inference latency, these comprises; \textit{Model Compression, Model Partition, Model Early Exit, Edge Caching, Input Filtering, Model Selection, Support Multi-Tenancy} and \textit{Application Specific Optimization} (Knowlegde Transfer Learning (student-teacher training)
 
-\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which implement adaptive learnining rate to avoid being stuck in local minimas. 
 
-\gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
+
+
+%\begin{figure}
+%	\centering
+%	\captionsetup[subfigure]{justification=centering}
+%	\subfloat[Device-based\label{fig:device-based}]{\includegraphics[width=.2\linewidth]{figures/models/device}}
+%	\subfloat[Edge-based\label{fig:edge-based}]{\includegraphics[width=.2\linewidth]{figures/models/edge}}
+%	\subfloat[Edge-Device mode\label{fig:edge-device-mode}]{\includegraphics[width=.2\linewidth]{figures/models/edge_device}}
+%	\subfloat[Edge-Cloud mode\label{fig:edge-cloud-mode}]{\includegraphics[width=.37\linewidth]{figures/models/edge_cloud}}
+%	\caption[Edge-centric architectures]{Edge Architectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partially execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partially execution. }
+%\end{figure}
+%
+%\begin{description}
+%	\item[Device-based Mode]
+%	 end device obtain model from edge server. The end-device then acquires input data and performs model inference. Since all computation is done on the end device, performance is solely reliant on the end device's computing resources. 
+%	
+%	\item[Edge-based Mode] end device acquires input data. The input data is transferred to an edge server, which performs model inference and send the prediction results to the end device. The performance relies on edge server computing resources and network bandwidth.
+%	\item[Edge-Device Mode] end device acquires input data and performs partially model inference. The intermediate data is transferred to an edge server which finalizes model inference. The performance relies on end device's and edge server computing resource, network bandwidth and edge server workload. 
+%	\item[Edge-Cloud Mode] resemble edge-device mode, however the model inference task is now partitioned between edge server and cloud data centers. The model is now reliant on edge server and data center computing resources, but even more reliant on \gls{wan} transmission rate between edge and cloud. 
+%\end{description}
+
+\newpage
+\section{Edge-centric Architectures}
+
+Figure \ref{fig:edge_arch} illustrates and elaborates on the four architectures; \protect\subref{fig:device-based} device-based, \protect\subref{fig:edge-based} edge-based, \protect\subref{fig:edge-device-mode} collaborative edge and \protect\subref{fig:edge-cloud-mode} collaborative edge-cloud. 
+
+\begin{figure}
+	\begin{minipage}{0.65\linewidth}
+		\textbf{\protect\subref{fig:device-based} \textsc{Device-based}}
+		\color{caption-color} \newline
+		The model is obtained by the end device from the edge server. The end device then acquires input data and performs model inference. Since all computation is done on the end device, performance is solely reliant on the end device's computing resources. 
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.3\linewidth}
+		\centering
+		\captionsetup[subfigure]{justification=centering}
+		\begin{figure}
+			\centering
+			\subfloat[Device-based\label{fig:device-based}]{\includegraphics[width=\linewidth]{figures/models/device}}
+		\end{figure}
+	\end{minipage}
+	
+	\begin{minipage}{0.3\linewidth}
+		\centering
+		\begin{figure}
+			\centering
+			\captionsetup[subfigure]{justification=centering}
+			\subfloat[Edge-based\label{fig:edge-based}]{\includegraphics[width=\linewidth]{figures/models/edge}}
+		\end{figure}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.65\linewidth}
+		\textbf{\protect\subref{fig:edge-based} \textsc{Edge-based}}
+		\color{caption-color} \newline
+		The end device acquires input data. The input data is transferred to an edge server, which performs model inference and send the prediction results back to the end device. The performance relies on edge server computing resources and the available network bandwidth between end device and edge server. 
+	\end{minipage}
+\end{figure}
+
+The first two modes are the conventional schemes, which resembles the current cloud-centric state, where all processing are done by one peer. The next two schemes exemplifies collaborative architectures, where processing is divided for partial execution between the peers.
+
+\begin{figure}
+	\begin{minipage}{0.65\linewidth}
+		\textbf{\protect\subref{fig:edge-device-mode} \textsc{Collaborative Edge}}
+		\color{caption-color} \newline
+		The end device acquires input data and performs partially model inference. The intermediate data is transferred to an edge server which finalizes model inference. The performance relies on the computing resource of both the end device and the edge server and edge server workload, as well as available network bandwidth between end device and edge server. 
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.3\linewidth}
+		\centering
+		\captionsetup[subfigure]{justification=centering}
+		\begin{figure}
+			\centering
+			\subfloat[Collaborative Edge\label{fig:edge-device-mode}]{\includegraphics[width=\linewidth]{figures/models/edge_device}}
+		\end{figure}
+	\end{minipage}
+	\begin{minipage}{0.5\linewidth}
+		\centering
+		\captionsetup[subfigure]{justification=centering}
+		\begin{figure}
+			\centering
+			\subfloat[Collaborative Edge-Cloud\label{fig:edge-cloud-mode}]{\includegraphics[width=\linewidth]{figures/models/edge_cloud}}
+		\end{figure}
+	\end{minipage}
+	\hfill
+	\begin{minipage}{0.45\linewidth}
+		\textbf{\protect\subref{fig:edge-cloud-mode} \textsc{Collaborative Edge-Cloud}}
+		\color{caption-color} \newline
+		resemble edge-device mode, however the model inference task is now partitioned between edge server and cloud data centers. The model is now reliant on edge server and data center computing resources, but even more reliant on \gls{wan} transmission rate between edge and cloud.
+	\end{minipage}
+	\caption[Edge-centric Architectures]{Edge-centric Architectures: \protect\subref{fig:device-based} device only execution, \protect\subref{fig:edge-based} edge only execution,\protect\subref{fig:edge-device-mode} edge and device partial execution, \protect\subref{fig:edge-cloud-mode} edge and cloud partial execution}
+	\label{fig:edge_arch}
+\end{figure}
+
+Over recent years interest research in reducing inference time have grown. In the next section related work will be explained.  
+
+
+%Recent years breakthrough within \gls{dl} have led to a dramatic increase in the amount of \gls{ai} applications and services, such as personal assistants, recommendation systems and surveillance systems. Combined with the development of mobile computing and \gls{iot}, where billions of device are getting connected to the internet. Traditionally data for \gls{ai} applications and services are generated by the devices and transferred to large data centers for computation.    To fully unleash the power of \gls{ai} applications and services \gls{ei} or edge \gls{ai} have become an interesting research area. \gls{ei} have potential to reduce the 
+
+\section{Research Field}
+
+\subsection{Model Architectures}
+
+To improve inference latency on a model-basis, efforts have been made in designing \gls{dnn}s, that reduces the amount of parameter and to more efficiently run on mobile device. Commonly for \gls{mobilenet}s \cite{howard_mobilenets:_2017,sandler_mobilenetv2:_2018}, \gls{shufflenet}s \cite{zhang_shufflenet:_2017, ma_shufflenet_2018} and \gls{squeezenet}s \cite{iandola_squeezenet:_2016} are all aiming to efficiently reducing the number of parameters, without compromising model accuracy by designing novel \gls{dnn} architectures.
+
+Use MobileNet's inverted Linear bottlenek as example and use source that describes the parameter efficiency og this model. 
+
+\citeauthor{sandler_mobilenetv2:_2018} designed \textsl{MobileNetV2} is a neural network architecture specifically for mobile devices. The main novelty is \textit{"inverted residual with linear bottlenecks"} a neural network layer module. ELABORATE
+
+Furthermore it uses another type of convolutional layer \textit{depth-wise separable convolutions}, both of which seeking to decrease the number of parameters. ELABORATE
+
+Other efforts have been made to reduce the number of parameters, thus the inference time in state-of-the-art model compression. 
+
+\subsection{Model Compression}
+
+Weight pruning is the removal of redundant weights, which have shown significant speed-ups using with a small loss in accuracy \cite{zhou_edge_2019}. The impact of compression is application dependent and can be applied to any pre-trained \gls{dnn} \cite{cheng_survey_2017}.
+
+Another compression technique is quantization. A more compact representation of a floating point is used to reduce the amount of bits needed for each weight of the model \cite{cheng_survey_2017}. The extreme case is binarization, where weights and activations are learned as a single bit representation. In BinaryConnect \cite{courbariaux_binaryconnect:_2015} and \gls{bnn} \cite{courbariaux_binarized_2016} most arithmetic operations are replaced with bit-wise operations, thus greatly improving the power-efficiency and inference latency, however using binary weights in extremely deep network have shown significant degradation in accuracy \cite{cheng_survey_2017}.
+
+In \cite{hinton_distilling_2015} \gls{kd} has been proposed. \gls{kd} is a framework to train \gls{dnn} in a student-teacher paradigm. The student network are penalized using the output of an ensemble of teacher networks. \gls{kd} can be viewed as a compression of an ensemble of teacher network into a student network \cite{cheng_survey_2017}. 
+In \cite{romero_fitnets:_2014} \gls{fitnet} have been proposed as a method to train thinner and shallower student networks using a deeper teacher network. FitNet learns the student network to mimick the teacher network, however this approach require the softmax loss function, which limits is usage \cite{cheng_survey_2017}.  
+
+Other approaches specifically related to edge computing aiming to reduce inference latency, is model partitioning between end device and edge server. 
+
+\subsection{Model Partitioning}
+
+Model partitioning is an approach to reduce inference latency on an architectural level. Instead of solely executing a \gls{dnn} in the cloud, edge or on device, the computing resources collaborates to boost inference time. 
+
+Splitting a model is an inherent nature of sequential \gls{dnn}s, that at any layer can be stopped. The intermediate output are transferred over the network and continued at the next layer on an edge server, as shown in figure \ref{fig:offlaoding}.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=.7\linewidth]{figures/lr.png}
-	\caption[Cosine Annealing Learning Rate]{Cosine Annealing Learning Rate} \label{fig:cosineannealing}
+	\includegraphics[width=\linewidth]{figures/models/partitioning}
+	\caption[Model partitioning]{Edge-Device model partitioning run part of the model on-device and offload the rest to edge processing. Network partitioning utilize the assumption, that at some later point in the \gls{dnn} a smaller representation of the data is found, illustrated by the gradually decreasing model layers, to reduce the communication bottleneck. }
+	\label{fig:offlaoding}
 \end{figure}
 
-\paragraph{Batch Size}
+Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning scheduler, that uses knowledge of the individual layers of the \gls{dnn} to effectively reduce inference latency. Communication latency is the bottleneck in an offloading application, hence a smaller representation of the input data is needed, however the layers producing a smaller output than the original input typically lies deep within the network. Neurosurgeon construct regression models for layer execution time and  output data size of the layers of a \gls{dnn}, to decide the best partition of the \gls{dnn} based on networking condition. The work is based on \gls{mcc} and shows, that the conventional cloud-only approach is insufficient due to different networking technologies and mobile device is becoming \gls{gpu} enabled. 
+% Evidently moving computation to the edge reduces the communication latency. 
 
-Batch Size are recommend to be between 1 and a few hundreds \cite{bengio_practical_2012}, to better utilize \gls{gpu}s a batch size in the power of 2 gives better runtime, e.g. 32 to 256 \cite{goodfellow_deep_2016}. Larger batch sizes have been driving by advancements in parallelism \cite{dean_large_2012}, which can improve the training time, however smaller batch size, have shown better generalization performance due to a regularizing effect \cite{masters_revisiting_nodate}, which especially large model, that tends to overfit can benefit from \cite{goodfellow_deep_2016}. 
+Another effort to reduce communication overhead of network splitting is adding feature compression of intermediate features before offloading to cloud \cite{choi_deep_2018}. The paper shows, that lossless compression have no impact on accuracy, however bit saving is rather limited. Lossy compression, on the other hand, results in 70\% bit savings, however also affects accuracy and require compression-aware training to compensate. The follow up paper \cite{choi_near-lossless_2018} propose compression techniques for deep features and achieve significant better bit saving, than conventional image compression algorithms.
 
-In this project a single \gls{gpu} GTX1080 with 8Gb memory is used to train the models. A batch size of 16 is chosen for all \gls{dnn} training sessions, which is the maximum power of 2 possible with the computational budget, as the typical choice of 32 samples in a batch caused memory exhaustion. A batch size of 16 should be adequate and still provide decent training times. 
-
-\paragraph{Datasets}
-
-\gls{min100} is a subset of the \gls{ilsvrc2012} dataset \cite{russakovsky_imagenet_2015} created for this project, to reduce training time from several weeks to only days on available hardware. The sub-setting is inspired by MiniImageNet \cite{vinyals_matching_2016}, that uses a subset of 100 classes with 600 samples for each class. \gls{min100} contains 100 out of 1.000 randomly sampled classes, which gives 127.300 out of 1.2m training samples and 5.000 out of 50.000 validation samples. A full list of classes are found in the appendix. 
-
-Compared to other sufficiently dense classification datasets e.g \gls{tinyimagenet} \cite{li_cs231n:_2018}, \gls{cifar10} and \gls{cifar100} \cite{krizhevsky_cifar-10_nodate}, the image sizes of these datasets are respectively $(64\times 64$), $(32\times 32)$, $(32\times 32)$ pixels, all of which are considered too small  for this project. Other datasets such as MS COCO and Pascal VOC are better suited for object detection/segmentation, as images are not cropped to only focus on a single object, thus too challenging for classification. In fact Pascal VOC was initially tested, the model however, clearly overfitted the training data due to data sparsity. 
-
-\paragraph{Image Augmentation}
-
-A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples \cite{goodfellow_deep_2016}.  
-
-\begin{figure}[H]
+\begin{figure}
 	\centering
-	\includegraphics[width=.7\linewidth]{figures/augmentation/augmentation_high_resolution.png}
-	\caption[Image Augmentaion Example]{Image Augmentation of an elephant}
-	\label{fig:augmentation}
+	\includegraphics[width=\linewidth]{figures/models/compressed}
+	\caption[Feature compression]{Feature compression}
 \end{figure}
 
-Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant, achieved using \gls{imgaug} \cite{jung_imgaug:_nodate}. 
+\gls{bottlenet} \cite{eshratifar_bottlenet:_2019} is a novel neural network module. Client-side it consists of a reduction unit and a compressor unit and server-side of a decompressor unit and restoration unit. The reduction unit creates a smaller representation of intermediate result by applying spatial- and channel-wise convolution. The compressor uses lossy \gls{jpeg} compression, that are decompressed server-side. The restoration unit apply deconvolution to restore the intermediate feature back to the required dimensionality for the next layer in the network.
 
-New methods have been proposed where image transformations are learned to improve generalization e.g. AutoAugment \cite{cubuk_autoaugment:_2018}. 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/bottlenet}
+	\caption[BottleNet Unit]{BottleNet Unit}
+\end{figure}
 
-Other methods involves actually enlarging the training dataset by synthetically creating more data using a \gls{gan}. \gls{gan}s can help overcome limited data given the available training data or a 3D model, by artificially constructing new samples in different background, light setting and from alternate perspectives.
+\gls{bottlenet} is able to achieve 84$\times$ bit savings compared to cloud-only approach with less than 2\% degradation of accuracy caused by lossy compression with compression-aware training. Under good networking condition, the evaluation of \gls{bottlenet} shows, that the best split is after the first convolutional block, as a smaller representation of the input can be found already here. Compared to cloud-only approach using WiFi a 8$\times$ speed up is found.
 
-Methods that do not cover enriching the available training, but alters the learning procedure are called regularization and covers; weight decay, dropout, batch normalization etc.
+The collaborative scheme between end device and edge servers shows improvements for \gls{cpu}-enabled end devices, compared to a cloud-only approach, however as communication is introduced the overall latency will vary depending on the networking conditions. Model selection is an approach, that tries to limit the amount of offloading, by first running an on-device model. 
 
-\paragraph{Transfer Learning}
+\subsection{Model Selection}
 
-Transfer learning is the procedure of using a pre-trained model to train on a new dataset. Under the assumption, that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Transfer learning can reduce the needed time to learn general features and possibly learn better ones. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset, enables model to learn general features suitable for many other domains \cite{kornblith_better_2019}. Transfer learning are especially suited for when the new data domain is of limited quantity and when the similarities between the two data domains are strong. If the similarity is less strong a model can be partially trained, the shallow layers containing general features are frozen and only the deeper layers with more specialized features are fine-tuned for the new data domain \cite{li_cs231n:_2018}.
+Model selection is an approach to reduce inference by selecting an appropriately accurate model, hence not using an unnecessarily deep model, if a shallower model should be satisfiable. In \cite{bolukbasi_adaptive_2017} a model selection framework is proposed. The framework stacks three increasingly deeper and more accurate models on top of each other; \gls{alexnet}, \gls{googlenet} and \gls{resnet}50. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/adaptive}
+	\caption[Adaptive Neural Network]{Adaptive Neural Network using model selection}
+\end{figure}
+
+The input is inferred to \gls{alexnet}, if the confidence scores is satisfactory the prediction is accepted, if not the framework decides to use either \gls{googlenet} or \gls{resnet}50 depending on a confidence threshold, however if the sample is inferred to \gls{googlenet} and the confidence is still unsatisfactory the sample is inferred to \gls{resnet}50 for the final prediction. The work shows improvement of the average prediction time with only a small reduction in accuracy depending on the confidence threshold. However, for hard samples, since multiple model are introduced, the inference time is increased, as well as the computational cost and memory consumption, thus such model selection approach seems overwhelming to introduce on an end-device yet it may be feasible in an edge-device mode using a Big/Little setup.
+
+To obtain faster inference Big/Little \gls{dnn} \cite{park_big/little_2015} is simple approach using model selection. It implements a hybrid edge architecture of device-only and selective offloading for edge-only processing. It runs a smaller yet less accurate model on device and a larger more accurate model on the edge server, as illustrated by figure \ref{fig:big/little-dnn}. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/big_little_dnn}
+	\caption[Big/Little \gls{dnn} architecture]{Big/Little \gls{dnn}, a hybrid edge architecture. An on-device model is used to selectively offload to a more complex model hosted on an edge server.}
+	\label{fig:big/little-dnn}
+\end{figure}
+
+If the prediction confidence of the little model is unsatisfactory, a decision is made to offload to the big model on the edge server. If a lot of samples are able to be correctly classified locally a speed-up is gained. However, the down-side of this approach is, if too many samples require the big model to satisfy a certain confidence threshold, a lot of work is wasted on the on-device prediction. Nonetheless the paper \cite{park_big/little_2015} contribute with another method to define a threshold, called \textsc{Score margin}. They have found, that the difference between the highest scoring and second highest scoring prediction, have a close relation to the actual true label. Although Big/Little \gls{dnn} obtain good results on energy savings and inference latency, more sophisticated frameworks such as early exiting, that also enabled model partitioning have been proposed.
+
+\subsection{Model Early Exit}
+
+Should I mention early exting in general for ML like Viola Jones? \cite{viola_rapid_2001}
+
+Model early exiting is a way to handle the latency-accuracy trade-off, by reducing the average inference time without compromising model accuracy. Typically samples can be accurately classified using less \gls{dnn} layers which can improve the inference time, if a sample cannot be classified with proper confidence more layers can be used to obtain a more confident prediction. Since early exiting less computation is wasted, if offloading is necessary after an exit compared to a Big/Little model selection setup. As less computation is needed and a smaller representation of input data can be obtained, thus less data must be offloaded to the edge server.
+
+Cascading neural networks \cite{leroux_resource-constrained_2015} by \citeauthor{leroux_resource-constrained_2015} proposes an early exiting framework by adding a cascade of intermediate classifiers, that allow some sample to exit the model early, hence improving inference time. \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} proposed by \citeauthor{teerapittayanon_branchynet:_2016} is an early exiting framework for existing state-of-the-art model, that allow for fast inference. The paper proposes a novel joint optimization of the all output branches which shows added regularization to the model weights. The framework shows promising results of reduced inference time. The result are based on three well-known \gls{dnn} architectures; \gls{lenet} \cite{lecun_lecun-98.pdf_1998}, \gls{alexnet} \cite{krizhevsky_imagenet_2017} and \gls{resnet} \cite{he_deep_2015}, modified to implement the \gls{branchynet} framework, and to accommodate the MNIST \cite{lecun_mnist_2010} and Cifar-10 \cite{krizhevsky_cifar-10_nodate} datasets.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/branchy}
+	\caption[BranchyNet Architecture]{BranchyNet Architecture}
+\end{figure}
+
+Cascading neural network \cite{leroux_resource-constrained_2015} have been followed up in \cite{leroux_cascading_2017} and \gls{branchynet} have been extended to \gls{ddnn} in \cite{teerapittayanon_distributed_2017}. Both papers are distributing the early exiting model over a distributed computing hierarchy over cloud, edge and end devices.  
+
+The distributed cascading neural network and \gls{ddnn} is basically alike, however the papers have different perspectives. \gls{ddnn} focuses on a cluster of $k$ stationary end devices collaboratively solving a classification challenge using sensor fusion. In \gls{ddnn}  early exits are placed to create a shallow on device model. If of local recognition with satisfying confidence cannot be obtained, then the intermediate features of the early exit are offloaded to servers. The paper investigate different aggregation schemes and find a concatenation of features to be the best performing. Concatenation of features increases the size needed to be offloaded to servers, to $k$ times the amount of features at the exit point of the model. The \gls{ddnn} framework require complete retraining of the model, as the amount of features after the exit point is not consistent with the existing \gls{dnn} architecture or it will require new novel architectures optimized for the \gls{ddnn} framework. Nonetheless, the work shows benefits from distributed computing to provide fault tolerance and support for sensor fusion of geographically dispersed sensors to improve recognition accuracy.
+
+Cascading neural network \cite{leroux_cascading_2017} on the other hand is more focused on reducing inference time of a single \gls{dnn} with early exiting, which is more suitable for mobile \gls{p2p} applications, however still cascaded/distributed over a computing hierarchy. Training the cascaded neural network is no different than training any other early exiting model, however in \cite{leroux_cascading_2017}, they freeze the network weights and only train the softmax classifiers, whereas in \cite{teerapittayanon_branchynet:_2016} show, that training the model's weights benefit from the joint optimization in the form of added regularization and obtaining early features more suited for early exiting. In the cascading neural network \cite{leroux_cascading_2017}, early exiting and network partitioning point can be chosen depending available networking bandwidth, yet the exit and partition point is assigned statically and evaluated at two different settings, where the point is placed at two different depths. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/cascaded}
+	\caption[Cascaded \gls{dnn} over a computing hierarchy]{Cascaded \gls{dnn} over a computing hierarchy}
+\end{figure}
+
+Another proposal Edgent \cite{li_edge_2018} by \citeauthor{li_edge_2018} is a framework built on top of a \gls{branchynet} model. Edgent is an optimization of the latency-accuracy trade-off for mission-critical application with a predefined deadline. It tries to optimize the selection of exit and partitioning point of a cascaded early exiting model in the online phase. The optimization is based on a latency requirement, a regression model of each layer type of the used \gls{branchynet} model and the observed available bandwidth between end device and edge server. Experiments in the paper show, that Edgent is able to meet more stringent deadlines, than running solely on device or edge and naively selecting partitioning points. However, one may question whether Edgent is actually an early exiting framework, as the \gls{dnn} optimizer decides an exit and partitioning point upfront to use as much of available time budget as possible without violating the latency requirement, hence model selection or in this case exit selection. In \gls{branchynet} and \gls{ddnn} some samples should be able to exit early, thus when the \gls{dnn} is cascaded over the network, some samples should be able to exit locally on end devices to reduce expensive cost of network communication in terms of both latency and energy usage. When using a powerful edge server more weight will be added to offloading and no savings are gained on easy samples and the accuracy of harder samples are degraded. Edgent as a exit selection framework is still a significant contribution for time-critical applications.
+
+On a per model level \citeauthor{huang_multi-scale_2017} have in \cite{huang_multi-scale_2017} investigated different state-of-the-art architectures for early exiting. They have found, that  densely connected layers of \gls{densenet} \cite{huang_densely_2016} are more suitable for early exiting than the popular \gls{resnet} architecture build of residual blocks. Densely connected block uses a concatenation of features from all layers for final classification. The combination of  general feature and increasingly more specific and complex features are shown to be important for early exiting models. This finding have been used to come of with a novel \gls{dnn} archtiecture specifically designed for early exiting. \gls{msdnet} \cite{huang_multi-scale_2017} uses the densely connected layers along with multi-scale paths. The unique design of multi-scale densely connected blocks shows further improvement on early exiting. The model are elaborated upon in section xx.
+
+
+\subsection{Model Layer Skipping}
+
+Other approaches to reduce inference time of \gls{dnn} involve mechanism for skipping certain layers. SkipNet \cite{wang_skipnet:_2017} is a framework for adding dynamic decision for skipping layers. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/skipnet}
+	\caption[SkipNet]{SkipNet}
+\end{figure}
+
+The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. SkipNet is trained using a hybrid of supervised learning and reinforcement learning. The classification is learnt as a usual supervised problem using labeled data. The skipping policies are learnt using reinforcement learning by rewarding decision, that have little impact on classification accuracy. The work shows, that only a small fraction of inputs actually require extremely deep models, thus being able to reduce computational cost by 30\% of \gls{resnet}101 on \gls{ilsvrc2012}. 
+
+BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies. However, instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use. BlockDrop is in fact a model selection framework, where the selection of models are learnt rather than tested. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/models/blockdrop}
+	\caption[BlockDrop]{BlockDrop}
+\end{figure}
+
+The policy network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode although neither architecture support early exiting or cascading, but would be useful in a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the policy network run by an end device would selective choose among a smaller model on device or a larger model on an edge server to avoid wasteful execution of a smaller model.
+
 
