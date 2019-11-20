@@ -310,7 +310,7 @@ The former test is conducted b stamping all samples whether it could have been e
 Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the \gls{min100}. Transfer learning was used with ImageNet weights, the model are used as a feature extractor, hence all weights were frozen and only the linear classifier was trained. The conventional models were used to compare with early exiting inference accuracy and latency on X different platforms.
 
 
-\begin{longtabu}{>{\bfseries}X|X|X|X}
+\begin{longtabu}{>{\bfseries}X[0.8]|X|X[1.5]|X[r0.3]}
 	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC and NVIDIA Jetson TX2 Edge Computer} \label{tbl:platforms} \\
 	\toprule
 	\rowfont{\bfseries}
@@ -328,11 +328,11 @@ Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the
 	\endfoot
 	\hline
 	\endlastfoot
-	Windows PC	& Intel i5 x gen.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
+	GPU Workstation	& Intel i5-6600K.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
 	\hline
 	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
 	\hline
-	NUC		  	& Intel i7 7th gen.	& None										& X GB \tabularnewline									
+	NUC		  	& Intel i7-7567U	& None										& 16GB \tabularnewline									
 	\bottomrule
 \end{longtabu}
 
