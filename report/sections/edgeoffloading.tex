@@ -40,7 +40,9 @@ Is $S_{exit_{n}} < S_{exit_{n+1}}$?
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/edge/highest-scoring.png}
+	\subfloat[B-ResNet]{\includegraphics[width=\linewidth]{figures/edge/b-resnet_correctness}}
+	\hfill
+	\subfloat[B-DenseNet]{\includegraphics[width=\linewidth]{figures/edge/b-densenet_correctness}}
 	\caption[short text]{text}
 	\label{fig:exit-highscore}
 \end{figure}
@@ -66,9 +68,38 @@ We also examined thresholds in the previous chapter, which did show that a high 
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/edge/information-combination.png}
+	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\hfill
+	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\caption[short text]{text}
+	\label{fig:info-combi}
+\end{figure}
+
+\subsection{Practical test}
+
+\begin{figure}
+	\centering
+	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-resnet_information-combination.png}}
+	\hfill
+	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-densenet_information-combination.png}}
 	\caption[short text]{text}
 	\label{fig:info-combi}
 \end{figure}
 
 Should I create hybrid combinations? Maybe only combine info from exit-0 and -1 and always let exit-2 and -3 have the final say if available? What if we can combine info from those two and omit the poor ones? 
+
+
+\subsection{Transport Protocol} 
+
+Offloading tasks over the network, irregardless fully or partially requires a transport protocol. The selection is typically a choice of either \gls{tcp} or \gls{udp}. \gls{tcp} is a reliable protocol, that guarantee no losses by retransmission of lost packets. \gls{udp} on the other hand is a best-effort protocol, that accept packets loss, thus not introducing retransmission communication overhead. 
+
+
+Fully offloading \gls{jpeg} compressed images for classification require no losses for human-readability. Sending intermediate features of a \gls{dnn} may not be as intolerant to losses and might be able to function with the far more lightweight \gls{udp}. In current research literature the choice of \gls{tcp} seems given in advance.  
+
+In this experiment the \gls{tcp} transmission time and retransmission rate is investigated under different communication environments. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/tcp/tcpoverhead}
+	\caption[TCP retransmission overhead]{TCP retransmission overhead}
+\end{figure}

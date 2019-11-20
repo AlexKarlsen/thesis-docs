@@ -1,9 +1,9 @@
 
-\section{Results}
+\section{Training}
 
 In this section the experimental setup, the training settings and training results are presented.  
 
-\subsection{Experiment Setup}
+\subsection{Experimental Setup}
 
 All code is written in \gls{python} 3.7 \cite{van_rossum_python_1995} using the \gls{pytorch} 1.2
 framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 library \cite{marcel_torchvision_2010}. All code is available at:
@@ -11,57 +11,50 @@ framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 libra
 
 All training have been accomplished using a \gls{gpu}-workstation equipped with a NVIDIA GeForce 1080 GTX \gls{gpu} using CUDA 10.1 and cuDNN 7.6.3. Trained models are available at: {\color{sns-grey}\url{https://drive.google.com/open?id=1EAl9qGxcm2U3kPhEsHp0HotgNn_LMWa1}} 
 
-\subsubsection{Optimizer}
-
-The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
-
-\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which implement adaptive learnining rate to avoid being stuck in local minimas. 
-
-\gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=.7\linewidth]{figures/lr.png}
-	\caption[Cosine Annealing Learning Rate]{Cosine Annealing Learning Rate} \label{fig:cosineannealing}
-\end{figure}
-
-\subsubsection{Batch Size}
-
-Batch Size are recommend to be between 1 and a few hundreds \cite{bengio_practical_2012}, to better utilize \gls{gpu}s a batch size in the power of 2 gives better runtime, e.g. 32 to 256 \cite{goodfellow_deep_2016}. Larger batch sizes have been driving by advancements in parallelism \cite{dean_large_2012}, which can improve the training time, however smaller batch size, have shown better generalization performance due to a regularizing effect \cite{masters_revisiting_nodate}, which especially large model, that tends to overfit can benefit from \cite{goodfellow_deep_2016}. 
-
-In this project a single \gls{gpu} GTX1080 with 8Gb memory is used to train the models. A batch size of 16 is chosen for all \gls{dnn} training sessions, which is the maximum power of 2 possible with the computational budget, as the typical choice of 32 samples in a batch caused memory exhaustion. A batch size of 16 should be adequate and still provide decent training times. 
-
-\subsubsection{Datasets}
-
-\gls{min100} is a subset of the \gls{ilsvrc2012} dataset \cite{russakovsky_imagenet_2015} created for this project, to reduce training time from several weeks to only days on available hardware. The sub-setting is inspired by MiniImageNet \cite{vinyals_matching_2016}, that uses a subset of 100 classes with 600 samples for each class. \gls{min100} contains 100 out of 1.000 randomly sampled classes, which gives 127.300 out of 1.2m training samples and 5.000 out of 50.000 validation samples. A full list of classes are found in the appendix. 
-
-Compared to other sufficiently dense classification datasets e.g \gls{tinyimagenet} \cite{li_cs231n:_2018}, \gls{cifar10} and \gls{cifar100} \cite{krizhevsky_cifar-10_nodate}, the image sizes of these datasets are respectively $(64\times 64$), $(32\times 32)$, $(32\times 32)$ pixels, all of which are considered too small  for this project. Other datasets such as MS COCO and Pascal VOC are better suited for object detection/segmentation, as images are not cropped to only focus on a single object, thus too challenging for classification. In fact Pascal VOC was initially tested, the model however, clearly overfitted the training data due to data sparsity. 
-
-\subsubsection{Image Augmentation}
-
-A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples \cite{goodfellow_deep_2016}.  
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=.7\linewidth]{figures/augmentation/augmentation_high_resolution.png}
-	\caption[Image Augmentaion Example]{Image Augmentation of an elephant}
-	\label{fig:augmentation}
-\end{figure}
-
-Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant, achieved using \gls{imgaug} \cite{jung_imgaug:_nodate}. 
-
-New methods have been proposed where image transformations are learned to improve generalization e.g. AutoAugment \cite{cubuk_autoaugment:_2018}. 
-
-Other methods involves actually enlarging the training dataset by synthetically creating more data using a \gls{gan}. \gls{gan}s can help overcome limited data given the available training data or a 3D model, by artificially constructing new samples in different background, light setting and from alternate perspectives.
-
-Methods that do not cover enriching the available training, but alters the learning procedure are called regularization and covers; weight decay, dropout, batch normalization etc.
-
-\subsubsection{Transfer Learning}
-
-Transfer learning is the procedure of using a pre-trained model to train on a new dataset. Under the assumption, that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Transfer learning can reduce the needed time to learn general features and possibly learn better ones. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset, enables model to learn general features suitable for many other domains \cite{kornblith_better_2019}. Transfer learning are especially suited for when the new data domain is of limited quantity and when the similarities between the two data domains are strong. If the similarity is less strong a model can be partially trained, the shallow layers containing general features are frozen and only the deeper layers with more specialized features are fine-tuned for the new data domain \cite{li_cs231n:_2018}.
 
 
-\subsection{BranchyNet Training}
+\begin{description}
+	\item[Optimizer] The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
+	
+	\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which implement adaptive learnining rate to avoid being stuck in local minimas. 
+	
+	\gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=.7\linewidth]{figures/lr.png}
+		\caption[Cosine Annealing Learning Rate]{Cosine Annealing Learning Rate} \label{fig:cosineannealing}
+	\end{figure}
+
+	\item[Batch Size] Batch Size are recommend to be between 1 and a few hundreds \cite{bengio_practical_2012}, to better utilize \gls{gpu}s a batch size in the power of 2 gives better runtime, e.g. 32 to 256 \cite{goodfellow_deep_2016}. Larger batch sizes have been driving by advancements in parallelism \cite{dean_large_2012}, which can improve the training time, however smaller batch size, have shown better generalization performance due to a regularizing effect \cite{masters_revisiting_nodate}, which especially large model, that tends to overfit can benefit from \cite{goodfellow_deep_2016}. 
+	
+	In this project a single \gls{gpu} GTX1080 with 8Gb memory is used to train the models. A batch size of 16 is chosen for all \gls{dnn} training sessions, which is the maximum power of 2 possible with the computational budget, as the typical choice of 32 samples in a batch caused memory exhaustion. A batch size of 16 should be adequate and still provide decent training times.
+	
+	\item[Datasets] \gls{min100} is a subset of the \gls{ilsvrc2012} dataset \cite{russakovsky_imagenet_2015} created for this project, to reduce training time from several weeks to only days on available hardware. The sub-setting is inspired by MiniImageNet \cite{vinyals_matching_2016}, that uses a subset of 100 classes with 600 samples for each class. \gls{min100} contains 100 out of 1.000 randomly sampled classes, which gives 127.300 out of 1.2m training samples and 5.000 out of 50.000 validation samples. A full list of classes are found in the appendix. 
+	
+	Compared to other sufficiently dense classification datasets e.g \gls{tinyimagenet} \cite{li_cs231n:_2018}, \gls{cifar10} and \gls{cifar100} \cite{krizhevsky_cifar-10_nodate}, the image sizes of these datasets are respectively $(64\times 64$), $(32\times 32)$, $(32\times 32)$ pixels, all of which are considered too small  for this project. Other datasets such as MS COCO and Pascal VOC are better suited for object detection/segmentation, as images are not cropped to only focus on a single object, thus too challenging for classification. In fact Pascal VOC was initially tested, the model however, clearly overfitted the training data due to data sparsity. 
+	
+	\item[Image Augmentation] A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples \cite{goodfellow_deep_2016}.  
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.7\linewidth]{figures/augmentation/augmentation_high_resolution.png}
+		\caption[Image Augmentaion Example]{Image Augmentation of an elephant}
+		\label{fig:augmentation}
+	\end{figure}
+	
+	Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant, achieved using \gls{imgaug} \cite{jung_imgaug:_nodate}. 
+	
+	New methods have been proposed where image transformations are learned to improve generalization e.g. AutoAugment \cite{cubuk_autoaugment:_2018}. 
+	
+	Other methods involves actually enlarging the training dataset by synthetically creating more data using a \gls{gan}. \gls{gan}s can help overcome limited data given the available training data or a 3D model, by artificially constructing new samples in different background, light setting and from alternate perspectives.
+	
+	Methods that do not cover enriching the available training, but alters the learning procedure are called regularization and covers; weight decay, dropout, batch normalization etc.
+	
+	\item[Transfer Learning] Transfer learning is the procedure of using a pre-trained model to train on a new dataset. Under the assumption, that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Transfer learning can reduce the needed time to learn general features and possibly learn better ones. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset, enables model to learn general features suitable for many other domains \cite{kornblith_better_2019}. Transfer learning are especially suited for when the new data domain is of limited quantity and when the similarities between the two data domains are strong. If the similarity is less strong a model can be partially trained, the shallow layers containing general features are frozen and only the deeper layers with more specialized features are fine-tuned for the new data domain \cite{li_cs231n:_2018}.
+\end{description}
+
+\subsection{Results}
 
 %\begin{figure}
 %	\centering
@@ -99,8 +92,7 @@ The two last exits of \gls{resnet} are almost equally accurate. The resolution b
 	\label{fig:b-net-miniimagenet-100}
 \end{figure}
 
-
-\subsection{Inference Testing}
+\subsection{Validation}
 
 In this test all validation samples are inferred to all three models. Each branch classifies the samples, but does not perform exit but continues the inference process. Figure \ref{fig:exit-accuracy} show the accuracy of each exit.  
 
@@ -112,7 +104,45 @@ In this test all validation samples are inferred to all three models. Each branc
 
 As expected the models become more accurate as we go deeper in the network. The features deep within the network have more discriminative characteristics. As stated in \cite{huang_multi-scale_2017} the densely connected features are important factors for obtaining intermediate classifiers with decent accuracy. The B-\gls{densenet} and \gls{msdnet} have as expected more accurate early classifiers, however the end-exit of B-\gls{resnet} achieves superior accuracy compared to the other models.
 
-Still about half the samples can be accurately classified at the very first exit, which justifies the assumption for \gls{branchynet} and we can expectedly save time but let samples exit prematurely, see figure \ref{fig:exit-time}
+Still about half the samples can be accurately classified at the very first exit, which justifies the assumption for \gls{branchynet} and we can expectedly save time but let samples exit prematurely,
+
+
+\section{Inference Test}
+
+\subsection{Experimental Setup}
+
+
+
+
+\begin{longtabu}{>{\bfseries}X|X|X|X}
+	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC and NVIDIA Jetson TX2 Edge Computer} \label{tbl:platforms} \\
+	\toprule
+	\rowfont{\bfseries}
+	Platform & CPU & GPU & RAM  \tabularnewline
+	\bottomrule
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:platforms}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Platform & CPU & GPU & RAM  \tabularnewline
+	\bottomrule
+	\endhead % all the lines above this will be repeated on every page
+	\bottomrule
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Windows PC	& Intel i5 x gen.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
+	\hline
+	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
+	\hline
+	NUC		  	& Intel i7 7th gen.	& None										& X GB \tabularnewline									
+	\bottomrule
+\end{longtabu}
+
+\subsection{Accuracy-Latency Trade-Off}
+
+ see figure \ref{fig:exit-time}
 
 \begin{figure}
 	\includegraphics[width=\linewidth]{figures/inference_plots/exit_time}
@@ -120,19 +150,21 @@ Still about half the samples can be accurately classified at the very first exit
 	\label{fig:exit-time}
 \end{figure}
 
+
+
 Figure \ref{fig:exit-time} shows the average inference time for a classification at the corresponding exit. If the model decides to exit earlier in the network, the figure shows the time savings achievable. The inference time is hardware dependent and a full model comparison cannot be made solely by this test, later tests compares the inference time of the models on different platforms, however the trend seems to be, that B-\gls{resnet} is the fastest, followed by B-\gls{densenet} an lastly \gls{msdnet}. Table \ref{tbl:early-exit} shows the accuracy and mean time in tabular form.
 
-\begin{longtabu}{>{\bfseries}X|X|X}
-	\caption[Early exit models' last exit accuracy]{Early exit models' last exit accuracy}\label{tbl:early-exit} \\
+\begin{longtabu}{>{\bfseries}X|X[r]|X[r]|X[r]|X[r]|X[r]}
+	\caption[Early exit models' last exit accuracy]{Early exit models' last exit accuracy. Model Parametric Comparison using \texttt{thop} \cite{zhu_thop_nodate}. The test is conducted by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models.}\label{tbl:early-exit} \\
 	\toprule
 	\rowfont{\bfseries}
-	Model & Accuracy & Mean Time (ms) \tabularnewline
+	Model & Accuracy & Mean Time (ms) & Layers & Parameters (M) & G\gls{flop}s \tabularnewline
 	\hline
 	\endfirsthead
 	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:early-exit}:}} continued}\\
 	\toprule
 	\rowfont{\bfseries}
-	Model & Accuracy & Mean Time (ms) \tabularnewline
+	Model & Accuracy & Mean Time (ms) & Layers & Parameters (M) & G\gls{flop}s \tabularnewline
 	\hline
 	\endhead % all the lines above this will be repeated on every page
 	\hline
@@ -140,28 +172,47 @@ Figure \ref{fig:exit-time} shows the average inference time for a classification
 	\endfoot
 	\hline
 	\endlastfoot
-	B-ResNet & \tabularnewline
-	\hspace{3mm} Exit-0 & 0.489 & 12.87 \tabularnewline
-	\hspace{3mm} Exit-1 & 0.703 & 18.61 \tabularnewline
-	\hspace{3mm} Exit-2 & 0.883 & 45.31 \tabularnewline
-	\hspace{3mm} Exit-3 & 0.893 & 49.45 \tabularnewline
+	ResNet  &  & & $ 101 $ & $ 42.705 $ & $ 7.864 $ \tabularnewline
 	\hline
-	B-DenseNet &  \tabularnewline
-	\hspace{3mm} Exit-0 & 0.545 & 17.96 \tabularnewline
-	\hspace{3mm} Exit-1 & 0.769 & 29.93 \tabularnewline
-	\hspace{3mm} Exit-2 & 0.841 & 51.56 \tabularnewline
-	\hspace{3mm} Exit-3 & 0.879 & 66.20 \tabularnewline
+	DenseNet & & & $ 121 $ & $ 7.056 $ & $ 2.897 $ \tabularnewline
 	\hline
-	MSDNet & \tabularnewline
-	\hspace{3mm} Exit-0 & 0.755 & 38.43 \tabularnewline
-	\hspace{3mm} Exit-1 & 0.829 & 59.60 \tabularnewline
-	\hspace{3mm} Exit-2 & 0.859 & 75.70 \tabularnewline
-	\hspace{3mm} Exit-3 & 0.864 & 86.06 \tabularnewline
-	\hspace{3mm} Exit-4 & 0.867 & 91.63 \tabularnewline
+	B-ResNet & & & $ 107 $ & $ 42.885 $ & $ 7.866 $ \tabularnewline 
+	\hspace{3mm} Exit-0 & 0.489 & 12.87 & & & \tabularnewline
+	\hspace{3mm} Exit-1 & 0.703 & 18.61 & & &\tabularnewline
+	\hspace{3mm} Exit-2 & 0.883 & 45.31 & & &\tabularnewline
+	\hspace{3mm} Exit-3 & 0.893 & 49.45 & & &\tabularnewline
+	\hline
+	B-DenseNet &  & & $ 127 $ & $ 7.236 $ & $ 2.898 $\tabularnewline
+	\hspace{3mm} Exit-0 & 0.545 & 17.96 & & & \tabularnewline
+	\hspace{3mm} Exit-1 & 0.769 & 29.93 & & &\tabularnewline
+	\hspace{3mm} Exit-2 & 0.841 & 51.56 & & &\tabularnewline
+	\hspace{3mm} Exit-3 & 0.879 & 66.20 & & &\tabularnewline
+	\hline
+	MSDNet & & & $ 24 $ & $ 23.958 $ & $ 1.374 $ \tabularnewline
+	\hspace{3mm} Exit-0 & 0.755 & 38.43 & & &\tabularnewline
+	\hspace{3mm} Exit-1 & 0.829 & 59.60 & & &\tabularnewline
+	\hspace{3mm} Exit-2 & 0.859 & 75.70 & & &\tabularnewline
+	\hspace{3mm} Exit-3 & 0.864 & 86.06 & & &\tabularnewline
+	\hspace{3mm} Exit-4 & 0.867 & 91.63 & & &\tabularnewline
 	\bottomrule
 \end{longtabu}
 
+
 The challenge is to known when to let samples exit, which can either be done at random or using the output from the softmax function, which can be interpreted as a confidence metric for the prediction. In the next test, we evaluate the two mentioned confidence scores as a threshold for exiting. 
+
+\begin{figure}
+	\captionsetup[subfigure]{farskip=0pt,captionskip=0pt, justification=centering}
+	\centering
+	\subfloat{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{figures/threshold_plots/time_dist_legend}}
+	\hfill
+	\subfloat[Windows PC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/inference_time_distribution}}
+	\hfill
+	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference_time_distribution}}
+	\hfill
+	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference_time_distribution}}
+	\caption[Inference Time Distribution]{Inference Time Distribution}
+	\label{fig:inference-time-dist}
+\end{figure}
 
 
 %\paragraph{Pascal VOC}
@@ -182,7 +233,7 @@ The challenge is to known when to let samples exit, which can either be done at 
 %Even though the model fails to generalize, the experiment still produce interesting results. Given an early exiting model as B-ResNet 50\% of the test samples can be correctly classified using only half of the \gls{dnn}.
 
 
-\subsection{Threshold Analysis}
+\subsection{Confidence Threshold Analysis}
 
 In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test a plot of the two thresholds for all exit for the model. It shows the frequency of exited samples, that have been correctly classified ({\color{sns-green}green}) and incorrectly classified ({\color{sns-red}red}). As well as, samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit ({\color{sns-blue}blue}). Along with a plot of the change in accuracy for the exit as the confidence grows ({\color{sns-orange}orange}).  
 
@@ -296,6 +347,8 @@ Generally \emph{score-margin} has more desirable traits, as less samples are inc
 
 The former test is conducted b stamping all samples whether it could have been exited at the exited and if would have been correct or not. The test does not take into account if samples have been exited, then not reaching a later exit, if a exit is very confident yet incorrect. In the next test, this is accommodated for.
 
+\subsubsection{Practical Threshold Exiting}
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/threshold_plots/inference_threshold_test}
@@ -303,38 +356,9 @@ The former test is conducted b stamping all samples whether it could have been e
 	\label{fig:inferencethresholdtest}
 \end{figure}
 
-
-
-\subsection{Early Exiting vs. Conventional Inference}
-
 Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the \gls{min100}. Transfer learning was used with ImageNet weights, the model are used as a feature extractor, hence all weights were frozen and only the linear classifier was trained. The conventional models were used to compare with early exiting inference accuracy and latency on X different platforms.
 
 
-\begin{longtabu}{>{\bfseries}X|X|X|X}
-	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC and NVIDIA Jetson TX2 Edge Computer} \label{tbl:platforms} \\
-	\toprule
-	\rowfont{\bfseries}
-	Platform & CPU & GPU & RAM  \tabularnewline
-	\bottomrule
-	\endfirsthead
-	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:platforms}:}} continued}\\
-	\toprule
-	\rowfont{\bfseries}
-	Platform & CPU & GPU & RAM  \tabularnewline
-	\bottomrule
-	\endhead % all the lines above this will be repeated on every page
-	\bottomrule
-	\multicolumn{3}{@{}l}{continued \ldots}\\
-	\endfoot
-	\hline
-	\endlastfoot
-	Windows PC	& Intel i5 x gen.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
-	\hline
-	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
-	\hline
-	NUC		  	& Intel i7 7th gen.	& None										& X GB \tabularnewline									
-	\bottomrule
-\end{longtabu}
 
 The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv}.
 
@@ -358,23 +382,7 @@ The figure clearly states the accuracy-latency trade-off imposed by early exitin
 	\caption[]{}
 \end{figure}
 
-\subsection{Inference Time Analysis}
-
-\begin{figure}
-	\captionsetup[subfigure]{farskip=0pt,captionskip=0pt, justification=centering}
-	\centering
-	\subfloat{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{figures/threshold_plots/time_dist_legend}}
-	\hfill
-	\subfloat[Windows PC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/inference_time_distribution}}
-	\hfill
-	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference_time_distribution}}
-	\hfill
-	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference_time_distribution}}
-	\caption[Inference Time Distribution]{Inference Time Distribution}
-	\label{fig:inference-time-dist}
-\end{figure}
-
-\subsection{Time Threshold}
+\subsection{Delay Threshold Analysis}
 
 For time-budgeted applications, where a classification must be derived within a timed threshold. We wish to maximize the accuracy subject to this time constraint. Figure \ref{fig:time-threshold} show the model accuracy under different time constraints and on different platforms.
 
@@ -407,20 +415,4 @@ From figure \ref{fig:inference-time-dist} we know the inference time distributio
  \end{maxi*}
 The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the local obtained prediction from an earlier exit. 
 
-Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. Multiple early exits allows for successively sending back increasingly confident and reliable predictions, at a small overhead communication, the last received prediction would then be used by the application.    
- 
-
-\subsection{Transport Protocol} 
-
-Offloading tasks over the network, irregardless fully or partially requires a transport protocol. The selection is typically a choice of either \gls{tcp} or \gls{udp}. \gls{tcp} is a reliable protocol, that guarantee no losses by retransmission of lost packets. \gls{udp} on the other hand is a best-effort protocol, that accept packets loss, thus not introducing retransmission communication overhead. 
-
-
-Fully offloading \gls{jpeg} compressed images for classification require no losses for human-readability. Sending intermediate features of a \gls{dnn} may not be as intolerant to losses and might be able to function with the far more lightweight \gls{udp}. In current research literature the choice of \gls{tcp} seems given in advance.  
-
-In this experiment the \gls{tcp} transmission time and retransmission rate is investigated under different communication environments. 
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{figures/tcp/tcpoverhead}
-	\caption[TCP retransmission overhead]{TCP retransmission overhead}
-\end{figure}
+Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. Multiple early exits allows for successively sending back increasingly confident and reliable predictions, at a small overhead communication, the last received prediction would then be used by the application.

@@ -258,41 +258,6 @@ In contrast to the early exiting framework of \gls{branchynet} for any model com
 
 The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely,thus harming the later and final classifiers. Their study reveals, that densely connected layers suffers mush less from intermediate classifiers, as a layer is connected to all previous layer and is therefore able to recover collapsed information.
 
-
-\section{Overall Comparison}
-
-
-\begin{longtabu}{>{\bfseries}X|X[r]|X[r]|X[r]}
-	\caption[Model Parametric Comparison]{Model Parametric Comparison using \texttt{thop} \cite{zhu_thop_nodate}. The test is conducted by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models.}  \label{} \\
-	\toprule
-	\rowfont{\bfseries}
-	Model & Layers & Parameters (M) & G\gls{flop} \tabularnewline
-	\hline
-	\endfirsthead
-	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
-	\toprule
-	\rowfont{\bfseries}
-	Model & Layers & Parameters (M) & G\gls{flop} \tabularnewline
-	\hline
-	\endhead % all the lines above this will be repeated on every page
-	\hline
-	\multicolumn{3}{@{}l}{continued \ldots}\\
-	\endfoot
-	\hline
-	\endlastfoot
-	ResNet & $ 101 $ & $ 42.705 $ & $ 7.864 $ \tabularnewline
-	\hline
-	DenseNet & $ 121 $ & $ 7.056 $ & $ 2.897 $ \tabularnewline
-	\hline
-	B-ResNet & $ 107 $ & $ 42.885 $ & $ 7.866 $ \tabularnewline
-	\hline
-	B-DenseNet & $ 127 $ & $ 7.236 $ & $ 2.898 $\tabularnewline
-	\hline
-	MSDNet & $ 24 $ & $ 23.958 $ & $ 1.374 $ \tabularnewline
-	\bottomrule
-\end{longtabu}
-
-
 \input{sections/Experiments.tex}
 
 
