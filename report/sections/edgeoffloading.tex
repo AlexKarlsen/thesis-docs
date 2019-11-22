@@ -22,17 +22,6 @@ Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not was
 
 \section{Results}
 
-\subsection{Delay Constraint}
-
-How far are we able to in inference process under different time constraints? 
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{figures/edge/exit-reached.png}
-	\caption[short text]{text}
-	\label{fig:exit-reached}
-\end{figure}
-
 \subsection{Exit Confidence}
 
 Is $S_{exit_{n}} < S_{exit_{n+1}}$?
@@ -40,19 +29,17 @@ Is $S_{exit_{n}} < S_{exit_{n+1}}$?
 
 \begin{figure}
 	\centering
-	\subfloat[B-ResNet]{\includegraphics[width=\linewidth]{figures/edge/b-resnet_correctness}}
+	\subfloat[B-ResNet]{\includegraphics[width=.7\linewidth]{figures/edge/b-resnet_correctness}}
 	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[width=\linewidth]{figures/edge/b-densenet_correctness}}
+	\subfloat[B-DenseNet]{\includegraphics[width=.7\linewidth]{figures/edge/b-densenet_correctness}}
 	\caption[short text]{text}
 	\label{fig:exit-highscore}
 \end{figure}
 
 \subsection{Combining Prediction Information}
 
+
 We define several proposals for using the additional predictions provided from the early exiting framework, with the purpose to improve the accuracy under time constraints. 
-
-
-
 
 We also examined thresholds in the previous chapter, which did show that a high prediction score, have more chance of being correct.       
 
@@ -68,14 +55,25 @@ We also examined thresholds in the previous chapter, which did show that a high 
 
 \begin{figure}
 	\centering
-	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\subfloat[subcaption]{\includegraphics[width=.7\linewidth]{figures/edge/b-resnet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\subfloat[subcaption]{\includegraphics[width=.7\linewidth]{figures/edge/b-densenet_theoretical_score_combinations}}
 	\caption[short text]{text}
 	\label{fig:info-combi}
 \end{figure}
 
-\subsection{Practical test}
+\subsection{Delay Constraint}
+
+How far are we able to in inference process under different time constraints? 
+
+\begin{figure}
+	\centering
+	\subfloat[]{\includegraphics[width=.7\linewidth]{figures/edge/b-resnet_exit-reached}}
+	\hfill
+	\subfloat[]{\includegraphics[width=.7\linewidth]{figures/edge/b-densenet_exit-reached}}
+	\caption[short text]{text}
+	\label{fig:exit-reached}
+\end{figure}
 
 \begin{figure}
 	\centering

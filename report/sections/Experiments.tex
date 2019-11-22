@@ -107,7 +107,7 @@ As expected the models become more accurate as we go deeper in the network. The 
 Still about half the samples can be accurately classified at the very first exit, which justifies the assumption for \gls{branchynet} and we can expectedly save time but let samples exit prematurely,
 
 
-\section{Inference Test}
+\section{Early Exiting Analysis}
 
 \subsection{Experimental Setup}
 
@@ -132,7 +132,7 @@ Still about half the samples can be accurately classified at the very first exit
 	\endfoot
 	\hline
 	\endlastfoot
-	Windows PC	& Intel i5 K6600.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
+	Windows PC	& Intel i5-6600K.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
 	\hline
 	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
 	\hline
@@ -140,7 +140,7 @@ Still about half the samples can be accurately classified at the very first exit
 	\bottomrule
 \end{longtabu}
 
-\subsection{Accuracy-Latency Trade-Off}
+\subsection{Accuracy-Latency Analysis}
 
  see figure \ref{fig:exit-time}
 
@@ -357,33 +357,6 @@ The former test is conducted b stamping all samples whether it could have been e
 \end{figure}
 
 Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the \gls{min100}. Transfer learning was used with ImageNet weights, the model are used as a feature extractor, hence all weights were frozen and only the linear classifier was trained. The conventional models were used to compare with early exiting inference accuracy and latency on X different platforms.
-
-
-\begin{longtabu}{>{\bfseries}X[0.8]|X|X[1.5]|X[r0.3]}
-	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC and NVIDIA Jetson TX2 Edge Computer} \label{tbl:platforms} \\
-	\toprule
-	\rowfont{\bfseries}
-	Platform & CPU & GPU & RAM  \tabularnewline
-	\bottomrule
-	\endfirsthead
-	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:platforms}:}} continued}\\
-	\toprule
-	\rowfont{\bfseries}
-	Platform & CPU & GPU & RAM  \tabularnewline
-	\bottomrule
-	\endhead % all the lines above this will be repeated on every page
-	\bottomrule
-	\multicolumn{3}{@{}l}{continued \ldots}\\
-	\endfoot
-	\hline
-	\endlastfoot
-	GPU Workstation	& Intel i5-6600K.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
-	\hline
-	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
-	\hline
-	NUC		  	& Intel i7-7567U	& None										& 16GB \tabularnewline									
-	\bottomrule
-\end{longtabu}
 
 The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv}.
 
