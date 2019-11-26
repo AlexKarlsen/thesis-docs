@@ -1,7 +1,9 @@
 
 \section{Training}
 
-In this section the experimental setup, the training settings and training results are presented.  
+We trained the three early exiting models B-\gls{resnet}, B-\gls{densenet} and \gls{msdnet}, along with conventional versions of the \gls{resnet}101 and \gls{densenet}-121 were trained on the \gls{min100} training set.
+
+In this section we describe the experimental setup, the training settings and training results.  
 
 \subsection{Experimental Setup}
 
@@ -14,6 +16,10 @@ All training have been accomplished using a \gls{gpu}-workstation equipped with 
 
 
 \begin{description}
+	\item[Number of Epochs] An epoch is a round of training in which every training sample have been presented to the model. All models have been trained for 50 epochs, to fairly compare models the models. Additionally to reduce the training time to allow training multiple models. Training on the available hardware took 30 to 40 hours per model.
+	
+	\item[Early Stopping] Early stopping is finding the best obtained model by alternating between training and validation phases for each epoch. The best model is the one obtaining the highest accuracy on the validation data. Early stopping is a mechanism to avoid overtraining a model, that then overfits the training data and obtain poor validation accuracy. For \gls{branchynet} we use the model with the highest average accuracy to not favour any part of the model.  
+	  
 	\item[Optimizer] The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
 	
 	\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which implement adaptive learnining rate to avoid being stuck in local minimas. 
@@ -107,7 +113,7 @@ As expected the models become more accurate as we go deeper in the network. The 
 Still about half the samples can be accurately classified at the very first exit, which justifies the assumption for \gls{branchynet} and we can expectedly save time but let samples exit prematurely,
 
 
-\section{Early Exiting Analysis}
+\section{Early Exit Analysis} \label{sec:early-exit-analysis}
 
 \subsection{Experimental Setup}
 
@@ -205,7 +211,7 @@ The challenge is to known when to let samples exit, which can either be done at 
 	\centering
 	\subfloat{\includegraphics[width=.5\textwidth,height=\textheight,keepaspectratio]{figures/threshold_plots/time_dist_legend}}
 	\hfill
-	\subfloat[Windows PC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/inference_time_distribution}}
+	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/inference_time_distribution}}
 	\hfill
 	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference_time_distribution}}
 	\hfill
@@ -235,7 +241,15 @@ The challenge is to known when to let samples exit, which can either be done at 
 
 \subsection{Confidence Threshold Analysis}
 
-In this experiment the MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test a plot of the two thresholds for all exit for the model. It shows the frequency of exited samples, that have been correctly classified ({\color{sns-green}green}) and incorrectly classified ({\color{sns-red}red}). As well as, samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit ({\color{sns-blue}blue}). Along with a plot of the change in accuracy for the exit as the confidence grows ({\color{sns-orange}orange}).  
+Selecting threshold is a vital hyper-parameter for the accuracy-latency trade-off of early exiting \gls{branchynet}. If a too high threshold is selected only a few samples can confidently exit the model at an early exit, thus no significant delay improvements may be found. Contrary if too low a threshold is selected a huge delay improvement may be found, however at the cost of overall model accuracy. 
+
+The analysis is theoretical, as the early exiting mechanism is in fact not exploited. All samples are allowed to pass all the way to the end of the network, thus all samples are classified at each exit, where both the prediction and score is logged. The prediction is evaluated against the ground truth and the score against different thresholds. If the score is higher than the threshold the samples is marked as exited. The MiniImageNet100 validation set have been used to evaluate the two threshold metrics; \emph{Confidence Threshold} and \emph{Score-Margin Threshold}. \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test, a plot of the two thresholds metrics for all exit of the model. The figures shows the frequency of exited samples, that have been correctly classified ({\color{sns-green}green}) and incorrectly classified ({\color{sns-red}red}), and samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit ({\color{sns-blue}blue}). Along with a plot of the change in accuracy for the exit as the confidence grows ({\color{sns-orange}orange}).  
+
+The aim is to find the metric, that reduces the amount of incorrectly exited samples ({\color{sns-red}red}). Whenever samples are exited incorrectly, the overall accuracy of the models are reduced, if it could have been correctly classifed at later exit. The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits shows exactly this. As the threshold requirements are raised, it results in a higher accuracy for the exit, as the ratio between correctly exited and incorrectly exited grows. 
+
+Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited ({\color{sns-red}red}), at the expense of additional samples not exited ({\color{sns-blue}blue}). \emph{Score-margin} is thus slower, but also more accurate, as fewer samples are incorrectly exited. The results matches \cite{park_big/little_2015}, which show a stronger correlation between \emph{score-margin} and accuracy, than confidence score and accuracy. Henceforth the \emph{score-margin threshold} are used.
+
+Comparing the three models we can see the impact of densely connected layer of B-\gls{densenet} and \gls{msdnet}. The two model are able to obtain higher scores at early exits, thus accurately exiting more samples prematurely. B-\gls{resnet} on the other hand are able to achieve higher end accuracy, ass we did show in the previous section \ref{sec:early-exit-analysis}. The theoretical analysis is followed up by a practical test, where samples are exited if the threshold is passed. The test evaluates the threshold impact on accuracy and latency. 
 
 \newcounter{imagenumber}
 \begin{minipage}{\textwidth}
@@ -341,14 +355,18 @@ In this experiment the MiniImageNet100 validation set have been used to evaluate
 	\end{minipage}
 \end{minipage}}
 
-The aim is to find the metric, that reduces the amount of incorrectly exited samples ({\color{sns-red}red}). Whenever samples are exited incorrectly, the overall accuracy of the models are reduced, if it could have been correctly classifed at later exit. The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits shows exactly this. As the threshold requirements are raised, it results in a higher accuracy for the exit, as the ratio between correctly exited and incorrectly exited grows. Even though all samples will be classified at the last exit, hence no sample is in fact exited at this last exit, still it shows the frequency of samples, that could not reach a confident score for the last exit. This means the accuracy for the last exit is not entirely correct.  Table \ref{tbl:early-exit} shows the accuracy of the exit, when all samples are exited at the exit. 
-
-Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited (red), only at the expense of a few additional samples not exited ({\color{sns-blue}blue}). The results matches \cite{park_big/little_2015}, which show a stronger correlation to actually being able to correctly predict samples given the \emph{score-margin threshold}. Henceforth the \emph{score-margin threshold} are used.
-
-The former test is conducted b stamping all samples whether it could have been exited at the exited and if would have been correct or not. The test does not take into account if samples have been exited, then not reaching a later exit, if a exit is very confident yet incorrect. In the next test, this is accommodated for.
-
 \subsubsection{Practical Threshold Exiting}
 
+We construct a test, where we use our three models, B-\gls{resnet}, B-\gls{densenet} and \gls{msdnet}, to evaluate early exiting capabilities. In this test a sample is exited when a threshold is passed, thus no additional prediction are tried for the sample. If a samples reaches the last exit, it is classified irregardless of threshold being passed or not.
+
+Figure \ref{fig:inferencethresholdtest} the exiting capabilities for the model at different \emph{score-margin threshold}. The frequency of correct and incorrect prediction are plotted for each exit. For each model the bars sum to one, equivalent to all samples of the test. The figure shows, that less samples are incorrect classified, as we select a higher threshold and thus forcing the model to use later exits. B-\gls{densenet} and especially \gls{msdnet}  designed for early-exiting, are able to more frequently exit samples at early exits even at high thresholds values. Given this insight we use timings from the test to evaluate threshold impact on the accuracy-latency trade-off.
+
+Figure \ref{fig:threshold-acc-lat-trade-off} show the inference accuracy and time on the three different platforms. The result clearly exemplifies the accuracy-latency trade-off imposed by early exiting. As we raise our requirements for confidence, we improve the model accuracy, but more time is used, as later exits are required to reach the level of confidence. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time on the \gls{gpu}-enabled devices. 
+
+The inference timings are very different on the three platforms, which are very much dependent on the hardware characteristics. The GPU Workstation are enabled with the strongest \gls{gpu}, thus have the most parallelization capabilities and able to run \gls{resnet} faster, as it requires enormous amounts of multiply-adds well-suited for \gls{gpu} acceleration. \gls{densenet} and \gls{msdnet} uses concatenation which might be a more expensive operation on the \gls{gpu}. Using only a \gls{cpu}-enabled device, that can not achieve same level of parallelization to accelerate model inference, such as Intel NUC, shows the opposite trend. The \gls{msdnet} outperform the model on the NUC, as it requires far fewer G\gls{flop}s and are comprised of far fewer layers. 
+
+
+As previously shown the models using densely connected layers are able to exit more samples early.
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/threshold_plots/inference_threshold_test}
@@ -356,29 +374,28 @@ The former test is conducted b stamping all samples whether it could have been e
 	\label{fig:inferencethresholdtest}
 \end{figure}
 
-Conventional versions of the \gls{resnet} and \gls{densenet} were trained on the \gls{min100}. Transfer learning was used with ImageNet weights, the model are used as a feature extractor, hence all weights were frozen and only the linear classifier was trained. The conventional models were used to compare with early exiting inference accuracy and latency on X different platforms.
+%\subsubsection{Accuracy-Latency Trade-Off Analysis}
 
-The model inference characteristic on PC, see figure \ref{fig:early_exit_vs_conv}.
-
-  \begin{figure}
+\begin{figure}
   	\captionsetup[subfigure]{justification=centering}
   	\centering
-  	\subfloat[Window PC\label{fig:early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/compare_exiting_vs_no_exiting}}
+  	\subfloat[GPU Workstation\label{fig:early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/compare_exiting_vs_no_exiting}}
   	\hfill
 	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference}}
 	\hfill
 	\subfloat[NUC\label{fig:nuc-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference}}
-	\caption[short text]{text}
+	\caption[Threshold Accuracy-Latency Trade-off]{Threshold Accuracy-Latency Trade-off on \protect\subref{fig:early_exit_vs_conv} GPU Workstation, \protect\subref{fig:jetson-early_exit_vs_conv} Jetson TX2 and \protect\subref{fig:nuc-early_exit_vs_conv} NUC }
+	\label{fig:threshold-acc-lat-trade-off}
 \end{figure}
 
-The figure clearly states the accuracy-latency trade-off imposed by early exiting. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time. The \gls{resnet}. 
+ 
 
-  \begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
-	\subfloat[Jetson TX2 fine-grained\label{fig:jetson-fingrained}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_finegrained}}
-	\caption[]{}
-\end{figure}
+%  \begin{figure}
+%	\captionsetup[subfigure]{justification=centering}
+%	\centering
+%	\subfloat[Jetson TX2 fine-grained\label{fig:jetson-fingrained}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_finegrained}}
+%	\caption[]{}
+%\end{figure}
 
 \subsection{Delay Threshold Analysis}
 
