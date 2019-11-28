@@ -271,6 +271,12 @@ The aim of edge intelligence is to accommodate certain performance metrics:
 	\end{align*}
 	Accuracy requirements are dependent on the application. In \gls{ei} some applications require high accuracy with extremely low latency for instance autonomous vehicles. Using sequential models, such as \gls{dnn}s, which get more accurate the deeper they get at the cost of additional computational delay. The most essential trade-off for \gls{ei} applications and services is how accurate a model can we use while complying to latency requirement.
 	
+	\begin{description}
+		\item[Top-1 Accuracy] description
+		\item[Top-5 Accuracy] description
+	\end{description}
+	
+	
 	\item[Communication overhead] is introduced whenever inference is offloaded for remote computation. Computational offloading is only sensible whenever time could be saved compared to local execution.
 	\begin{align*}
 	T_{local\: computation} > T_{remote\: computation} + T_{communication}

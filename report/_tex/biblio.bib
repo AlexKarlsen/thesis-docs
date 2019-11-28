@@ -6,6 +6,9 @@
 	date = {2009}
 }
 
+@inproceedings{noauthor_notitle_nodate
+}
+
 @article{masters_revisiting_nodate,
 	title = {Revisiting Small Batch Training for Deep Neural Networks},
 	volume = {abs/1804.07612},
@@ -126,6 +129,15 @@
 	eprint = {1805.11761},
 	keywords = {Computer Science - Machine Learning, Computer Science - Computer Vision and Pattern Recognition, Statistics - Machine Learning},
 	file = {Song and Chai - 2018 - Collaborative Learning for Deep Neural Networks.pdf:C\:\\Users\\ajk\\Zotero\\storage\\WUJEKLUH\\Song and Chai - 2018 - Collaborative Learning for Deep Neural Networks.pdf:application/pdf}
+}
+
+@article{song_collaborative_nodate,
+	title = {Collaborative Learning for Deep Neural Networks},
+	abstract = {We introduce collaborative learning in which multiple classiﬁer heads of the same network are simultaneously trained on the same training data to improve generalization and robustness to label noise with no extra inference cost. It acquires the strengths from auxiliary training, multi-task learning and knowledge distillation. There are two important mechanisms involved in collaborative learning. First, the consensus of multiple views from different classiﬁer heads on the same example provides supplementary information as well as regularization to each classiﬁer, thereby improving generalization. Second, intermediate-level representation ({ILR}) sharing with backpropagation rescaling aggregates the gradient ﬂows from all heads, which not only reduces training computational complexity, but also facilitates supervision to the shared layers. The empirical results on {CIFAR} and {ImageNet} datasets demonstrate that deep neural networks learned as a group in a collaborative way signiﬁcantly reduce the generalization error and increase the robustness to label noise.},
+	pages = {10},
+	author = {Song, Guocong and Chai, Wei},
+	langid = {english},
+	file = {Song and Chai - Collaborative Learning for Deep Neural Networks.pdf:C\:\\Users\\ajk\\Zotero\\storage\\86GVGZSM\\Song and Chai - Collaborative Learning for Deep Neural Networks.pdf:application/pdf}
 }
 
 @article{chatzopoulos_mobile_2017,
@@ -306,6 +318,15 @@
 	eprint = {1801.04381},
 	keywords = {Computer Science - Computer Vision and Pattern Recognition},
 	file = {Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:C\:\\Users\\ajk\\Zotero\\storage\\DCUGD8XB\\Sandler et al. - 2018 - MobileNetV2 Inverted Residuals and Linear Bottlen.pdf:application/pdf}
+}
+
+@article{dean_large_nodate,
+	title = {Large Scale Distributed Deep Networks},
+	abstract = {Recent work in unsupervised feature learning and deep learning has shown that being able to train large models can dramatically improve performance. In this paper, we consider the problem of training a deep network with billions of parameters using tens of thousands of {CPU} cores. We have developed a software framework called {DistBelief} that can utilize computing clusters with thousands of machines to train large models. Within this framework, we have developed two algorithms for large-scale distributed training: (i) Downpour {SGD}, an asynchronous stochastic gradient descent procedure supporting a large number of model replicas, and (ii) Sandblaster, a framework that supports a variety of distributed batch optimization procedures, including a distributed implementation of L-{BFGS}. Downpour {SGD} and Sandblaster L-{BFGS} both increase the scale and speed of deep network training. We have successfully used our system to train a deep network 30x larger than previously reported in the literature, and achieves state-of-the-art performance on {ImageNet}, a visual object recognition task with 16 million images and 21k categories. We show that these same techniques dramatically accelerate the training of a more modestly- sized deep network for a commercial speech recognition service. Although we focus on and report performance of these methods as applied to training large neural networks, the underlying algorithms are applicable to any gradient-based machine learning algorithm.},
+	pages = {9},
+	author = {Dean, Jeffrey and Corrado, Greg and Monga, Rajat and Chen, Kai and Devin, Matthieu and Mao, Mark and Ranzato, Marc'aurelio and Senior, Andrew and Tucker, Paul and Yang, Ke and Le, Quoc V and Ng, Andrew Y},
+	langid = {english},
+	file = {Dean et al. - Large Scale Distributed Deep Networks.pdf:C\:\\Users\\ajk\\Zotero\\storage\\2S2NKMFU\\Dean et al. - Large Scale Distributed Deep Networks.pdf:application/pdf}
 }
 
 @inproceedings{teerapittayanon_distributed_2017-1,
@@ -506,6 +527,21 @@
 	author = {Wang, Jason and Mall, Serra and Perez, Luis},
 	langid = {english},
 	file = {Wang m.fl. - The Effectiveness of Data Augmentation in Image Cl.pdf:C\:\\Users\\ajk\\Zotero\\storage\\NGV9C6W7\\Wang m.fl. - The Effectiveness of Data Augmentation in Image Cl.pdf:application/pdf}
+}
+
+@article{perez_effectiveness_2017,
+	title = {The Effectiveness of Data Augmentation in Image Classification using Deep Learning},
+	url = {http://arxiv.org/abs/1712.04621},
+	abstract = {In this paper, we explore and compare multiple solutions to the problem of data augmentation in image classiﬁcation. Previous work has demonstrated the effectiveness of data augmentation through simple techniques, such as cropping, rotating, and ﬂipping input images. We artiﬁcially constrain our access to data to a small subset of the {ImageNet} dataset, and compare each data augmentation technique in turn. One of the more successful data augmentations strategies is the traditional transformations mentioned above. We also experiment with {GANs} to generate images of different styles. Finally, we propose a method to allow a neural net to learn augmentations that best improve the classiﬁer, which we call neural augmentation. We discuss the successes and shortcomings of this method on various datasets.},
+	journaltitle = {{arXiv}:1712.04621 [cs]},
+	author = {Perez, Luis and Wang, Jason},
+	urldate = {2019-09-23},
+	date = {2017-12-13},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1712.04621},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+	file = {Perez og Wang - 2017 - The Effectiveness of Data Augmentation in Image Cl.pdf:C\:\\Users\\ajk\\Zotero\\storage\\2H2SMSN4\\Perez og Wang - 2017 - The Effectiveness of Data Augmentation in Image Cl.pdf:application/pdf}
 }
 
 @article{cubuk_autoaugment:_2018,
@@ -766,6 +802,20 @@
 @article{huang_multi-scale_2017,
 	title = {Multi-Scale Dense Networks for Resource Efficient Image Classification},
 	url = {http://arxiv.org/abs/1703.09844},
+	abstract = {In this paper we investigate image classification with computational resource limits at test time. Two such settings are: 1. anytime classification, where the network's prediction for a test example is progressively updated, facilitating the output of a prediction at any time; and 2. budgeted batch classification, where a fixed amount of computation is available to classify a set of examples that can be spent unevenly across "easier" and "harder" inputs. In contrast to most prior work, such as the popular Viola and Jones algorithm, our approach is based on convolutional neural networks. We train multiple classifiers with varying resource demands, which we adaptively apply during test time. To maximally re-use computation between the classifiers, we incorporate them as early-exits into a single deep convolutional neural network and inter-connect them with dense connectivity. To facilitate high quality classification early on, we use a two-dimensional multi-scale network architecture that maintains coarse and fine level features all-throughout the network. Experiments on three image-classification tasks demonstrate that our framework substantially improves the existing state-of-the-art in both settings.},
+	journaltitle = {{arXiv}:1703.09844 [cs]},
+	author = {Huang, Gao and Chen, Danlu and Li, Tianhong and Wu, Felix and van der Maaten, Laurens and Weinberger, Kilian Q.},
+	urldate = {2019-09-27},
+	date = {2017-03-28},
+	eprinttype = {arxiv},
+	eprint = {1703.09844},
+	keywords = {Computer Science - Machine Learning},
+	file = {arXiv\:1703.09844 PDF:C\:\\Users\\ajk\\Zotero\\storage\\F93Q5SQV\\Huang m.fl. - 2017 - Multi-Scale Dense Networks for Resource Efficient .pdf:application/pdf;arXiv.org Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\YN28GIBB\\1703.html:text/html}
+}
+
+@article{huang_multi-scale_2017-1,
+	title = {Multi-Scale Dense Networks for Resource Efficient Image Classification},
+	url = {http://arxiv.org/abs/1703.09844},
 	abstract = {In this paper we investigate image classiﬁcation with computational resource limits at test time. Two such settings are: 1. anytime classiﬁcation, where the network’s prediction for a test example is progressively updated, facilitating the output of a prediction at any time; and 2. budgeted batch classiﬁcation, where a ﬁxed amount of computation is available to classify a set of examples that can be spent unevenly across “easier” and “harder” inputs. In contrast to most prior work, such as the popular Viola and Jones algorithm, our approach is based on convolutional neural networks. We train multiple classiﬁers with varying resource demands, which we adaptively apply during test time. To maximally re-use computation between the classiﬁers, we incorporate them as early-exits into a single deep convolutional neural network and inter-connect them with dense connectivity. To facilitate high quality classiﬁcation early on, we use a two-dimensional multi-scale network architecture that maintains coarse and ﬁne level features all-throughout the network. Experiments on three image-classiﬁcation tasks demonstrate that our framework substantially improves the existing state-of-the-art in both settings.},
 	journaltitle = {{arXiv}:1703.09844 [cs]},
 	author = {Huang, Gao and Chen, Danlu and Li, Tianhong and Wu, Felix and van der Maaten, Laurens and Weinberger, Kilian Q.},
@@ -778,7 +828,36 @@
 	file = {Huang m.fl. - 2017 - Multi-Scale Dense Networks for Resource Efficient .pdf:C\:\\Users\\ajk\\Zotero\\storage\\ZJGTCEQ3\\Huang m.fl. - 2017 - Multi-Scale Dense Networks for Resource Efficient .pdf:application/pdf}
 }
 
+@article{huang_multi-scale_2017-2,
+	title = {Multi-Scale Dense Networks for Resource Efficient Image Classification},
+	url = {http://arxiv.org/abs/1703.09844},
+	abstract = {In this paper we investigate image classification with computational resource limits at test time. Two such settings are: 1. anytime classification, where the network's prediction for a test example is progressively updated, facilitating the output of a prediction at any time; and 2. budgeted batch classification, where a fixed amount of computation is available to classify a set of examples that can be spent unevenly across "easier" and "harder" inputs. In contrast to most prior work, such as the popular Viola and Jones algorithm, our approach is based on convolutional neural networks. We train multiple classifiers with varying resource demands, which we adaptively apply during test time. To maximally re-use computation between the classifiers, we incorporate them as early-exits into a single deep convolutional neural network and inter-connect them with dense connectivity. To facilitate high quality classification early on, we use a two-dimensional multi-scale network architecture that maintains coarse and fine level features all-throughout the network. Experiments on three image-classification tasks demonstrate that our framework substantially improves the existing state-of-the-art in both settings.},
+	journaltitle = {{arXiv}:1703.09844 [cs]},
+	author = {Huang, Gao and Chen, Danlu and Li, Tianhong and Wu, Felix and van der Maaten, Laurens and Weinberger, Kilian Q.},
+	urldate = {2019-09-27},
+	date = {2017-03-28},
+	eprinttype = {arxiv},
+	eprint = {1703.09844},
+	keywords = {Computer Science - Machine Learning},
+	file = {arXiv\:1703.09844 PDF:C\:\\Users\\ajk\\Zotero\\storage\\RRXPECB8\\Huang m.fl. - 2017 - Multi-Scale Dense Networks for Resource Efficient .pdf:application/pdf;arXiv.org Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\VF6RYHGB\\1703.html:text/html}
+}
+
 @article{wang_skipnet:_2017,
+	title = {{SkipNet}: Learning Dynamic Routing in Convolutional Networks},
+	url = {http://arxiv.org/abs/1711.09485},
+	shorttitle = {{SkipNet}},
+	abstract = {While deeper convolutional networks are needed to achieve maximum accuracy in visual perception tasks, for many inputs shallower networks are sufficient. We exploit this observation by learning to skip convolutional layers on a per-input basis. We introduce {SkipNet}, a modified residual network, that uses a gating network to selectively skip convolutional blocks based on the activations of the previous layer. We formulate the dynamic skipping problem in the context of sequential decision making and propose a hybrid learning algorithm that combines supervised learning and reinforcement learning to address the challenges of non-differentiable skipping decisions. We show {SkipNet} reduces computation by 30-90\% while preserving the accuracy of the original model on four benchmark datasets and outperforms the state-of-the-art dynamic networks and static compression methods. We also qualitatively evaluate the gating policy to reveal a relationship between image scale and saliency and the number of layers skipped.},
+	journaltitle = {{arXiv}:1711.09485 [cs]},
+	author = {Wang, Xin and Yu, Fisher and Dou, Zi-Yi and Darrell, Trevor and Gonzalez, Joseph E.},
+	urldate = {2019-09-27},
+	date = {2017-11-26},
+	eprinttype = {arxiv},
+	eprint = {1711.09485},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+	file = {arXiv\:1711.09485 PDF:C\:\\Users\\ajk\\Zotero\\storage\\WWN99UWG\\Wang m.fl. - 2017 - SkipNet Learning Dynamic Routing in Convolutional.pdf:application/pdf;arXiv.org Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\SQ5L57A2\\1711.html:text/html}
+}
+
+@article{wang_skipnet:_2017-1,
 	title = {{SkipNet}: Learning Dynamic Routing in Convolutional Networks},
 	url = {http://arxiv.org/abs/1711.09485},
 	shorttitle = {{SkipNet}},
@@ -1003,6 +1082,24 @@
 	file = {Leroux m.fl. - 2015 - Resource-constrained classification using a cascad.pdf:C\:\\Users\\ajk\\Zotero\\storage\\KQUFU4DX\\Leroux m.fl. - 2015 - Resource-constrained classification using a cascad.pdf:application/pdf}
 }
 
+@inproceedings{leroux_resource-constrained_2015-2,
+	location = {Killarney, Ireland},
+	title = {Resource-constrained classification using a cascade of neural network layers},
+	isbn = {978-1-4799-1960-4},
+	url = {http://ieeexplore.ieee.org/document/7280601/},
+	doi = {10.1109/IJCNN.2015.7280601},
+	abstract = {Deep neural networks are the state of the art technique for a wide variety of classiﬁcation problems. Although deeper networks are able to make more accurate classiﬁcations, the value brought by an additional hidden layer diminishes rapidly. Even shallow networks are able to achieve relatively good results on various classiﬁcation problems. Only for a small subset of the samples do the deeper layers make a signiﬁcant difference. We describe an architecture in which only the samples that can not be classiﬁed with a sufﬁcient conﬁdence by a shallow network have to be processed by the deeper layers. Instead of training a network with one output layer at the end of the network, we train several output layers, one for each hidden layer. When an output layer is sufﬁciently conﬁdent in this result, we stop propagating at this layer and the deeper layers need not be evaluated. The choice of a threshold conﬁdence value allows us to trade-off accuracy and speed.},
+	eventtitle = {2015 International Joint Conference on Neural Networks ({IJCNN})},
+	pages = {1--7},
+	booktitle = {2015 International Joint Conference on Neural Networks ({IJCNN})},
+	publisher = {{IEEE}},
+	author = {Leroux, Sam and Bohez, Steven and Verbelen, Tim and Vankeirsbilck, Bert and Simoens, Pieter and Dhoedt, Bart},
+	urldate = {2019-10-13},
+	date = {2015-07},
+	langid = {english},
+	file = {Leroux m.fl. - 2015 - Resource-constrained classification using a cascad.pdf:C\:\\Users\\ajk\\Zotero\\storage\\GMC6WKTG\\Leroux m.fl. - 2015 - Resource-constrained classification using a cascad.pdf:application/pdf}
+}
+
 @article{hinton_distilling_2015,
 	title = {Distilling the Knowledge in a Neural Network},
 	url = {http://arxiv.org/abs/1503.02531},
@@ -1180,7 +1277,7 @@
 	file = {Iandola et al. - 2016 - SqueezeNet AlexNet-level accuracy with 50x fewer .pdf:C\:\\Users\\ajk\\Zotero\\storage\\9YRQ8NVL\\Iandola et al. - 2016 - SqueezeNet AlexNet-level accuracy with 50x fewer .pdf:application/pdf}
 }
 
-@article{perez_effectiveness_2017,
+@article{perez_effectiveness_2017-1,
 	title = {The Effectiveness of Data Augmentation in Image Classification using Deep Learning},
 	url = {http://arxiv.org/abs/1712.04621},
 	abstract = {In this paper, we explore and compare multiple solutions to the problem of data augmentation in image classiﬁcation. Previous work has demonstrated the effectiveness of data augmentation through simple techniques, such as cropping, rotating, and ﬂipping input images. We artiﬁcially constrain our access to data to a small subset of the {ImageNet} dataset, and compare each data augmentation technique in turn. One of the more successful data augmentations strategies is the traditional transformations mentioned above. We also experiment with {GANs} to generate images of different styles. Finally, we propose a method to allow a neural net to learn augmentations that best improve the classiﬁer, which we call neural augmentation. We discuss the successes and shortcomings of this method on various datasets.},
@@ -1207,6 +1304,24 @@
 	date = {2018}
 }
 
+@article{bastidas_tiny_nodate,
+	title = {Tiny {ImageNet} Image Classification},
+	abstract = {In this work, I investigate how fine-tuning and adapting existing models, namely {InceptionV}3[7] and {VGGNet}[3], for benchmarking on the Tiny {ImageNet} Challenge. The top performing model was inspired by {VGG} architecture, leveraging Batch Normalization [9] and L-2 regularization to avoid over-fitting. Network performance was analyzed by evaluating validation loss and accuracy prior to running on test set. The work concludes with a discussion of how the modified dataset inspired modifications to the architectures.},
+	pages = {6},
+	author = {Bastidas, Alexei},
+	langid = {english},
+	file = {Bastidas - Tiny ImageNet Image Classification.pdf:C\:\\Users\\ajk\\Zotero\\storage\\JPLM6CDM\\Bastidas - Tiny ImageNet Image Classification.pdf:application/pdf}
+}
+
+@article{bastidas_tiny_nodate-1,
+	title = {Tiny {ImageNet} Image Classification},
+	abstract = {In this work, I investigate how fine-tuning and adapting existing models, namely {InceptionV}3[7] and {VGGNet}[3], for benchmarking on the Tiny {ImageNet} Challenge. The top performing model was inspired by {VGG} architecture, leveraging Batch Normalization [9] and L-2 regularization to avoid over-fitting. Network performance was analyzed by evaluating validation loss and accuracy prior to running on test set. The work concludes with a discussion of how the modified dataset inspired modifications to the architectures.},
+	pages = {6},
+	author = {Bastidas, Alexei},
+	langid = {english},
+	file = {Bastidas - Tiny ImageNet Image Classification.pdf:C\:\\Users\\ajk\\Zotero\\storage\\3A8U89FM\\Bastidas - Tiny ImageNet Image Classification.pdf:application/pdf}
+}
+
 @article{li_learning_2018,
 	title = {Learning {IoT} in Edge: Deep Learning for the Internet of Things with Edge Computing},
 	volume = {32},
@@ -1226,6 +1341,419 @@
 	file = {Li et al. - 2018 - Learning IoT in Edge Deep Learning for the Intern.pdf:C\:\\Users\\ajk\\Zotero\\storage\\MU3DZAJI\\Li et al. - 2018 - Learning IoT in Edge Deep Learning for the Intern.pdf:application/pdf}
 }
 
+@article{shinde_yolo_2018,
+	title = {{YOLO} based Human Action Recognition and Localization},
+	volume = {133},
+	issn = {18770509},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1877050918310652},
+	doi = {10.1016/j.procs.2018.07.112},
+	abstract = {Human action recognition in video analytics has been widely studied in recent years. Yet, most of these methods assign a single action label to video after either analyzing a complete video or using classifier for each frame. But when compared to human vision strategy, it can be deduced that we (human) require just an instance of visual data for recognition of scene. It turns out that small group of frames or even single frame from the video are enough for precise recognition. In this paper, we present an approach to detect, localize and recognize actions of interest in almost real-time from frames obtained by a continuous stream of video data that can be captured from a surveillance camera. The model takes input frames after a specified period and is able to give action label based on a single frame. Combining results over specific time we predicted the action label for the stream of video. We demonstrate that {YOLO} is effective method and comparatively fast for recognition and localization in Liris Human Activities dataset.},
+	pages = {831--838},
+	journaltitle = {Procedia Computer Science},
+	shortjournal = {Procedia Computer Science},
+	author = {Shinde, Shubham and Kothari, Ashwin and Gupta, Vikram},
+	urldate = {2019-11-01},
+	date = {2018},
+	langid = {english},
+	file = {Shinde et al. - 2018 - YOLO based Human Action Recognition and Localizati.pdf:C\:\\Users\\ajk\\Zotero\\storage\\K7ZMQN6Y\\Shinde et al. - 2018 - YOLO based Human Action Recognition and Localizati.pdf:application/pdf}
+}
+
+@article{xiong_when_2018,
+	title = {When Mobile Blockchain Meets Edge Computing},
+	volume = {56},
+	issn = {0163-6804, 1558-1896},
+	url = {https://ieeexplore.ieee.org/document/8436042/},
+	doi = {10.1109/MCOM.2018.1701095},
+	abstract = {Blockchain, as the backbone technology of the current popular Bitcoin digital currency, has become a promising decentralized data management framework. Although blockchain has been widely adopted in many applications (e.g., finance, healthcare, and logistics), its application in mobile services is still limited. This is due to the fact that blockchain users need to solve preset proof-of-work puzzles to add new data (i.e., a block) to the blockchain. Solving the proof of work, however, consumes substantial resources in terms of {CPU} time and energy, which is not suitable for resource-limited mobile devices. To facilitate blockchain applications in future mobile Internet of Things systems, multiple access mobile edge computing appears to be an auspicious solution to solve the proof-of-work puzzles for mobile users. We first introduce a novel concept of edge computing for mobile blockchain. Then we introduce an economic approach for edge computing resource management. Moreover, a prototype of mobile edge computing enabled blockchain systems is presented with experimental results to justify the proposed concept.},
+	pages = {33--39},
+	number = {8},
+	journaltitle = {{IEEE} Communications Magazine},
+	shortjournal = {{IEEE} Commun. Mag.},
+	author = {Xiong, Zehui and Zhang, Yang and Niyato, Dusit and Wang, Ping and Han, Zhu},
+	urldate = {2019-11-01},
+	date = {2018-08},
+	langid = {english},
+	file = {Xiong et al. - 2018 - When Mobile Blockchain Meets Edge Computing.pdf:C\:\\Users\\ajk\\Zotero\\storage\\Y3XGLA26\\Xiong et al. - 2018 - When Mobile Blockchain Meets Edge Computing.pdf:application/pdf}
+}
+
+@inproceedings{chatzieleftheriou_towards_2018,
+	location = {Lisbon},
+	title = {Towards Resource-Efficient Wireless Edge Analytics for Mobile Augmented Reality Applications},
+	isbn = {978-1-5386-5005-9},
+	url = {https://ieeexplore.ieee.org/document/8491206/},
+	doi = {10.1109/ISWCS.2018.8491206},
+	abstract = {From entertainment to education, augmented reality ({AR}) is about to impact positively our everyday lives. Enhanced capabilities of mobile devices, such as smartphones or wearables, as well as ubiquitous network connectivity give {AR} the opportunity to prosper. Despite these improvements, {AR} requires computationally heavy tasks, such as context recognition and classiﬁcation through image or video processing, which are hard to fulﬁll on mobile devices. To this end, solutions for computation ofﬂoading to cloud servers have been proposed. We consider a scenario where context identiﬁcation is performed through elicitation of user-generated information, such as images or small video ﬁles. It is the quantity of this information that ultimately determines the context classiﬁcation precision, which we model as a Binomial random variable. We introduce the problem of maximizing a lower bound of the precision of context classiﬁcation through prudent resource allocation, namely computation ofﬂoading, and bandwidth and computational capacity allocation at the wireless network edge. We deﬁne the context classiﬁcation precision as a function of the quantity of information that users provide, and we demonstrate through numerical experiments that appropriate management of the limited resources at the wireless edge can maximize the classiﬁcation precision of data analytics mechanisms needed for augmented reality applications.},
+	eventtitle = {2018 15th International Symposium on Wireless Communication Systems ({ISWCS})},
+	pages = {1--5},
+	booktitle = {2018 15th International Symposium on Wireless Communication Systems ({ISWCS})},
+	publisher = {{IEEE}},
+	author = {Chatzieleftheriou, Livia Elena and Iosifidis, Georgios and Koutsopoulos, Iordanis and Leith, Douglas},
+	urldate = {2019-11-01},
+	date = {2018-08},
+	langid = {english},
+	file = {Chatzieleftheriou et al. - 2018 - Towards Resource-Efficient Wireless Edge Analytics.pdf:C\:\\Users\\ajk\\Zotero\\storage\\NLPVR5D4\\Chatzieleftheriou et al. - 2018 - Towards Resource-Efficient Wireless Edge Analytics.pdf:application/pdf}
+}
+
+@inproceedings{mtibaa_towards_2018,
+	location = {San Francisco, {CA}},
+	title = {Towards Edge Computing over Named Data Networking},
+	isbn = {978-1-5386-7238-9},
+	url = {https://ieeexplore.ieee.org/document/8473385/},
+	doi = {10.1109/EDGE.2018.00023},
+	abstract = {This paper discusses leveraging the Named Data Networking ({NDN}) architecture and Named Function Networking ({NFN}) to facilitate in-network edge computing. In the {NDN} context, we consider a the Augmented Reality ({AR}) use-case–a challenging application–to discuss how {NDN} functionalities can be leveraged for addressing inherent edge computing challenges, such as efﬁcient resource discovery, compute re-use, mobility management, and security. We present several options to tackle the highlighted challenges and where possible provide solutions.},
+	eventtitle = {2018 {IEEE} International Conference on Edge Computing ({EDGE})},
+	pages = {117--120},
+	booktitle = {2018 {IEEE} International Conference on Edge Computing ({EDGE})},
+	publisher = {{IEEE}},
+	author = {Mtibaa, Abderrahmen and Tourani, Reza and Misra, Satyajayant and Burke, Jeff and Zhang, Lixia},
+	urldate = {2019-11-01},
+	date = {2018-07},
+	langid = {english},
+	file = {Mtibaa et al. - 2018 - Towards Edge Computing over Named Data Networking.pdf:C\:\\Users\\ajk\\Zotero\\storage\\D2UNDJXW\\Mtibaa et al. - 2018 - Towards Edge Computing over Named Data Networking.pdf:application/pdf}
+}
+
+@article{pedregosa_scikit-learn:_nodate,
+	title = {Scikit-learn: Machine Learning in Python},
+	abstract = {Scikit-learn is a Python module integrating a wide range of state-of-the-art machine learning algorithms for medium-scale supervised and unsupervised problems. This package focuses on bringing machine learning to non-specialists using a general-purpose high-level language. Emphasis is put on ease of use, performance, documentation, and {API} consistency. It has minimal dependencies and is distributed under the simpliﬁed {BSD} license, encouraging its use in both academic and commercial settings. Source code, binaries, and documentation can be downloaded from http://scikit-learn.sourceforge.net.},
+	pages = {6},
+	journaltitle = {{MACHINE} {LEARNING} {IN} {PYTHON}},
+	author = {Pedregosa, Fabian},
+	langid = {english},
+	file = {Pedregosa - Scikit-learn Machine Learning in Python.pdf:C\:\\Users\\ajk\\Zotero\\storage\\7VTBBQMA\\Pedregosa - Scikit-learn Machine Learning in Python.pdf:application/pdf}
+}
+
+@article{noauthor_educational_nodate,
+	title = {Educational Technology \& Society},
+	abstract = {The purpose of this study was the investigation of the added value of technology of augmented reality ({AR}) in education and, particularly, whether this contributes to both student performance improvement, as well as the appearance of the psychological condition of Flow, which according to research, has had a positive effect on their performance when experienced during learning process. The research involved a total of 42 students in their second year of junior high school who were taught the module “Representation of the information on computers” using two different technologies, those of {AR} and the Web. Research data showed that both technologies contributed to student performance improvement and to the appearance of Flow to pupils, with apparently better results with the student group who utilized the technology of {AR}, though.},
+	pages = {12},
+	langid = {english},
+	file = {Educational Technology & Society.pdf:C\:\\Users\\ajk\\Zotero\\storage\\LICNXZ59\\Educational Technology & Society.pdf:application/pdf}
+}
+
+@article{chatzopoulos_mobile_2017-1,
+	title = {Mobile Augmented Reality Survey: From Where We Are to Where We Go},
+	volume = {5},
+	issn = {2169-3536},
+	url = {http://ieeexplore.ieee.org/document/7912316/},
+	doi = {10.1109/ACCESS.2017.2698164},
+	shorttitle = {Mobile Augmented Reality Survey},
+	abstract = {The boom in the capabilities and features of mobile devices, like smartphones, tablets, and wearables, combined with the ubiquitous and affordable Internet access and the advances in the areas of cooperative networking, computer vision, and mobile cloud computing transformed mobile augmented reality ({MAR}) from science ﬁction to a reality. Although mobile devices are more constrained computationalwise from traditional computers, they have a multitude of sensors that can be used to the development of more sophisticated {MAR} applications and can be assisted from remote servers for the execution of their intensive parts. In this paper, after introducing the reader to the basics of {MAR}, we present a categorization of the application ﬁelds together with some representative examples. Next, we introduce the reader to the user interface and experience in {MAR} applications and continue with the core system components of the {MAR} systems. After that, we discuss advances in tracking and registration, since their functionality is crucial to any {MAR} application and the network connectivity of the devices that run {MAR} applications together with its importance to the performance of the application. We continue with the importance of data management in {MAR} systems and the systems performance and sustainability, and before we conclude this survey, we present existing challenging problems.},
+	pages = {6917--6950},
+	journaltitle = {{IEEE} Access},
+	shortjournal = {{IEEE} Access},
+	author = {Chatzopoulos, Dimitris and Bermejo, Carlos and Huang, Zhanpeng and Hui, Pan},
+	urldate = {2019-11-01},
+	date = {2017},
+	langid = {english},
+	file = {Chatzopoulos et al. - 2017 - Mobile Augmented Reality Survey From Where We Are.pdf:C\:\\Users\\ajk\\Zotero\\storage\\45BJBG3I\\Chatzopoulos et al. - 2017 - Mobile Augmented Reality Survey From Where We Are.pdf:application/pdf}
+}
+
+@article{macdougall_development_2018,
+	title = {Development of a tool to aid the radiologic technologist using augmented reality and computer vision},
+	volume = {48},
+	issn = {0301-0449, 1432-1998},
+	url = {http://link.springer.com/10.1007/s00247-017-3968-9},
+	doi = {10.1007/s00247-017-3968-9},
+	abstract = {This technical innovation describes the development of a novel device to aid technologists in reducing exposure variation and repeat imaging in computed and digital radiography. The device consists of a color video and depth camera in combination with proprietary software and user interface. A monitor in the x-ray control room displays the position of the patient in real time with respect to automatic exposure control chambers and image receptor area. The thickness of the body part of interest is automatically displayed along with a motion indicator for the examined body part. The aim is to provide an automatic measurement of patient thickness to set the x-ray technique and to assist the technologist in detecting errors in positioning and motion before the patient is exposed. The device has the potential to reduce the incidence of repeat imaging by addressing problems technologists encounter daily during the acquisition of radiographs.},
+	pages = {141--145},
+	number = {1},
+	journaltitle = {Pediatric Radiology},
+	shortjournal = {Pediatr Radiol},
+	author = {{MacDougall}, Robert D. and Scherrer, Benoit and Don, Steven},
+	urldate = {2019-11-01},
+	date = {2018-01},
+	langid = {english},
+	file = {MacDougall et al. - 2018 - Development of a tool to aid the radiologic techno.pdf:C\:\\Users\\ajk\\Zotero\\storage\\SS99HDVZ\\MacDougall et al. - 2018 - Development of a tool to aid the radiologic techno.pdf:application/pdf}
+}
+
+@article{jian_hybrid_2018,
+	title = {Hybrid Cloud Computing for User Location-aware Augmented Reality Construction},
+	abstract = {In this paper, the Hybrid Cloud Computing for User Location-aware Augmented Reality Construction is proposed including three layers: Estimation Layer, Scenario Layer, and Presentation Layer. Based on “Angle of the Arrival” position method in Estimation Layer, the location-aware information of individual user can be considered. According to Scenario Layer, the various augmented reality contents can be rapidly and dynamically re-established. Three types of virtual machines including scenario virtual machine, material and physical parameter database, and re-direction management are proposed Based on the proposed system structure, the cost of {AR} construction can be reduced for the various display devices.},
+	pages = {5},
+	author = {Jian, Ming-Shen and Wang, Yi-Chang and Wu, Bo-Han and Cheng, Yu-En},
+	date = {2018},
+	langid = {english},
+	file = {Jian et al. - 2018 - Hybrid Cloud Computing for User Location-aware Aug.pdf:C\:\\Users\\ajk\\Zotero\\storage\\GJUNRCHM\\Jian et al. - 2018 - Hybrid Cloud Computing for User Location-aware Aug.pdf:application/pdf}
+}
+
+@article{bardzell_shaowen_2017,
+	title = {Shaowen Bardzell},
+	volume = {24},
+	issn = {10725520},
+	url = {http://dl.acm.org/citation.cfm?doid=3086450.3068259},
+	doi = {10.1145/3068259},
+	pages = {12--13},
+	number = {3},
+	journaltitle = {interactions},
+	shortjournal = {interactions},
+	author = {Bardzell, Shaowen},
+	urldate = {2019-11-01},
+	date = {2017-04-27},
+	langid = {english},
+	file = {Bardzell - 2017 - Shaowen Bardzell.pdf:C\:\\Users\\ajk\\Zotero\\storage\\DQFLT4W8\\Bardzell - 2017 - Shaowen Bardzell.pdf:application/pdf}
+}
+
+@inproceedings{liu_dare:_2018-1,
+	location = {Cambridge},
+	title = {{DARE}: Dynamic Adaptive Mobile Augmented Reality with Edge Computing},
+	isbn = {978-1-5386-6043-0},
+	url = {https://ieeexplore.ieee.org/document/8526799/},
+	doi = {10.1109/ICNP.2018.00011},
+	shorttitle = {{DARE}},
+	abstract = {Mobile augmented reality ({MAR}) is a killer application of mobile edge computing because of its high computation demand and stringent latency requirement. Since edge networks and computing resources are highly dynamic, handling such dynamics is essential for providing high-quality {MAR} services. In this paper, we design a new network protocol named {DARE} (dynamic adaptive {AR} over the edge) that enables mobile users to dynamically change their {AR} conﬁgurations according to wireless channel conditions and computation workloads in edge servers. The dynamic conﬁguration adaptations reduce the service latency of {MAR} users and maximize the quality of augmentation ({QoA}) under varying network conditions and computation workloads. Considering the video frame size and computation model, i.e., object detection algorithms, as two key parameters in adapting the {AR} conﬁguration, we develop analytical models to characterize the impact of these parameters on {QoA} and the service latency. Then, we design optimization mechanisms on both the edge server and {AR} devices to guide the {AR} conﬁguration adaptation and server computation resource allocation. The performance of the {DARE} protocol is validated through a small-scale testbed implementation.},
+	eventtitle = {2018 {IEEE} 26th International Conference on Network Protocols ({ICNP})},
+	pages = {1--11},
+	booktitle = {2018 {IEEE} 26th International Conference on Network Protocols ({ICNP})},
+	publisher = {{IEEE}},
+	author = {Liu, Qiang and Han, Tao},
+	urldate = {2019-11-01},
+	date = {2018-09},
+	langid = {english},
+	file = {Liu and Han - 2018 - DARE Dynamic Adaptive Mobile Augmented Reality wi.pdf:C\:\\Users\\ajk\\Zotero\\storage\\4DW5WVKG\\Liu and Han - 2018 - DARE Dynamic Adaptive Mobile Augmented Reality wi.pdf:application/pdf}
+}
+
+@article{kashinkunti_s8495:_nodate,
+	title = {S8495: {DEPLOYING} {DEEP} {NEURAL} {NETWORKS} {AS}-A-{SERVICE} {USING} {TENSORRT} {AND} {NVIDIA}-{DOCKER}},
+	pages = {25},
+	author = {Kashinkunti, Prethvi and Gunny, Alec},
+	langid = {english},
+	file = {Kashinkunti and Gunny - S8495 DEPLOYING DEEP NEURAL NETWORKS AS-A-SERVICE.pdf:C\:\\Users\\ajk\\Zotero\\storage\\4PDXIYCJ\\Kashinkunti and Gunny - S8495 DEPLOYING DEEP NEURAL NETWORKS AS-A-SERVICE.pdf:application/pdf}
+}
+
+@inproceedings{dolui_comparison_2017,
+	location = {Geneva, Switzerland},
+	title = {Comparison of edge computing implementations: Fog computing, cloudlet and mobile edge computing},
+	isbn = {978-1-5090-5873-0},
+	url = {http://ieeexplore.ieee.org/document/8016213/},
+	doi = {10.1109/GIOTS.2017.8016213},
+	shorttitle = {Comparison of edge computing implementations},
+	abstract = {When it comes to storage and computation of large scales of data, Cloud Computing has acted as the de-facto solution over the past decade. However, with the massive growth in intelligent and mobile devices coupled with technologies like Internet of Things ({IoT}), V2X Communications, Augmented Reality ({AR}), the focus has shifted towards gaining real-time responses along with support for context-awareness and mobility. Due to the delays induced on the Wide Area Network ({WAN}) and location agnostic provisioning of resources on the cloud, there is a need to bring the features of the cloud closer to the consumer devices. This led to the birth of the Edge Computing paradigm which aims to provide context aware storage and distributed Computing at the edge of the networks. In this paper, we discuss the three different implementations of Edge Computing namely Fog Computing, Cloudlet and Mobile Edge Computing in detail and compare their features. We deﬁne a set of parameters based on which one of these implementations can be chosen optimally given a particular use-case or application and present a decision tree for the selection of the optimal implementation.},
+	eventtitle = {2017 Global Internet of Things Summit ({GIoTS})},
+	pages = {1--6},
+	booktitle = {2017 Global Internet of Things Summit ({GIoTS})},
+	publisher = {{IEEE}},
+	author = {Dolui, Koustabh and Datta, Soumya Kanti},
+	urldate = {2019-11-01},
+	date = {2017-06},
+	langid = {english},
+	file = {Dolui and Datta - 2017 - Comparison of edge computing implementations Fog .pdf:C\:\\Users\\ajk\\Zotero\\storage\\8WYI2XJR\\Dolui and Datta - 2017 - Comparison of edge computing implementations Fog .pdf:application/pdf}
+}
+
+@inproceedings{schneider_augmented_2017,
+	location = {Toronto, {ON}},
+	title = {Augmented reality based on edge computing using the example of remote live support},
+	isbn = {978-1-5090-5320-9},
+	url = {http://ieeexplore.ieee.org/document/7915547/},
+	doi = {10.1109/ICIT.2017.7915547},
+	abstract = {Augmented Reality ({AR}) introduces vast opportunities to the industry in terms of time and therefore cost reduction when utilized in various tasks. The biggest obstacle for a comprehensive deployment of mobile {AR} is that current devices still leave much to be desired concerning computational and graphical performance. To improve this situation in this paper we introduce an {AR} Edge Computing architecture with the aim to ofﬂoad the demanding {AR} algorithms over the local network to a high-end {PC} considering the real-time requirements of {AR}. As an example use case we implemented an {AR} Remote Live Support application. Applications like this on the one hand are strongly demanded in the industry at present, on the other hand by now mostly do not implement a satisfying tracking algorithm lacking computational resources. In our work we lay the focus on both, the possibilities our architecture offers regarding improvements of tracking and the challenges it implies in respect of real-time. We found that ofﬂoading {AR} algorithms in real-time is possible with available {WiFi} making use of standard compression techniques like {JPEG}. However it can be improved by future radio solutions offering higher bandwidth to avoid additional latency contributed by the coding.},
+	eventtitle = {2017 {IEEE} International Conference on Industrial Technology ({ICIT})},
+	pages = {1277--1282},
+	booktitle = {2017 {IEEE} International Conference on Industrial Technology ({ICIT})},
+	publisher = {{IEEE}},
+	author = {Schneider, Michael and Rambach, Jason and Stricker, Didier},
+	urldate = {2019-11-01},
+	date = {2017-03},
+	langid = {english},
+	file = {Schneider et al. - 2017 - Augmented reality based on edge computing using th.pdf:C\:\\Users\\ajk\\Zotero\\storage\\KQTN34JM\\Schneider et al. - 2017 - Augmented reality based on edge computing using th.pdf:application/pdf}
+}
+
+@inproceedings{sharma_are_2018-1,
+	location = {San Francisco, {CA}},
+	title = {Are Existing Knowledge Transfer Techniques Effective for Deep Learning with Edge Devices?},
+	isbn = {978-1-5386-7238-9},
+	url = {https://ieeexplore.ieee.org/document/8473375/},
+	doi = {10.1109/EDGE.2018.00013},
+	abstract = {With the emergence of edge computing paradigm, many applications such as image recognition and augmented reality require to perform machine learning ({ML}) and artiﬁcial intelligence ({AI}) tasks on edge devices. Most {AI} and {ML} models are large and computational-heavy, whereas edge devices are usually equipped with limited computational and storage resources. Such models can be compressed and reduced for deployment on edge devices, but they may lose their capability and not perform well. Recent works used knowledge transfer techniques to transfer information from a large network (termed teacher) to a small one (termed student) in order to improve the performance of the latter. This approach seems to be promising for learning on edge devices, but a thorough investigation on its effectiveness is lacking. This paper provides an extensive study on the performance (in both accuracy and convergence speed) of knowledge transfer, considering different student architectures and different techniques for transferring knowledge from teacher to student. The results show that the performance of {KT} does vary by architectures and transfer techniques. A good performance improvement is obtained by transferring knowledge from both the intermediate layers and last layer of the teacher to a shallower student. But other architectures and transfer techniques do not fare so well and some of them even lead to negative performance impact.},
+	eventtitle = {2018 {IEEE} International Conference on Edge Computing ({EDGE})},
+	pages = {42--49},
+	booktitle = {2018 {IEEE} International Conference on Edge Computing ({EDGE})},
+	publisher = {{IEEE}},
+	author = {Sharma, Ragini and Biookaghazadeh, Saman and Li, Baoxin and Zhao, Ming},
+	urldate = {2019-11-01},
+	date = {2018-07},
+	langid = {english},
+	file = {Sharma et al. - 2018 - Are Existing Knowledge Transfer Techniques Effecti.pdf:C\:\\Users\\ajk\\Zotero\\storage\\4VH4MWCK\\Sharma et al. - 2018 - Are Existing Knowledge Transfer Techniques Effecti.pdf:application/pdf}
+}
+
+@article{spano_advances_2019,
+	title = {Advances in computer-human interaction for recommender systems ({AdCHIReS})},
+	volume = {121},
+	issn = {10715819},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1071581918304282},
+	doi = {10.1016/j.ijhcs.2018.07.008},
+	pages = {1--3},
+	journaltitle = {International Journal of Human-Computer Studies},
+	shortjournal = {International Journal of Human-Computer Studies},
+	author = {Spano, Lucio Davide and Boratto, Ludovico},
+	urldate = {2019-11-01},
+	date = {2019-01},
+	langid = {english},
+	file = {Spano and Boratto - 2019 - Advances in computer-human interaction for recomme.pdf:C\:\\Users\\ajk\\Zotero\\storage\\PVP6VA8I\\Spano and Boratto - 2019 - Advances in computer-human interaction for recomme.pdf:application/pdf}
+}
+
+@article{abu_alhaija_augmented_2018,
+	title = {Augmented Reality Meets Computer Vision: Efficient Data Generation for Urban Driving Scenes},
+	volume = {126},
+	issn = {0920-5691, 1573-1405},
+	url = {http://link.springer.com/10.1007/s11263-018-1070-x},
+	doi = {10.1007/s11263-018-1070-x},
+	shorttitle = {Augmented Reality Meets Computer Vision},
+	abstract = {The success of deep learning in computer vision is based on the availability of large annotated datasets. To lower the need for hand labeled images, virtually rendered 3D worlds have recently gained popularity. Unfortunately, creating realistic 3D content is challenging on its own and requires signiﬁcant human effort. In this work, we propose an alternative paradigm which combines real and synthetic data for learning semantic instance segmentation and object detection models. Exploiting the fact that not all aspects of the scene are equally important for this task, we propose to augment real-world imagery with virtual objects of the target category. Capturing real-world images at large scale is easy and cheap, and directly provides real background appearances without the need for creating complex 3D models of the environment. We present an efﬁcient procedure to augment these images with virtual objects. In contrast to modeling complete 3D environments, our data augmentation approach requires only a few user interactions in combination with 3D models of the target object category. Leveraging our approach, we introduce a novel dataset of augmented urban driving scenes with 360 degree images that are used as environment maps to create realistic lighting and reﬂections on rendered objects. We analyze the signiﬁcance of realistic object placement by comparing manual placement by humans to automatic methods based on semantic scene analysis. This allows us to create composite images which exhibit both realistic background appearance as well as a large number of complex object arrangements. Through an extensive set of experiments, we conclude the right set of parameters to produce augmented data which can maximally enhance the performance of instance segmentation models. Further, we demonstrate the utility of the proposed approach on training standard deep models for semantic instance segmentation and object detection of cars in outdoor driving scenarios. We test the models trained on our augmented data on the {KITTI} 2015 dataset, which we have annotated with pixel-accurate ground truth, and on the Cityscapes dataset. Our experiments demonstrate that the models trained on augmented imagery generalize better than those trained on fully synthetic data or models trained on limited amounts of annotated real data.},
+	pages = {961--972},
+	number = {9},
+	journaltitle = {International Journal of Computer Vision},
+	shortjournal = {Int J Comput Vis},
+	author = {Abu Alhaija, Hassan and Mustikovela, Siva Karthik and Mescheder, Lars and Geiger, Andreas and Rother, Carsten},
+	urldate = {2019-11-01},
+	date = {2018-09},
+	langid = {english},
+	file = {Abu Alhaija et al. - 2018 - Augmented Reality Meets Computer Vision Efficient.pdf:C\:\\Users\\ajk\\Zotero\\storage\\WTGQE5R9\\Abu Alhaija et al. - 2018 - Augmented Reality Meets Computer Vision Efficient.pdf:application/pdf}
+}
+
+@article{mao_survey_2017-1,
+	title = {A Survey on Mobile Edge Computing: The Communication Perspective},
+	volume = {19},
+	issn = {1553-877X},
+	url = {http://ieeexplore.ieee.org/document/8016573/},
+	doi = {10.1109/COMST.2017.2745201},
+	shorttitle = {A Survey on Mobile Edge Computing},
+	abstract = {Driven by the visions of Internet of Things and 5G communications, recent years have seen a paradigm shift in mobile computing, from the centralized mobile cloud computing toward mobile edge computing ({MEC}). The main feature of {MEC} is to push mobile computing, network control and storage to the network edges (e.g., base stations and access points) so as to enable computation-intensive and latency-critical applications at the resource-limited mobile devices. {MEC} promises dramatic reduction in latency and mobile energy consumption, tackling the key challenges for materializing 5G vision. The promised gains of {MEC} have motivated extensive efforts in both academia and industry on developing the technology. A main thrust of {MEC} research is to seamlessly merge the two disciplines of wireless communications and mobile computing, resulting in a wide-range of new designs ranging from techniques for computation ofﬂoading to network architectures. This paper provides a comprehensive survey of the state-of-the-art {MEC} research with a focus on joint radio-and-computational resource management. We also discuss a set of issues, challenges, and future research directions for {MEC} research, including {MEC} system deployment, cache-enabled {MEC}, mobility management for {MEC}, green {MEC}, as well as privacy-aware {MEC}. Advancements in these directions will facilitate the transformation of {MEC} from theory to practice. Finally, we introduce recent standardization efforts on {MEC} as well as some typical {MEC} application scenarios.},
+	pages = {2322--2358},
+	number = {4},
+	journaltitle = {{IEEE} Communications Surveys \& Tutorials},
+	shortjournal = {{IEEE} Commun. Surv. Tutorials},
+	author = {Mao, Yuyi and You, Changsheng and Zhang, Jun and Huang, Kaibin and Letaief, Khaled B.},
+	urldate = {2019-11-01},
+	date = {2017},
+	langid = {english},
+	file = {Mao et al. - 2017 - A Survey on Mobile Edge Computing The Communicati.pdf:C\:\\Users\\ajk\\Zotero\\storage\\EGI8J5HB\\Mao et al. - 2017 - A Survey on Mobile Edge Computing The Communicati.pdf:application/pdf}
+}
+
+@article{redmon_you_2016-1,
+	title = {You Only Look Once: Unified, Real-Time Object Detection},
+	url = {http://arxiv.org/abs/1506.02640},
+	shorttitle = {You Only Look Once},
+	abstract = {We present {YOLO}, a new approach to object detection. Prior work on object detection repurposes classiﬁers to perform detection. Instead, we frame object detection as a regression problem to spatially separated bounding boxes and associated class probabilities. A single neural network predicts bounding boxes and class probabilities directly from full images in one evaluation. Since the whole detection pipeline is a single network, it can be optimized end-to-end directly on detection performance.},
+	journaltitle = {{arXiv}:1506.02640 [cs]},
+	author = {Redmon, Joseph and Divvala, Santosh and Girshick, Ross and Farhadi, Ali},
+	urldate = {2019-11-01},
+	date = {2016-05-09},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1506.02640},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+	file = {Redmon et al. - 2016 - You Only Look Once Unified, Real-Time Object Dete.pdf:C\:\\Users\\ajk\\Zotero\\storage\\PR9XA69Y\\Redmon et al. - 2016 - You Only Look Once Unified, Real-Time Object Dete.pdf:application/pdf}
+}
+
+@article{shinde_yolo_2018-1,
+	title = {{YOLO} based Human Action Recognition and Localization},
+	volume = {133},
+	issn = {18770509},
+	url = {https://linkinghub.elsevier.com/retrieve/pii/S1877050918310652},
+	doi = {10.1016/j.procs.2018.07.112},
+	abstract = {Human action recognition in video analytics has been widely studied in recent years. Yet, most of these methods assign a single action label to video after either analyzing a complete video or using classifier for each frame. But when compared to human vision strategy, it can be deduced that we (human) require just an instance of visual data for recognition of scene. It turns out that small group of frames or even single frame from the video are enough for precise recognition. In this paper, we present an approach to detect, localize and recognize actions of interest in almost real-time from frames obtained by a continuous stream of video data that can be captured from a surveillance camera. The model takes input frames after a specified period and is able to give action label based on a single frame. Combining results over specific time we predicted the action label for the stream of video. We demonstrate that {YOLO} is effective method and comparatively fast for recognition and localization in Liris Human Activities dataset.},
+	pages = {831--838},
+	journaltitle = {Procedia Computer Science},
+	shortjournal = {Procedia Computer Science},
+	author = {Shinde, Shubham and Kothari, Ashwin and Gupta, Vikram},
+	urldate = {2019-11-01},
+	date = {2018},
+	langid = {english},
+	file = {Shinde et al. - 2018 - YOLO based Human Action Recognition and Localizati.pdf:C\:\\Users\\ajk\\Zotero\\storage\\HHMGJH8E\\Shinde et al. - 2018 - YOLO based Human Action Recognition and Localizati.pdf:application/pdf}
+}
+
+@inproceedings{liu_edge_2018-1,
+	location = {Honolulu, {HI}},
+	title = {An Edge Network Orchestrator for Mobile Augmented Reality},
+	isbn = {978-1-5386-4128-6},
+	url = {https://ieeexplore.ieee.org/document/8486241/},
+	doi = {10.1109/INFOCOM.2018.8486241},
+	abstract = {Mobile augmented reality ({MAR}) involves high complexity computation which cannot be performed efﬁciently on resource limited mobile devices. The performance of {MAR} would be signiﬁcantly improved by ofﬂoading the computation tasks to servers deployed with the close proximity to the users. In this paper, we design an edge network orchestrator to enable fast and accurate object analytics at the network edge for {MAR}. The measurement-based analytical models are built to characterize the tradeoff between the service latency and analytics accuracy in edge-based {MAR} systems. As a key component of the edge network orchestrator, a server assignment and frame resolution selection algorithm named {FACT} is proposed to mitigate the latency-accuracy tradeoff. Through network simulations, we evaluate the performance of the {FACT} algorithm and show the insights on optimizing the performance of edge-based {MAR} systems. We have implemented the edge network orchestrator and developed the corresponding communication protocol. Our experiments validate the performance of the proposed edge network orchestrator.},
+	eventtitle = {{IEEE} {INFOCOM} 2018 - {IEEE} Conference on Computer Communications},
+	pages = {756--764},
+	booktitle = {{IEEE} {INFOCOM} 2018 - {IEEE} Conference on Computer Communications},
+	publisher = {{IEEE}},
+	author = {Liu, Qiang and Huang, Siqi and Opadere, Johnson and Han, Tao},
+	urldate = {2019-11-01},
+	date = {2018-04},
+	langid = {english},
+	file = {Liu et al. - 2018 - An Edge Network Orchestrator for Mobile Augmented .pdf:C\:\\Users\\ajk\\Zotero\\storage\\6UM3BGR2\\Liu et al. - 2018 - An Edge Network Orchestrator for Mobile Augmented .pdf:application/pdf}
+}
+
+@article{ma_when_2013,
+	title = {When mobile terminals meet the cloud: computation offloading as the bridge},
+	volume = {27},
+	issn = {0890-8044},
+	url = {http://ieeexplore.ieee.org/document/6616112/},
+	doi = {10.1109/MNET.2013.6616112},
+	shorttitle = {When mobile terminals meet the cloud},
+	abstract = {The emergence of cloud computing has been dramatically changing the landscape of services for modern computer applications. Offloading computation to the cloud effectively expands the usability of mobile terminals beyond their physical limits, and also greatly extends their battery charging intervals through potential energy savings. In this article, we present an overview of computation offloading in mobile cloud computing. We identify the key issues in developing new applications that effectively leverage cloud resources for computation-intensive modules, or migrating such modules in existing applications to the mobile cloud. We then analyze two representative applications in detail from both the macro and micro perspectives, cloud-assisted distributed interactive mobile applications and cloud-assisted motion estimation for mobile video compression, to illustrate the unique challenges, benefit, and implementation of computation offloading in mobile cloud computing. We finally summarize the lessons learned and present potential future avenues.},
+	pages = {28--33},
+	number = {5},
+	journaltitle = {{IEEE} Network},
+	shortjournal = {{IEEE} Network},
+	author = {Ma, Xiaoqiang and Zhao, Yuan and Zhang, Lei and Wang, Haiyang and Peng, Limei},
+	urldate = {2019-11-01},
+	date = {2013-09},
+	langid = {english},
+	file = {Ma et al. - 2013 - When mobile terminals meet the cloud computation .pdf:C\:\\Users\\ajk\\Zotero\\storage\\9TPWNPMF\\Ma et al. - 2013 - When mobile terminals meet the cloud computation .pdf:application/pdf}
+}
+
+@inproceedings{mtibaa_towards_2013,
+	location = {Bristol, United Kingdom},
+	title = {Towards Computational Offloading in Mobile Device Clouds},
+	isbn = {978-0-7695-5095-4},
+	url = {http://ieeexplore.ieee.org/document/6753815/},
+	doi = {10.1109/CloudCom.2013.50},
+	abstract = {Many mobile applications overcome their device limitations in computational, energy, or data resources by ofﬂoading computations to the cloud. In this paper, we consider environments in which computational ofﬂoading occurs amongst a set of mobile devices. We call such an environment a mobile device cloud ({MDC}). In this work, we ﬁrst highlight the gain in computation time and energy consumption that can be achieved by ofﬂoading tasks to nearby devices within an {MDC} compared to a cloud. We then propose and implement an {MDC} platform that enables the creation and assessment of various ofﬂoading algorithms in {MDCs}. This platform consists of an Android application deployable across {MDC} devices, and a test bed to measure power being consumed by a mobile device. We utilize this platform to carry out various ofﬂoading experiments on an {MDC} testbed from which we gain interesting insights into the potential for {MDC} ofﬂoading. Results from these experiments show up to 50\% gain in time and 26\% gain in energy. Finally, we address the ofﬂoadee selection problem in {MDCs} by proposing several social-based algorithms. The potential promise of this approach is shown by evaluating these algorithms using real data sets that include contact traces and social information of mobile devices in a conference setting.},
+	eventtitle = {2013 {IEEE} 5th International Conference on Cloud Computing Technology and Science ({CloudCom})},
+	pages = {331--338},
+	booktitle = {2013 {IEEE} 5th International Conference on Cloud Computing Technology and Science},
+	publisher = {{IEEE}},
+	author = {Mtibaa, Abderrahmen and Harras, Khaled A. and Fahim, Afnan},
+	urldate = {2019-11-01},
+	date = {2013-12},
+	langid = {english},
+	file = {Mtibaa et al. - 2013 - Towards Computational Offloading in Mobile Device .pdf:C\:\\Users\\ajk\\Zotero\\storage\\B2CSMSRA\\Mtibaa et al. - 2013 - Towards Computational Offloading in Mobile Device .pdf:application/pdf}
+}
+
+@article{mach_mobile_2017-1,
+	title = {Mobile Edge Computing: A Survey on Architecture and Computation Offloading},
+	volume = {19},
+	issn = {1553-877X},
+	url = {http://ieeexplore.ieee.org/document/7879258/},
+	doi = {10.1109/COMST.2017.2682318},
+	shorttitle = {Mobile Edge Computing},
+	abstract = {Technological evolution of mobile user equipment ({UEs}), such as smartphones or laptops, goes hand-in-hand with evolution of new mobile applications. However, running computationally demanding applications at the {UEs} is constrained by limited battery capacity and energy consumption of the {UEs}. A suitable solution extending the battery life-time of the {UEs} is to ofﬂoad the applications demanding huge processing to a conventional centralized cloud. Nevertheless, this option introduces signiﬁcant execution delay consisting of delivery of the ofﬂoaded applications to the cloud and back plus time of the computation at the cloud. Such a delay is inconvenient and makes the ofﬂoading unsuitable for real-time applications. To cope with the delay problem, a new emerging concept, known as mobile edge computing ({MEC}), has been introduced. The {MEC} brings computation and storage resources to the edge of mobile network enabling it to run the highly demanding applications at the {UE} while meeting strict delay requirements. The {MEC} computing resources can be exploited also by operators and third parties for speciﬁc purposes. In this paper, we ﬁrst describe major use cases and reference scenarios where the {MEC} is applicable. After that we survey existing concepts integrating {MEC} functionalities to the mobile networks and discuss current advancement in standardization of the {MEC}. The core of this survey is, then, focused on user-oriented use case in the {MEC}, i.e., computation ofﬂoading. In this regard, we divide the research on computation ofﬂoading to three key areas: 1) decision on computation ofﬂoading; 2) allocation of computing resource within the {MEC}; and 3) mobility management. Finally, we highlight lessons learned in area of the {MEC} and we discuss open research challenges yet to be addressed in order to fully enjoy potentials offered by the {MEC}.},
+	pages = {1628--1656},
+	number = {3},
+	journaltitle = {{IEEE} Communications Surveys \& Tutorials},
+	shortjournal = {{IEEE} Commun. Surv. Tutorials},
+	author = {Mach, Pavel and Becvar, Zdenek},
+	urldate = {2019-11-01},
+	date = {2017},
+	langid = {english},
+	file = {Mach and Becvar - 2017 - Mobile Edge Computing A Survey on Architecture an.pdf:C\:\\Users\\ajk\\Zotero\\storage\\UZP9CYXD\\Mach and Becvar - 2017 - Mobile Edge Computing A Survey on Architecture an.pdf:application/pdf}
+}
+
+@inproceedings{ferzli_mobile_2011,
+	location = {Sedona, {AZ}, {USA}},
+	title = {Mobile cloud computing educational tool for image/video processing algorithms},
+	isbn = {978-1-61284-226-4},
+	url = {http://ieeexplore.ieee.org/document/5739270/},
+	doi = {10.1109/DSP-SPE.2011.5739270},
+	abstract = {This paper shows the importance and beneﬁt of coupling cloud computing with mobile especially due to power limitations that mobile devices exhibit. Moreover, the work done shows that mobile computing can be applied for educational purposes, where a tool for students termed Mobi4Ed is presented. This educational tool aims at exploiting the concept of cloud computing in the context of image and video processing, where students can assess several algorithms in real-time. Two possible system architectures are detailed, where one uses the cellular channel and the other uses the data channel. Consequently, one of the approaches is adopted and a detailed simulation is done where an Android client device is shown communicating with a server running {openCV} and using the Haar face-detection algorithm. The work assures the credibility of the adopted system architecture, in terms of deployment, and several future lines of work are proposed.},
+	eventtitle = {2011 Digital Signal Processing and Signal Processing Education Meeting ({DSP}/{SPE})},
+	pages = {529--533},
+	booktitle = {2011 Digital Signal Processing and Signal Processing Education Meeting ({DSP}/{SPE})},
+	publisher = {{IEEE}},
+	author = {Ferzli, Rony and Khalife, Ibrahim},
+	urldate = {2019-11-01},
+	date = {2011-01},
+	langid = {english},
+	file = {Ferzli and Khalife - 2011 - Mobile cloud computing educational tool for image.pdf:C\:\\Users\\ajk\\Zotero\\storage\\VGKP7VIK\\Ferzli and Khalife - 2011 - Mobile cloud computing educational tool for image.pdf:application/pdf}
+}
+
 @article{kornblith_better_2019,
 	title = {Do Better {ImageNet} Models Transfer Better?},
 	url = {http://arxiv.org/abs/1805.08974},
@@ -1239,6 +1767,15 @@
 	eprint = {1805.08974},
 	keywords = {Computer Science - Machine Learning, Computer Science - Computer Vision and Pattern Recognition, Statistics - Machine Learning},
 	file = {Kornblith et al. - 2019 - Do Better ImageNet Models Transfer Better.pdf:C\:\\Users\\ajk\\Zotero\\storage\\68KJ7V5E\\Kornblith et al. - 2019 - Do Better ImageNet Models Transfer Better.pdf:application/pdf}
+}
+
+@article{kornblith_better_nodate,
+	title = {Do Better {ImageNet} Models Transfer Better?},
+	abstract = {Transfer learning is a cornerstone of computer vision, yet little work has been done to evaluate the relationship between architecture and transfer. An implicit hypothesis in modern computer vision research is that models that perform better on {ImageNet} necessarily perform better on other vision tasks. However, this hypothesis has never been systematically tested. Here, we compare the performance of 16 classiﬁcation networks on 12 image classiﬁcation datasets. We ﬁnd that, when networks are used as ﬁxed feature extractors or ﬁne-tuned, there is a strong correlation between {ImageNet} accuracy and transfer accuracy (r = 0.99 and 0.96, respectively). In the former setting, we ﬁnd that this relationship is very sensitive to the way in which networks are trained on {ImageNet}; many common forms of regularization slightly improve {ImageNet} accuracy but yield penultimate layer features that are much worse for transfer learning. Additionally, we ﬁnd that, on two small ﬁne-grained image classiﬁcation datasets, pretraining on {ImageNet} provides minimal beneﬁts, indicating the learned features from {ImageNet} do not transfer well to ﬁne-grained tasks. Together, our results show that {ImageNet} architectures generalize well across datasets, but {ImageNet} features are less general than previously suggested.},
+	pages = {11},
+	author = {Kornblith, Simon and Shlens, Jonathon and Le, Quoc V},
+	langid = {english},
+	file = {Kornblith et al. - Do Better ImageNet Models Transfer Better.pdf:C\:\\Users\\ajk\\Zotero\\storage\\TZR9HW64\\Kornblith et al. - Do Better ImageNet Models Transfer Better.pdf:application/pdf}
 }
 
 @incollection{dean_large_2012,
@@ -1372,4 +1909,22 @@
 	date = {2001},
 	langid = {english},
 	file = {Viola og Jones - 2001 - Rapid object detection using a boosted cascade of .pdf:C\:\\Users\\ajk\\Zotero\\storage\\8WREN45A\\Viola og Jones - 2001 - Rapid object detection using a boosted cascade of .pdf:application/pdf}
+}
+
+@inproceedings{szegedy_going_2015,
+	location = {Boston, {MA}, {USA}},
+	title = {Going deeper with convolutions},
+	isbn = {978-1-4673-6964-0},
+	url = {http://ieeexplore.ieee.org/document/7298594/},
+	doi = {10.1109/CVPR.2015.7298594},
+	abstract = {We propose a deep convolutional neural network architecture codenamed Inception that achieves the new state of the art for classiﬁcation and detection in the {ImageNet} Large-Scale Visual Recognition Challenge 2014 ({ILSVRC}14). The main hallmark of this architecture is the improved utilization of the computing resources inside the network. By a carefully crafted design, we increased the depth and width of the network while keeping the computational budget constant. To optimize quality, the architectural decisions were based on the Hebbian principle and the intuition of multi-scale processing. One particular incarnation used in our submission for {ILSVRC}14 is called {GoogLeNet}, a 22 layers deep network, the quality of which is assessed in the context of classiﬁcation and detection.},
+	eventtitle = {2015 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+	pages = {1--9},
+	booktitle = {2015 {IEEE} Conference on Computer Vision and Pattern Recognition ({CVPR})},
+	publisher = {{IEEE}},
+	author = {Szegedy, Christian and {Wei Liu} and {Yangqing Jia} and Sermanet, Pierre and Reed, Scott and Anguelov, Dragomir and Erhan, Dumitru and Vanhoucke, Vincent and Rabinovich, Andrew},
+	urldate = {2019-11-28},
+	date = {2015-06},
+	langid = {english},
+	file = {Szegedy m.fl. - 2015 - Going deeper with convolutions.pdf:C\:\\Users\\ajk\\Zotero\\storage\\YFCNP4EN\\Szegedy m.fl. - 2015 - Going deeper with convolutions.pdf:application/pdf}
 }

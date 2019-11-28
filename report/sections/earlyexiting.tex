@@ -2,7 +2,7 @@
 	\chapter{Early Exiting}\label{ch:earlyexit}}
 \thispagestyle{fancy}
 
-Early exiting \gls{dnn} draws inspiration from the face detection algorithm Viola-Jones \cite{viola_rapid_2001}. The idea is a stacking or cascaded of predictors, that increasingly build up confidence to detect faces. Early exiting \gls{dnn} likewise stacks multiple classifiers, and the algorithm, that can be terminated when a prediction with satisfying confidence is obtained. Early exiting \gls{dnn} have shown promising result in \cite{leroux_cascading_2017, teerapittayanon_branchynet:_2016, leroux_resource-constrained_2015, teerapittayanon_distributed_2017, huang_multi-scale_2017}. Early exiting relies on the assumption, that the majority of samples are easy to classify correctly, and that \gls{dnn}s only have become deeper to accurately classify more difficult samples.
+Early exiting \gls{dnn} draws inspiration from the face detection algorithm Viola-Jones \cite{viola_rapid_2001}. The idea is a stacking or cascaded of predictors, that increasingly build up confidence to detect faces. Early exiting \gls{dnn} likewise stacks multiple classifiers. The \gls{dnn} can too be terminated when a prediction with satisfying confidence is obtained. Early exiting \gls{dnn} have shown promising result in \cite{leroux_cascading_2017, teerapittayanon_branchynet:_2016, leroux_resource-constrained_2015, teerapittayanon_distributed_2017, huang_multi-scale_2017, li_edge_2018}. Early exiting relies on the assumption, that the majority of samples are easy to classify correctly, and that \gls{dnn}s only have become deeper to accurately classify more difficult samples.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -13,36 +13,75 @@ Early exiting \gls{dnn} draws inspiration from the face detection algorithm Viol
 	\label{fig:hardvseasydog}
 \end{figure}
 
-As figures \ref{fig:hardvseasydog} exemplifies, samples where the object is easily separated from the background, are not occluded, and are viewed from angles which makes it easier to classify. Contrary samples that are not, are harder, additionally if the sample, should be discriminated from classes, with similar features are difficult such as different dog breeds etc.  
+As figures \ref{fig:hardvseasydog} exemplifies, samples where the object is easily separated from the background, are not occluded, and are viewed from angles which makes it easier to classify. Contrary samples that are not, are harder, additionally if the sample, should be discriminated from classes, with similar features are difficult such as different dog breeds etc. The examples have been found by running a early exit model. The hard examples have been found from looking at samples, that the \gls{dnn}s fail to classify, or can only classify using the last exit. The easy example are found by looking at samples, that can be correctly classified with high confidence by the first exit. 
 
-\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} or cascaded network \cite{leroux_resource-constrained_2015} are both frameworks for constructing \gls{dnn} with early exiting or stopping mechanisms. The difference between the two proposals are, cascaded network are seen as a general framework for adding intermediate classifiers after a layer, or a block of layer in a \gls{dnn}. \gls{branchynet} shows, that the framework can be applied to existing \gls{dnn} architectures. Commonly the two proposals addresses the same challenge of reducing the inference latency by not necessarily computing all layer of the network.
+\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} or cascaded network \cite{leroux_resource-constrained_2015} are both frameworks for constructing \gls{dnn}s with early exiting or stopping mechanisms. The difference between the two proposals are, cascaded network are seen as a general framework for adding intermediate classifiers after a layer, or a block of layer in a \gls{dnn}. \gls{branchynet} shows, that the framework can be applied to existing \gls{dnn} architectures. Commonly the two proposals addresses the same challenge of reducing the inference latency by not necessarily computing all layer of the network.
 
-\section{BranchyNet}
+\section{BranchyNet or Cascaded DNN}
 
 The \gls{branchynet} framework, proposed by \citeauthor{teerapittayanon_branchynet:_2016} It is a framework aimed at reducing the inference time by a small cost in accuracy. The original framework proposed is an modification of \gls{alexnet}, but is easily extended to other architectures. 
 
 \begin{figure}
 	\centering
-	\includegraphics[width=.3\linewidth]{figures/articles/branchynet}
-	\caption[Branchy AlexNet]{Branchy AlexNet, Source \citetitle{teerapittayanon_branchynet:_2016} \cite{teerapittayanon_branchynet:_2016}}
+	\subfloat[Branchy AlexNet, Source \citetitle{teerapittayanon_branchynet:_2016} \cite{teerapittayanon_branchynet:_2016}]{\includegraphics[height=.3\textheight]{figures/articles/branchynet}}
+	\hspace{2em}
+	\subfloat[Cascaded \gls{dnn}, Source \citetitle{leroux_resource-constrained_2015}\cite{leroux_resource-constrained_2015}]{\includegraphics[height=.3\textheight]{figures/articles/cascade_dnn}}
+	\caption[\gls{branchynet} vs. Cascaded \gls{dnn}]{\gls{branchynet} vs. Cascaded \gls{dnn}}
 \end{figure}
 
-What benefits and result and observations have branchynet made? 
 
-\paragraph{BranchyNet Training Framework}
+\paragraph{Training Framework} Training cascaded \gls{dnn}, in \cite{leroux_resource-constrained_2015} it is proposed to train a network using a single end classifier. Once the model has convergence, the weights of the network are frozen and intermediate classfiers are attached. The next phase is training all intermediate classifiers. The approach was tested and gave unsatisfactory results, see \ref{sec:training-results}. However, this particular method may work on datasets with small image sizes such as \gls{mnist} or \gls{cifar10}. Both \cite{leroux_resource-constrained_2015} and \cite{teerapittayanon_branchynet:_2016} uses the \gls{mnist} and \gls{cifar10} datasets. One may argue, that the two datasets used are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples. In \cite{leroux_cascading_2017}, the follow-up paper to Cascaded \gls{dnn}, they train a frozen base network on the ImageNet dataset, but does not achieve particularly high accuracy on early exits.  
 
-The network is trained solving the joint-optimization problem is defined as the weighted sum of each branch-prediction.
-
+The \gls{branchynet} approach is remarkably similar. In \cite{teerapittayanon_branchynet:_2016} the network is trained solving a joint-optimization problem. The optimization problem is defined as the weighted sum of each branch-prediction. Where the loss function is the softmax cross-entropy objective.
 \begin{align*}
 L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
 \end{align*}
+In \cite{teerapittayanon_branchynet:_2016} they claim, the joint-optimization comes with the positive side-effect, that each exit provides regularization on the others, thus countering over-fitting and potentially improves test accuracy. Additionally is also mitigates vanishing gradient, due to additional gradient signal from the early exits, which promotes more discriminative feature in early layers. In \gls{googlenet} \cite{szegedy_going_2015} auxiliary classifiers are place in the middle of the network for this very purpose. It is also the only purpose for these auxiliary classifiers, as they are only used when training the network, hence no samples will be classified to exit an inference process. 
 
-Where the loss function is the softmax cross-entropy objective.
-The weighted sum loss is back-propagated to optimize the weights of the network. 
+In \cite{teerapittayanon_branchynet:_2016} they have too found, that first training the network end-to-end or using a pre-trained model, and then attach the intermediate classifier both improves the performance and shortens the training time. However, they do not suggest freezing the features of the networks, which we also show to be a far superior approach. This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}101 and \gls{densenet}-121 on a subset of the ImageNet dataset with an average size of 400 $\times$ 350 pixels per images.  
 
-The paper uses the \gls{mnist} and \gls{cifar10} datasets for benchmarking. One may argue, that the two datasets used for benchmarking are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples. This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}50 and \gls{densenet}-121 on a subset of the ImageNet dataset. \gls{ilsvrc2012} contains 1.2 million images with an average size of 400 $\times$ 350 pixels.
-  
+\paragraph{Inference Framework} The inference framework for the two proposal \gls{branchynet} and Cascaded \gls{dnn} is almost identical. Cascaded \gls{dnn} uses the score output from the softmax function and checks if the score is higher than a selected threshold, if true the sample is exited. See listing \ref{lst:cascaded-inference}. Nb. $f_{exit_n}$ is the output of the $n$-th exit.
 
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = {}, mathescape=true, caption={Cascaded Network Fast Inference (Reformulated)}, label={lst:cascaded-inference}]
+procedure $\textsc{CascadedNetworkFastInference}$$(x, T )$
+	for n = $1\dots N$ do
+		z = $f_{exit_n}(x)$
+		s = softmax(z)
+		if s $ > T_n$ then
+			return $\arg \max s$
+	return $\arg \max s$ 
+\end{lstlisting}
+\end{minipage}
+
+\gls{branchynet} uses one step more and determines the entropy from the softmax output, and evaluates if the entropy is less a selected threshold, if true the sample is exited. See listing \ref{lst:branchy-inference}.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = {}, mathescape=true, caption={BranchyNet Fast Inference}, label={lst:branchy-inference}]
+procedure $\textsc{BranchyNetFastInference}$$(x, T)$
+	for n = $1\dots N$ do
+		z = $f_{exit_n}(x)$
+	 	$\hat{y}$ = softmax(z)
+		e = entropy($\hat{y}$)
+		if e $ < T_n$ then
+	 		return $\arg \max \hat{y}$
+	return $\arg \max \hat{y}$ 
+\end{lstlisting}
+\end{minipage}
+In this thesis we use Cascaded Network Fast Inference also referred to as confidence threshold. We do also propose a new procedure for fast inference using the score-margin from \cite{park_big/little_2015} as threshold. The score-margin is defined in \ref{}. The procedure is still very similar, but instead of calculating the entropy from the score, we calculate the score-margin, see listing \ref{lst:score-margin-inference}.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language = {}, mathescape=true, caption={Early Exit using Score-margin }, label={lst:score-margin-inference}]
+procedure $\textsc{EarlyExitScoreMargin}$$(x, T )$
+	for n = $1\dots N$ do
+		z = $f_{exit_n}(x)$
+		s = softmax(z)
+		m = scoremargin(s)
+		if m $ > T_n$ then
+			return $\arg \max s$
+	return $\arg \max s$ 
+\end{lstlisting}
+\end{minipage}
 \subsection{Branchy-ResNet}
 
 In this section the design of Branchy-\gls{resnet} is explained. First is the building blocks of a residual network explained followed by the design of B-\gls{resnet}. 
@@ -67,6 +106,7 @@ The residual layers proposed in \cite{he_deep_2015} are grouped into 4 resolutio
 
 The architecture is further divided into 4 resolution blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
 
+\begin{minipage}{\linewidth}
 \begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
 	\caption[\gls{resnet}50 description]{\gls{resnet}50 description. The table describes the blocks of \gls{resnet}50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
 	\toprule
@@ -126,7 +166,8 @@ The architecture is further divided into 4 resolution blocks, each of which down
 	Classifier & \multicolumn2{c}{$\mathrm{Avg.\: Pool,\:} 1000d\: \mathrm{fc,\: Softmax}$} \tabularnewline
 	\bottomrule
 \end{longtabu}
-\vspace{-20pt} \color{caption-color}{\textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (\gls{resnet}18, \gls{resnet}34, \gls{resnet}50, \gls{resnet}101 and \gls{resnet}152)}}\color{main-color}
+\color{caption-color}{\textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (\gls{resnet}18, \gls{resnet}34, \gls{resnet}50, \gls{resnet}101 and \gls{resnet}152)}}\color{main-color}
+\end{minipage}
 
 The early exits of Branchy-\gls{resnet}50 is placed immediately after a resolution block, as 1) we have to go deep enough, that the model is actually able to correctly predict some input samples. 2) we wish a smaller representation of the input and within a resolution block the data size is unchanged. Hence if offloading after a resolution block 2) is fulfilled and we must by experiment determine how deep within the model exits should be in order to classify some portion of input.
 
@@ -166,7 +207,7 @@ The collective knowledge from all preceding layers gives more diversified featur
 
 Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet} architecture. 
 
-\pagebreak
+\begin{minipage}{\linewidth}
 \begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
 	\caption[\gls{densenet}-121 description]{\gls{densenet}-121 description. The table describes the blocks of \gls{densenet}-121. $k$ is the growth rate of the DenseBlock. A typical setting is $k=32$ yielding 256, 512 and 1024 output channels for denseblock(1-3) respectively. The transition layer downsamples the output channel by a factor of 2, thus the number of input channels for DenseBlock(2-4) becomes 128, 256 and 512 respectively.} \label{tbl:densenet121} \\
 	\toprule
@@ -238,7 +279,8 @@ Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet}
 	Layer &  \multicolumn2{c}{$\mathrm{Avg.\: Pool,\:} 1000d\: \mathrm{fc,\: Softmax}$} \tabularnewline
 	\bottomrule
 \end{longtabu}
-\vspace{-20pt} \color{caption-color}{\textit{Source: \citetitle{huang_densely_2016}, by \citeauthor{huang_densely_2016} \cite{huang_densely_2016}, describes a full list of Densely Connected Networks (\gls{densenet}-121, \gls{densenet}-169, \gls{densenet}-201 and \gls{densenet}-264)}} \color{main-color}
+\color{caption-color}{\textit{Source: \citetitle{huang_densely_2016}, by \citeauthor{huang_densely_2016} \cite{huang_densely_2016}, describes a full list of Densely Connected Networks (\gls{densenet}-121, \gls{densenet}-169, \gls{densenet}-201 and \gls{densenet}-264)}} \color{main-color}
+\end{minipage}
 
 
 In the same fashion as B-ResNet early exits have been placed to construct B-DenseNet. The exits are placed after a DenseBlock to obtain feature of sufficient quality and exiting as quickly as possible. If used in Edge-Device mode and the confidence was insufficient the transition layer after the DenseBlock is executed, before data is being preprocess for offloading. 

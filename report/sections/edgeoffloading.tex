@@ -91,9 +91,12 @@ Figure \ref{fig:exit-highscore} show the distribution of highest scoring exit gi
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
+	\includegraphics[width=.7\linewidth]{figures/edge/exit0-4_legend}
 	\subfloat[B-ResNet]{\includegraphics[width=.5\linewidth]{figures/edge/b-resnet_correctness}}
 	\hfill
 	\subfloat[B-DenseNet]{\includegraphics[width=.5\linewidth]{figures/edge/b-densenet_correctness}}
+	\hfill
+	\subfloat[MSDNet]{\includegraphics[width=.5\linewidth]{figures/edge/msdnet_correctness}}
 	\caption[short text]{text}
 	\label{fig:exit-highscore}
 \end{figure}
@@ -201,10 +204,14 @@ We also examined thresholds in the previous chapter, which did show that a high 
 \end{description}
 
 \begin{figure}
+	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
-	\subfloat[subcaption]{\includegraphics[width=.7\linewidth]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\includegraphics[width=.7\linewidth, keepaspectratio]{figures/edge/theoretical_score_combination_legend}
+	\subfloat[subcaption]{\includegraphics[width=.7\linewidth, height=.27\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[width=.7\linewidth]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\subfloat[subcaption]{\includegraphics[width=.7\linewidth,height=.27\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\hfill
+	\subfloat[subcaption]{\includegraphics[width=.7\linewidth,height=.27\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
 	\caption[short text]{text}
 	\label{fig:info-combi}
 \end{figure}
