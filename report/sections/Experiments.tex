@@ -276,8 +276,55 @@ In the next section we conduct a practical experiment by timing all exit predict
 
 \subsection{Inference Latency Analysis}
 
-We setup a test, where we inference the entire \gls{min100} validation set the in all 5 models on three different platforms. Figure \ref{fig:inference-time-dist} shows the result of the inference time distribution for a classification at the corresponding exit. The inference timings are very different on the three platforms, and is very much dependent on the hardware characteristics. The GPU Workstation are enabled with the strongest \gls{gpu}, thus have the most parallelization capabilities and able to run \gls{resnet} faster, as it requires enormous amounts of multiply-adds well-suited for \gls{gpu} acceleration. \gls{densenet} and \gls{msdnet} uses concatenation which might be a more expensive operation on the \gls{gpu}. Using only a \gls{cpu}-only device the same level of parallelization cannot be achieved to accelerate model inference. The Intel NUC, shows the opposite trend, in fact the \gls{msdnet} outperform the other models on the NUC, as it requires far fewer G\gls{flop}s and are comprised of far fewer layers and parameters.
+We setup a test, where we inference the entire \gls{min100} validation set the in all 5 models on three different platforms. Table \ref{tbl:inference-stats} show statistical values mean, standard deviation, minimum and maximum for the model inference time on the different platforms. From the table one can see, that the early exiting framework adds additional delay when using the last exit of the compared to the models conventional pendant.  
+\begin{longtabu}{>{\bfseries}X[2.6]|[1pt]X[r]|X[0.8r]|X[r]|X[r]|[1pt]X[r]|X[0.8r]|X[r]|X[r]|[1pt]X[r]|X[0.8r]|X[r]|X[r]}
+	\caption[Inference time statistics]{Inference time statistics (mean, standard deviation, minimum, maximum) of the five models on the three platforms }\label{tbl:inference-stats} \\
+	\toprule
+	\rowfont{\bfseries}
+	& \multicolumn4{c|[1pt]}{GPU Workstation} &  \multicolumn4{c|[1pt]}{Jetson TX2} & \multicolumn4{c}{Intel NUC} \tabularnewline
+	\tabucline{2-13}
+	\rowfont{\bfseries} Model & Mean & Std.  & Min & Max & Mean & Std. & Min & Max & Mean & Std.  & Min & Max  \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:inference-stats}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	& \multicolumn4{c|[1pt]}{GPU Workstation} &  \multicolumn4{c|[1pt]}{Jetson TX2} & \multicolumn4{c}{Intel NUC} \tabularnewline
+	\tabucline{2-13}
+	\rowfont{\bfseries} Model & Mean & Std.  & Min & Max & Mean & Std.  & Min & Max & Mean & Std.  & Min & Max  \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	ResNet  	& 44.55 & 2.69 & 40.09 &  85.83 & 64.19 & 1.95 & 61.28 & 110.17 & 215.76 & 21.98 & 132.98 & 275.55 \tabularnewline
+	\hline
+	DenseNet 	& 59.22 & 3.42 & 54.39 & 114.25 & 70.48 & 3.04 & 59.56 & 132.45 &  72.30 &  2.61 &  69.02 & 107.63 \tabularnewline
+	\hline
+	B-ResNet & & & &&&&&&&& &  \tabularnewline 
+	\hspace{3mm} Exit-0 & 12.80 & 1.02 & 11.20 & 42.98 &  8.61 & 0.31 &  8.39 &  15.54 &  38.25 &  1.85 &  29.26 &  74.94 \tabularnewline
+	\hspace{3mm} Exit-1 & 18.61 & 1.45 & 16.23 & 68.41 & 19.30 & 1.08 & 16.42 &  38.41 &  66.69 &  3.15 &  50.41 & 110.80 \tabularnewline
+	\hspace{3mm} Exit-2 & 45.31 & 3.15 & 40.83 & 90.61 & 56.77 & 2.73 & 52.34 & 102.58 & 196.43 &  8.81 & 150.11 & 254.86 \tabularnewline
+	\hspace{3mm} Exit-3 & 49.45 & 3.38 & 45.01 & 99.01 & 67.04 & 2.86 & 62.47 & 116.74 & 223.32 & 10.35 & 170.95 & 289.67 \tabularnewline
+	\hline
+	B-DenseNet &  & & &&&&&&&& & \tabularnewline
+	\hspace{3mm} Exit-0 & 18.05 & 1.22 & 16.02 & 68.16 & 11.16 & 0.49 &	10.53 &   18.28 &  42.16 & 2.02 & 27.64 &  67.76 \tabularnewline
+	\hspace{3mm} Exit-1 & 30.18 & 2.29 & 26.57 & 77.42 & 30.51 & 2.05 & 23.95 &   50.56 &  70.44 & 3.30 & 45.01 & 128.94 \tabularnewline
+	\hspace{3mm} Exit-2 & 51.82 & 3.50 & 47.11 & 95.96 & 55.74 & 3.25 & 48.42 &   91.33 &  96.85 & 4.41 & 61.95 & 187.57 \tabularnewline
+	\hspace{3mm} Exit-3 & 66.32 & 3.89 & 60.91 & 115.25 & 72.90 & 3.92 & 65.13 & 124.61 & 107.92 & 4.91 & 69.49 & 219.40 \tabularnewline
+	\hline
+	MSDNet & & &&&&&&&&&& \tabularnewline
+	\hspace{3mm} Exit-0 & 38.40 & 4.53 & 34.89 &  84.85 &  40.37 & 2.77 & 29.36 & 209.89 & 19.99 & 1.27 & 16.99 &  35.12 \tabularnewline
+	\hspace{3mm} Exit-1 & 59.60 & 6.00 & 55.24 & 106.53 &  65.18 & 4.29 & 53.34 & 267.19 & 32.82 & 2.38 & 29.03 & 103.19 \tabularnewline
+	\hspace{3mm} Exit-2 & 75.70 & 6.99 & 70.58 & 116.71 &  83.81 & 5.43 & 71.39 & 312.55 & 42.89 & 3.03 & 38.72 & 130.52 \tabularnewline
+	\hspace{3mm} Exit-3 & 86.07 & 6.79 & 81.22 & 123.35 &  96.53 & 6.26 & 83.68 & 345.67 & 50.10 & 3.43 & 45.66 & 145.75 \tabularnewline
+	\hspace{3mm} Exit-4 & 91.63 & 7.71 & 86.04 & 142.07 & 103.29 & 6.65 & 90.14 & 361.02 & 56.02 & 3.62 & 51.28 & 154.08 \tabularnewline
+	\bottomrule
+\end{longtabu}
 
+Figure \ref{fig:inference-time-dist} shows the result as a histogram of the inference time for a classification at the corresponding exit. The inference timings are very different on the three platforms, and is very much dependent on the hardware characteristics. The GPU Workstation are enabled with the strongest \gls{gpu}, thus have the most parallelization capabilities and able to run \gls{resnet} faster, as it requires enormous amounts of multiply-adds well-suited for \gls{gpu} acceleration. \gls{densenet} and \gls{msdnet} uses concatenation which might be a more expensive operation on the \gls{gpu}. Using only a \gls{cpu}-only device the same level of parallelization cannot be achieved to accelerate model inference. The Intel NUC, shows the opposite trend, in fact the \gls{msdnet} outperform the other models on the NUC, as it requires far fewer G\gls{flop}s and are comprised of far fewer layers and parameters.
 
 \begin{figure}
 	\begin{minipage}{\textwidth}
@@ -461,6 +508,39 @@ We construct a test, where we use our three models, B-\gls{resnet}, B-\gls{dense
 	\label{fig:inferencethresholdtest}
 \end{figure}
 
+\begin{minipage}{\linewidth}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=0pt}
+		\centering
+		\includegraphics[width=.5\linewidth]{figures/inference_plots/model_bar_legend}
+	\end{figure}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=1pt}
+		\centering
+		\subfloat[$T= 0.1$\label{fig:model-threshold_comparison_t_1}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_1}}
+		\hfill
+		\subfloat[$T= 0.2$\label{fig:model-threshold_comparison_t_2}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_2}}
+		\hfill
+		\subfloat[$T= 0.3$\label{fig:model-threshold_comparison_t_3}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_3}}
+		\hfill
+		\subfloat[$T= 0.4$\label{fig:model-threshold_comparison_t_4}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_4}}
+		\hfill
+		\subfloat[$T= 0.5$\label{fig:model-threshold_comparison_t_5}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_5}}
+		\hfill
+		\subfloat[$T= 0.6$\label{fig:model-threshold_comparison_t_6}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_6}}
+		\hfill
+		\subfloat[$T= 0.7$\label{fig:model-threshold_comparison_t_7}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_7}}
+		\hfill
+		\subfloat[$T= 0.8$\label{fig:model-threshold_comparison_t_8}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_8}}
+		\hfill
+		\subfloat[$T= 0.9$\label{fig:model-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_9}}
+		
+		\caption[Model comparison of early exit capabilities]{Model comparison of early exit capabilities}
+		\label{fig:model_threshold_comparison}
+	\end{figure}
+
+\end{minipage}
+
 Figure \ref{fig:inferencethresholdtest} the exiting capabilities for the model at different \emph{score-margin threshold}. The frequency of correct and incorrect prediction are plotted for each exit. For each model the bars sum to one, equivalent to all samples of the test. The figure shows, that less samples are incorrect classified, as we select a higher threshold and thus forcing the model to use later exits. B-\gls{densenet} and especially \gls{msdnet}  designed for early-exiting, are able to more frequently exit samples at early exits even at high thresholds values. Given this insight we use timings from the test to evaluate threshold impact on the accuracy-latency trade-off.
 
 %\subsubsection{Accuracy-Latency Trade-Off Analysis}
@@ -482,7 +562,6 @@ As previously shown the models using densely connected layers are able to exit m
 	\label{fig:threshold-acc-lat-trade-off}
 \end{figure}
 
- 
 
 %  \begin{figure}
 %	\captionsetup[subfigure]{justification=centering}

@@ -256,7 +256,7 @@ BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping polici
 	\caption[BlockDrop]{BlockDrop}
 \end{figure}
 
-The policy network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode although neither architecture support early exiting or cascading, but would be useful in a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the policy network run by an end device would selective choose among a smaller model on device or a larger model on an edge server to avoid wasteful execution of a smaller model.
+The policy network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode although neither architecture support early exiting or cascading, but would be useful in a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the policy network run by an end device would selective choose among a smaller model on device or a larger model on an edge server to avoid wasteful executions.
 
 \section{Performance Metrics}
 
@@ -309,6 +309,8 @@ The aim of edge intelligence is to accommodate certain performance metrics:
 	\begin{align*}
 	\mathrm{\text{score-margin}} = s_0 - s_1
 	\end{align*}
+	
+	\todo{How to write a sorting and take the two first or is there a arg max of the two best elements?}
 	In \cite{park_big/little_2015} they have made a study, that show the score-margin is a better measure for confidence, which they have used to find a threshold, that with higher certainty can tell if a prediction is correct or not.  
 \end{description}
 
