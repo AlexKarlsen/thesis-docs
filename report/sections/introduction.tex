@@ -4,5 +4,18 @@
 
 \section{Background \& Motivation}
 
-The emerging applications, such as \gls{ar}/\gls{vr}, autonomous driving, mission critical \gls{iot} applications, and others, require extreme low latency of \gls{ai} decision feedback. The conventional approach is sending the sensor data, e.g., images, to the central cloud or data center to perform advanced \gls{ml} algorithms and send the results, e.g., object detection, classification, back to the end mobile devices. The conventional cloud-centric \gls{ml} framework cannot fulfill the stringent requirements of these emerging applications. \gls{mec} is a new computing paradigm which brings the computing units from the core of the network to the network edge. \gls{mec} has many benefits such as lower communication latency, higher reliability and resiliency, better security and privacy, scalability and context-awareness and others. Pushing \gls{ai} to the Edge is also known as Edge \gls{ai} or \gls{ei}.
+The emerging applications, such as \gls{ar}/\gls{vr}, autonomous driving, mission critical \gls{iot} applications, and others, require extreme low latency of \gls{ai} decision feedback. The conventional approach is sending the sensor data, e.g., images, to the central cloud or data center to perform advanced \gls{ml} algorithms and send the results, e.g., object detection, classification, back to the end mobile devices. The conventional cloud-centric \gls{ml} framework cannot fulfill the stringent requirements of these emerging applications. \gls{mec} is a new computing paradigm which brings the computing units from the core of the network to the network edge. \gls{mec} has many benefits such as lower communication latency, higher reliability and resiliency, better security and privacy, scalability and context-awareness and others. Pushing \gls{ai} to the Edge is also known as Edge \gls{ai} or \gls{ei}. \todo{Write a proper background and motivation}
+
+\section{Related work}
+
+\todo{Read cascade neural net for inspiration to this introduction}
+\todo{Cascaded, Branchy, DDNN, Edgent}
+
+
+Over the last couple of years an increasing interest in reducing the inference time of intelligent applications to be able to run on less powerful mobile and \gls{iot} device in real-time applications. The survey \citetitle{zhou_edge_2019} by \citet{zhou_edge_2019} review the current state within the research field of \gls{ei}. The survey includes training and inference of \gls{dnn} on the edge and categorizes similar approaches to improve training \gls{ei} application and services and proposals to shorten the inference time in such setups. This thesis is mainly concerned with reducing inference time.
+
+\section{Our contribution}
+
+\todo{our proposal and all our experiments, which have brought some news to litterature}
+The objective of this thesis is, taking mobile AR applications as use case, to design and implement of MEC offloading deep learning algorithms to maximize the inference reliability while meeting the service latency deadline. The thesis will design feasible offloading schemes, such as deep neural network partitioning, preprosssing (feature extractions), in objective detection and classification. The proposed schemes will be implemented using Raspberry Pi and Jetson TX2. The communication and computation latency, as well as the inference accuracy and reliability will be measured and analyzed.
 

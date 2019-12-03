@@ -123,26 +123,28 @@ According to \cite{zhou_edge_2019} there are 8 main effort to shorten inference 
 
 \section{Research Field}
 
+\todo{introduction}
+
 \subsection{Model Architectures}
 
 To improve inference latency on a model-basis, efforts have been made in designing \gls{dnn}s, that reduces the amount of parameter and to more efficiently run on mobile device. Commonly for \gls{mobilenet}s \cite{howard_mobilenets:_2017,sandler_mobilenetv2:_2018}, \gls{shufflenet}s \cite{zhang_shufflenet:_2017, ma_shufflenet_2018} and \gls{squeezenet}s \cite{iandola_squeezenet:_2016} are all aiming to efficiently reducing the number of parameters, without compromising model accuracy by designing novel \gls{dnn} architectures.
 
 Use MobileNet's inverted Linear bottlenek as example and use source that describes the parameter efficiency og this model. 
 
-\citeauthor{sandler_mobilenetv2:_2018} designed \textsl{MobileNetV2} is a neural network architecture specifically for mobile devices. The main novelty is \textit{"inverted residual with linear bottlenecks"} a neural network layer module. ELABORATE
+\citeauthor{sandler_mobilenetv2:_2018} designed \textsl{MobileNetV2} is a neural network architecture specifically for mobile devices. The main novelty is \textit{"inverted residual with linear bottlenecks"} a neural network layer module. \todo{ELABORATE}
 
-Furthermore it uses another type of convolutional layer \textit{depth-wise separable convolutions}, both of which seeking to decrease the number of parameters. ELABORATE
+Furthermore it uses another type of convolutional layer \textit{depth-wise separable convolutions}, both of which seeking to decrease the number of parameters. \todo{ELABORATE}
 
 Other efforts have been made to reduce the number of parameters, thus the inference time in state-of-the-art model compression. 
 
 \subsection{Model Compression}
 
-Weight pruning is the removal of redundant weights, which have shown significant speed-ups using with a small loss in accuracy \cite{zhou_edge_2019}. The impact of compression is application dependent and can be applied to any pre-trained \gls{dnn} \cite{cheng_survey_2017}.
+A the name impliese model compression is all about finding a more compact or compressed way to represent the model. Weight pruning is one of such methods. Weight pruning is the removal of redundant weights, which have shown significant speed-ups using with a small loss in accuracy \cite{zhou_edge_2019}. The impact of compression is application dependent and can be applied to any pretrained \gls{dnn} and in combination with other techniques \cite{cheng_survey_2017}.
 
-Another compression technique is quantization. A more compact representation of a floating point is used to reduce the amount of bits needed for each weight of the model \cite{cheng_survey_2017}. The extreme case is binarization, where weights and activations are learned as a single bit representation. In BinaryConnect \cite{courbariaux_binaryconnect:_2015} and \gls{bnn} \cite{courbariaux_binarized_2016} most arithmetic operations are replaced with bit-wise operations, thus greatly improving the power-efficiency and inference latency, however using binary weights in extremely deep network have shown significant degradation in accuracy \cite{cheng_survey_2017}.
+Another compression technique is quantization. A more compact representation of a floating point is used to reduce the amount of bits needed for each weight of the model \cite{cheng_survey_2017}. The extreme case is binarization, where weights and activations are learned as a binary representations. In BinaryConnect \cite{courbariaux_binaryconnect:_2015} and \gls{bnn} \cite{courbariaux_binarized_2016} most arithmetic operations are replaced with bit-wise operations, thus greatly improving the power-efficiency and inference latency, however using binary weights in extremely deep network have shown significant degradation in accuracy \cite{cheng_survey_2017}.
 
 In \cite{hinton_distilling_2015} \gls{kd} has been proposed. \gls{kd} is a framework to train \gls{dnn} in a student-teacher paradigm. The student network are penalized using the output of an ensemble of teacher networks. \gls{kd} can be viewed as a compression of an ensemble of teacher network into a student network \cite{cheng_survey_2017}. 
-In \cite{romero_fitnets:_2014} \gls{fitnet} have been proposed as a method to train thinner and shallower student networks using a deeper teacher network. FitNet learns the student network to mimick the teacher network, however this approach require the softmax loss function, which limits is usage \cite{cheng_survey_2017}.  
+In \cite{romero_fitnets:_2014} \gls{fitnet} have been proposed as a method to train thinner and shallower student networks using a deeper teacher network. FitNet learns the student network to mimick the teacher network, however this approach require the softmax loss function, which limits iys usage \cite{cheng_survey_2017}.  
 
 Other approaches specifically related to edge computing aiming to reduce inference latency, is model partitioning between end device and edge server. 
 
@@ -159,10 +161,10 @@ Splitting a model is an inherent nature of sequential \gls{dnn}s, that at any la
 	\label{fig:offlaoding}
 \end{figure}
 
-Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning scheduler, that uses knowledge of the individual layers of the \gls{dnn} to effectively reduce inference latency. Communication latency is the bottleneck in an offloading application, hence a smaller representation of the input data is needed, however the layers producing a smaller output than the original input typically lies deep within the network. Neurosurgeon construct regression models for layer execution time and  output data size of the layers of a \gls{dnn}, to decide the best partition of the \gls{dnn} based on networking condition. The work is based on \gls{mcc} and shows, that the conventional cloud-only approach is insufficient due to different networking technologies and mobile device is becoming \gls{gpu} enabled. 
+Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning scheduler, that uses knowledge of the individual layers of the \gls{dnn} to effectively reduce inference latency. Communication latency is the bottleneck in an offloading application, hence a smaller representation of the input data is needed, however the layers producing a smaller output than the original input typically lies deep within the network. Neurosurgeon construct regression models for layer execution time and  output data size of the layers of a \gls{dnn}, to decide the best partition of the \gls{dnn} based on networking condition. The work is based on \gls{mcc}\todo{or cloud intelligence? which to use?} and shows, that the conventional cloud-only approach is insufficient due to different networking technologies and mobile device is becoming \gls{gpu} enabled. 
 % Evidently moving computation to the edge reduces the communication latency. 
 
-Another effort to reduce communication overhead of network splitting is adding feature compression of intermediate features before offloading to cloud \cite{choi_deep_2018}. The paper shows, that lossless compression have no impact on accuracy, however bit saving is rather limited. Lossy compression, on the other hand, results in 70\% bit savings, however also affects accuracy and require compression-aware training to compensate. The follow up paper \cite{choi_near-lossless_2018} propose compression techniques for deep features and achieve significant better bit saving, than conventional image compression algorithms.
+Another effort to reduce communication overhead of network splitting is adding feature compression of intermediate features before offloading to cloud or edge \cite{choi_deep_2018}. The paper shows, that lossless compression have no impact on accuracy, however bit saving is rather limited. Lossy compression, on the other hand, results in 70\% bit savings, however also affects the accuracy of the model and require compression-aware training to compensate. The follow up paper \cite{choi_near-lossless_2018} propose a novel compression techniques designed for deep features i.e. the output of a intermediate \gls{dnn} layer and achieve significant better bit saving, than conventional image compression algorithms such as JPEG. Alternatively methods such as \gls{bottlenet} uses layers of a \gls{dnn} to create a low dimensional representation of the output features, that can be restored back to original dimensionality. 
 
 \begin{figure}
 	\centering
@@ -170,7 +172,7 @@ Another effort to reduce communication overhead of network splitting is adding f
 	\caption[Feature compression]{Feature compression}
 \end{figure}
 
-\gls{bottlenet} \cite{eshratifar_bottlenet:_2019} is a novel neural network module. Client-side it consists of a reduction unit and a compressor unit and server-side of a decompressor unit and restoration unit. The reduction unit creates a smaller representation of intermediate result by applying spatial- and channel-wise convolution. The compressor uses lossy \gls{jpeg} compression, that are decompressed server-side. The restoration unit apply deconvolution to restore the intermediate feature back to the required dimensionality for the next layer in the network.
+\gls{bottlenet} \cite{eshratifar_bottlenet:_2019} is a novel neural network module. Client-side it consists of a reduction unit and a compressor unit and server-side of a decompressor unit and restoration unit. The reduction unit creates a smaller representation of intermediate result by applying spatial- and channel-wise convolution. The compressor uses lossy JPEG and sends the data to the server. Th server decompresses the received data, and the restoration unit restores these intermediate feature using channel- and spatial-wise deconvolution to get back the required input size for the next layer in the network.
 
 \begin{figure}
 	\centering
@@ -178,7 +180,7 @@ Another effort to reduce communication overhead of network splitting is adding f
 	\caption[BottleNet Unit]{BottleNet Unit}
 \end{figure}
 
-\gls{bottlenet} is able to achieve 84$\times$ bit savings compared to cloud-only approach with less than 2\% degradation of accuracy caused by lossy compression with compression-aware training. Under good networking condition, the evaluation of \gls{bottlenet} shows, that the best split is after the first convolutional block, as a smaller representation of the input can be found already here. Compared to cloud-only approach using WiFi a 8$\times$ speed up is found.
+\gls{bottlenet} is able to achieve 84$\times$ bit savings compared to cloud-only approach with less than 2\% degradation of accuracy caused by lossy compression with compression-aware training. Under good networking condition, the evaluation of \gls{bottlenet} shows, that the best split is after the first convolutional block, as a smaller representation of the input can be found and the server is a more powerful machine. Compared to cloud-only approach using WiFi a 8$\times$ speed up is found.
 
 The collaborative scheme between end device and edge servers shows improvements for \gls{cpu}-enabled end devices, compared to a cloud-only approach, however as communication is introduced the overall latency will vary depending on the networking conditions. Model selection is an approach, that tries to limit the amount of offloading, by first running an on-device model. 
 
@@ -192,9 +194,9 @@ Model selection is an approach to reduce inference by selecting an appropriately
 	\caption[Adaptive Neural Network]{Adaptive Neural Network using model selection}
 \end{figure}
 
-The input is inferred to \gls{alexnet}, if the confidence scores is satisfactory the prediction is accepted, if not the framework decides to use either \gls{googlenet} or \gls{resnet}50 depending on a confidence threshold, however if the sample is inferred to \gls{googlenet} and the confidence is still unsatisfactory the sample is inferred to \gls{resnet}50 for the final prediction. The work shows improvement of the average prediction time with only a small reduction in accuracy depending on the confidence threshold. However, for hard samples, since multiple model are introduced, the inference time is increased, as well as the computational cost and memory consumption, thus such model selection approach seems overwhelming to introduce on an end-device yet it may be feasible in an edge-device mode using a Big/Little setup.
+The input is inferred to \gls{alexnet}, if the confidence scores is satisfactory the prediction is accepted, if not the framework decides to use either \gls{googlenet} or \gls{resnet}50 depending on a confidence threshold, however if the sample is inferred to \gls{googlenet} and the confidence is still unsatisfactory the sample is inferred to \gls{resnet}50 for the final prediction. The work shows improvement of the average prediction time with only a small reduction in accuracy depending on the confidence threshold. However, for hard samples, since multiple model are introduced, the inference time is increased, as well as the computational cost and memory consumption, thus such model selection approach seems overwhelming to introduce on a constraint end device yet it may be feasible in an edge-device mode using a Big/Little setup.
 
-To obtain faster inference Big/Little \gls{dnn} \cite{park_big/little_2015} is simple approach using model selection. It implements a hybrid edge architecture of device-only and selective offloading for edge-only processing. It runs a smaller yet less accurate model on device and a larger more accurate model on the edge server, as illustrated by figure \ref{fig:big/little-dnn}. 
+To obtain faster inference Big/Little \gls{dnn} \cite{park_big/little_2015} is simple approach using model selection. It implements a hybrid edge architecture of device-only and selective offloading for edge-only processing. It runs a smaller, albeit less accurate model on device and a larger more accurate model on the edge server, as illustrated by figure \ref{fig:big/little-dnn}. 
 
 \begin{figure}
 	\centering
@@ -203,11 +205,9 @@ To obtain faster inference Big/Little \gls{dnn} \cite{park_big/little_2015} is s
 	\label{fig:big/little-dnn}
 \end{figure}
 
-If the prediction confidence of the little model is unsatisfactory, a decision is made to offload to the big model on the edge server. If a lot of samples are able to be correctly classified locally a speed-up is gained. However, the down-side of this approach is, if too many samples require the big model to satisfy a certain confidence threshold, a lot of work is wasted on the on-device prediction. Nonetheless the paper \cite{park_big/little_2015} contribute with another method to define a threshold, called \textsc{Score margin}. They have found, that the difference between the highest scoring and second highest scoring prediction, have a close relation to the actual true label. Although Big/Little \gls{dnn} obtain good results on energy savings and inference latency, more sophisticated frameworks such as early exiting, that also enabled model partitioning have been proposed.
+If the prediction confidence of the little model is unsatisfactory, a decision is made to offload to the big model on the edge server. If a lot of samples are able to be correctly classified locally, a speed-up is gained. However, the down-side of this approach is, if too many samples require the big model to satisfy a certain confidence threshold, a lot of work is wasted on the on-device prediction. Although Big/Little \gls{dnn} obtain good results on energy savings and inference latency, more sophisticated frameworks such as early exiting, that also enabled model partitioning have been proposed.
 
 \subsection{Model Early Exit}
-
-Should I mention early exting in general for ML like Viola Jones? \cite{viola_rapid_2001}
 
 Model early exiting is a way to handle the latency-accuracy trade-off, by reducing the average inference time without compromising model accuracy. Typically samples can be accurately classified using less \gls{dnn} layers which can improve the inference time, if a sample cannot be classified with proper confidence more layers can be used to obtain a more confident prediction. Since early exiting less computation is wasted, if offloading is necessary after an exit compared to a Big/Little model selection setup. As less computation is needed and a smaller representation of input data can be obtained, thus less data must be offloaded to the edge server.
 
@@ -223,7 +223,7 @@ Cascading neural network \cite{leroux_resource-constrained_2015} have been follo
 
 The distributed cascading neural network and \gls{ddnn} is basically alike, however the papers have different perspectives. \gls{ddnn} focuses on a cluster of $k$ stationary end devices collaboratively solving a classification challenge using sensor fusion. In \gls{ddnn}  early exits are placed to create a shallow on device model. If of local recognition with satisfying confidence cannot be obtained, then the intermediate features of the early exit are offloaded to servers. The paper investigate different aggregation schemes and find a concatenation of features to be the best performing. Concatenation of features increases the size needed to be offloaded to servers, to $k$ times the amount of features at the exit point of the model. The \gls{ddnn} framework require complete retraining of the model, as the amount of features after the exit point is not consistent with the existing \gls{dnn} architecture or it will require new novel architectures optimized for the \gls{ddnn} framework. Nonetheless, the work shows benefits from distributed computing to provide fault tolerance and support for sensor fusion of geographically dispersed sensors to improve recognition accuracy.
 
-Cascading neural network \cite{leroux_cascading_2017} on the other hand is more focused on reducing inference time of a single \gls{dnn} with early exiting, which is more suitable for mobile \gls{p2p} applications, however still cascaded/distributed over a computing hierarchy. Training the cascaded neural network is no different than training any other early exiting model, however in \cite{leroux_cascading_2017}, they freeze the network weights and only train the softmax classifiers, whereas in \cite{teerapittayanon_branchynet:_2016} show, that training the model's weights benefit from the joint optimization in the form of added regularization and obtaining early features more suited for early exiting. In the cascading neural network \cite{leroux_cascading_2017}, early exiting and network partitioning point can be chosen depending available networking bandwidth, yet the exit and partition point is assigned statically and evaluated at two different settings, where the point is placed at two different depths. 
+Cascading neural network \cite{leroux_cascading_2017} on the other hand is more focused on reducing inference time of a single \gls{dnn} with early exiting, which is more suitable for mobile \gls{p2p} \todo{Is this correct?}applications, however still cascaded/distributed over a computing hierarchy. Training the cascaded neural network is no different than training any other early exiting model, however in \cite{leroux_cascading_2017}, they freeze the network weights and only train the softmax classifiers, whereas in \cite{teerapittayanon_branchynet:_2016} show, that training the model's weights benefit from the joint optimization in the form of added regularization and obtaining early features more suited for early exiting. In the cascading neural network \cite{leroux_cascading_2017}, early exiting and network partitioning point can be chosen depending available networking bandwidth, yet the exit and partition point is assigned statically and evaluated at two different settings, where the point is placed at two different depths. \todo{make this shorter and maybe tease for the more in-depth explanation later}
 
 \begin{figure}
 	\centering
@@ -246,9 +246,9 @@ Other approaches to reduce inference time of \gls{dnn} involve mechanism for ski
 	\caption[SkipNet]{SkipNet}
 \end{figure}
 
-The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. SkipNet is trained using a hybrid of supervised learning and reinforcement learning. The classification is learnt as a usual supervised problem using labeled data. The skipping policies are learnt using reinforcement learning by rewarding decision, that have little impact on classification accuracy. The work shows, that only a small fraction of inputs actually require extremely deep models, thus being able to reduce computational cost by 30\% of \gls{resnet}101 on \gls{ilsvrc2012}. 
+The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. SkipNet is trained using a hybrid of supervised learning and reinforcement learning. The classification is learnt as a usual supervised problem using labeled data. The skipping policies are learnt using reinforcement learning by rewarding skipping decisions, that have little impact on classification accuracy. The work shows, that only a small fraction of inputs actually require these extremely deep models, an d is thus being able to reduce the computational cost by 30\% of \gls{resnet}101 on \gls{ilsvrc2012}. 
 
-BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies. However, instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use. BlockDrop is in fact a model selection framework, where the selection of models are learnt rather than tested. 
+BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping policies. However, instead of adding intermediate skipping gates for dynamic local decisions, BlockDrop trains a global policy network, that selectively chooses which model depth to use. BlockDrop is in fact a learned model selection framework, where the selection of models is not based on a confidence output of a smaller model, but on a \gls{dnn} trained to predict the complexity of an input sample. 
 
 \begin{figure}
 	\centering
@@ -256,9 +256,11 @@ BlockDrop \cite{wu_blockdrop:_2017} is another approach to learn skipping polici
 	\caption[BlockDrop]{BlockDrop}
 \end{figure}
 
-The policy network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode although neither architecture support early exiting or cascading, but would be useful in a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the policy network run by an end device would selective choose among a smaller model on device or a larger model on an edge server to avoid wasteful executions.
+The policy network is similarly trained using reinforcement learning. The training shows, which classes are easy and which are hard. SkipNet and BlockDrop could both be used in an edge-device mode such as a Big/Little \cite{park_big/little_2015} setup. Particularly BlockDrop where the inexpensive policy network is run by an end device to selective choose among a smaller model on-device or a larger model on an edge server to avoid wasteful executions.
 
-\section{Performance Metrics}
+In the next section important metrics for \gls{ei} are explained. These metrics are used throughout the thesis.
+
+\section{Performance Metrics} \label{sec:perf-metrics}
 
 The aim of edge intelligence is to accommodate certain performance metrics:
 

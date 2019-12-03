@@ -5,11 +5,15 @@ Early exiting model have been used for two purposes in literature.
 \begin{enumerate}
 	\item Reducing average inference latency and power consumption by letting samples prematurely exit the model based on random distributions \cite{bibid} or samples passing a threshold measure of confidence \cite{teerapittayanon_branchynet:_2016}.
 	\item Comply with application time constraints by exit selection or sub-model selection. By only inference samples up to a selected exit possible to meet stringent delay constraints and reduce waste of computation \cite{li_edge_2018}. 
-\end{enumerate} 
+\end{enumerate}
 
-We propose a more flexible edge offloading scheme, compared to upfront exit selection. We argue, that allowing the edge server to reach as far as possible, within the time budget and continuously sending back increasingly confident predictions, will in any case achieve at least the same accuracy. Even though a sub-model exit have been chosen with care, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
+We have too shown the possibility of 1. to reduce average latency by a early exiting model in section \ref{}. We have also shown, the possibility of adhering to a time constraint, whilst maximizing the accuracy in section \ref{}. This we have shown purely in a lab setup, where no actual offloading takes place. 
 
-Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is offloaded from the end device, to edge server as soon as acquired. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained, a thread is spawned to send back the result to the end device. The end device then decides the prediction based upon the information received from the edge server. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available.
+Edgent \cite{li_edge_2018} is to our knowledge the only proposal in current literature, that uses early exiting models in an offloading scenario. Edgent combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. The downside of edgent is an upfront selection of exit i.e gls{dnn} right-sizing, which can be troublesome with unpredictable communication delays. 
+
+We propose a more flexible edge offloading scheme, compared to upfront exit selection. We argue, that allowing the edge server to reach as far as possible, within the time budget and continuously sending back increasingly confident predictions, will in any case achieve at least the same accuracy. Even though a sub-model exit have been chosen with care e.g. using \gls{dnn} right-sizing, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
+
+Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is offloaded from the end device, to edge server as soon as acquired. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. The end device then decides the prediction based upon the information received from the edge server. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available.
 
 What about lost prediction? Should we have small model running on end?
 
@@ -76,11 +80,11 @@ Figure \ref{fig:exit-highscore} show the distribution of highest scoring exit gi
 	\captionsetup[subfigure]{justification=centering}
 	\centering
 	\includegraphics[width=.7\linewidth]{figures/edge/exit0-4_legend}
-	\subfloat[B-ResNet]{\includegraphics[width=.5\linewidth]{figures/edge/b-resnet_correctness}}
+	\subfloat[B-ResNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-resnet_correctness}}
 	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[width=.5\linewidth]{figures/edge/b-densenet_correctness}}
+	\subfloat[B-DenseNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-densenet_correctness}}
 	\hfill
-	\subfloat[MSDNet]{\includegraphics[width=.5\linewidth]{figures/edge/msdnet_correctness}}
+	\subfloat[MSDNet]{\includegraphics[width=.33\linewidth]{figures/edge/msdnet_correctness}}
 	\caption[short text]{text}
 	\label{fig:exit-highscore}
 \end{figure}
@@ -168,10 +172,10 @@ Given we receive $n$ prediction within the time frame, we can formulate $n \time
 %Each row contain the top-5 prediction from the corresponding exit and the columns contain the highest to lowest scoring of the top-5 prediction at all exits.
 \begin{align*}
 \mathbf{S}_{n,k} = \begin{bmatrix}
-s_{0,0} & s_{0,1} & \dots  & s_{0,k-1} 	\\
-s_{1,0} & s_{1,1} & \dots  & s_{1,k-1}	\\
+s^*_{0,0} & s^*_{0,1} & \dots  & s^*_{0,k-1} 	\\
+s^*_{1,0} & s^*_{1,1} & \dots  & s^*_{1,k-1}	\\
 \vdots 	& \vdots  & \ddots & \vdots 	\\
-s_{n,0} & s_{n,1} & \dots  & s_{n,k-1}
+s^*_{n,0} & s^*_{n,1} & \dots  & s^*_{n,k-1}
 \end{bmatrix}
 \end{align*}      
 
@@ -291,15 +295,6 @@ How far are we able to in inference process under different time constraints?
 
 Should I create hybrid combinations? Maybe only combine info from exit-0 and -1 and always let exit-2 and -3 have the final say if available? What if we can combine info from those two and omit the poor ones? 
 
-\section{Summary}
-
-All offloading can lead to lost predictions under time stringent time constraints. If local processing is possible, then;
-
-\begin{enumerate}
-	\item \textbf{Collaborative Edge} where local inference of an early exit \gls{dnn} up to the first exit and then offload to the edge for remaining inference. The upside is, that running locally up to an exit, that should always be achievable guarantee a single prediction is available and mitigates lost prediction. The downsides are wasted idle time on edge server, as the slower end-device must do the most demanding early layers of the \gls{dnn}. Additionally offloading intermediate features that are typically larger than the original compressed images, hence the overall time becomes worse as communication is the bottleneck. This collaborative scheme require sophisticated compression of intermediate feature as in \cite{choi_near-lossless_2018} or a using \gls{bottlenet} layers.
-	\item \textbf{Big/Little} A modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it as more accurate prediction arrives or combine information local and incoming predictions.
-\end{enumerate}
-
 \subsection{Transport Protocol} 
 
 Offloading tasks over the network, irregardless fully or partially requires a transport protocol. The selection is typically a choice of either \gls{tcp} or \gls{udp}. \gls{tcp} is a reliable protocol, that guarantee no losses by retransmission of lost packets. \gls{udp} on the other hand is a best-effort protocol, that accept packets loss, thus not introducing retransmission communication overhead. 
@@ -314,3 +309,13 @@ In this experiment the \gls{tcp} transmission time and retransmission rate is in
 	\includegraphics[width=\linewidth]{figures/tcp/tcpoverhead}
 	\caption[TCP retransmission overhead]{TCP retransmission overhead}
 \end{figure}
+
+\section{Summary}
+
+All offloading can lead to lost predictions under time stringent time constraints. If local processing is possible, then;
+
+\begin{enumerate}
+	\item \textbf{Collaborative Edge} where local inference of an early exit \gls{dnn} up to the first exit and then offload to the edge for remaining inference. The upside is, that running locally up to an exit, that should always be achievable guarantee a single prediction is available and mitigates lost prediction. The downsides are wasted idle time on edge server, as the slower end-device must do the most demanding early layers of the \gls{dnn}. Additionally offloading intermediate features that are typically larger than the original compressed images, hence the overall time becomes worse as communication is the bottleneck. This collaborative scheme require sophisticated compression of intermediate feature as in \cite{choi_near-lossless_2018} or a using \gls{bottlenet} layers.
+	\item \textbf{Big/Little} A modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it as more accurate prediction arrives or combine information local and incoming predictions.
+\end{enumerate}
+

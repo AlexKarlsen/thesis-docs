@@ -1,5 +1,5 @@
 
-\section{Training}
+\section{Training Early Exiting Models}
 
 We trained the three early exiting models B-\gls{resnet}, B-\gls{densenet} and \gls{msdnet}, along with conventional versions of the \gls{resnet}101 and \gls{densenet}-121. The \gls{dnn}s were trained on the \gls{min100} training set.
 
@@ -16,9 +16,18 @@ All training have been accomplished using a \gls{gpu}-workstation equipped with 
 
 
 \begin{description}
-	\item[Number of Epochs] An epoch is a round of training in which every training sample have been presented to the model. All models have been trained for 50 epochs, to fairly compare models the models. Additionally to reduce the training time to allow training multiple models. Training on the available hardware took 30 to 40 hours per model.
+	\item[Number of Epochs] An epoch is a step of training in which every training sample have been presented to the model. A training time of 50 epochs have been selected for all models, for two reasons;
+	
+	\begin{enumerate}
+		\item Obtain fair comparison between models
+		\item Limit overall training time to give time for multiple attempts and training multiple model
+	\end{enumerate}
+
+	Training the models on the available hardware took $\sim$30 to  $\sim$40 hours depending on the model. In total 5 models have been fully trained once the rest of training settings had been found.
 	
 	\item[Early Stopping] Early stopping is finding the best obtained model by alternating between training and validation phases for each epoch. The best model is the one obtaining the highest accuracy on the validation data. Early stopping is a mechanism to avoid overtraining a model, that then overfits the training data and obtain poor validation accuracy. For \gls{branchynet} we use the model with the highest average accuracy to not favour any part of the model.  
+	
+	\item[Branch Weights] The same unit weights have been selected for all branches of the model to not favour any part of the model. In \cite{} they claim, that putting more weight on early branches have a regularizing impact on the later classifiers and can actually achieve better performance. They too have chosen unit weights for comparison of multiple models to avoid time consuming search for specific branch weights on a per model basis.
 	  
 	\item[Optimizer] The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
 	
@@ -92,12 +101,12 @@ As found in \cite{teerapittayanon_branchynet:_2016}, we unfreeze the model, to a
 	\label{fig:b-resnet-miniimagenet-100}
 \end{figure}
 
-Table \ref{tbl:frozen-vs-unfrozen}  shows the improvement of the higest validation score obtained in the training process. Comparing the two show, that we are now able to improve the accuracy at early exits, thus the features located in the shallower part of the model now provides information that enables the classifiers to discriminate the classes. 
+Table \ref{tbl:frozen-vs-unfrozen}  shows the improvement of the higest validation score obtained in the training process. Comparing the two show, that we are able to improve the accuracy at early exits, thus the features located in the shallower part of the model now provides information that enables the classifiers to better discriminate the classes. 
 \begin{longtabu}{>{\bfseries}X[2]|X|X|X|X}
-	\caption[Comparison of Transfer Learning Approaches]{Comparison of transfer learning approaches frozen model vs. fine-tuning} \label{tbl:frozen-vs-unfrozen} \\
+	\caption[Comparison of Transfer Learning Approaches]{Comparison of transfer learning approaches frozen model vs. fine-tuning on validation accuracy} \label{tbl:frozen-vs-unfrozen} \\
 	\toprule
 	\rowfont{\bfseries}
-	Model & Exit-0 & Exit-1 & Exit-2 & Exit-1 \tabularnewline
+	Model & Exit-0 & Exit-1 & Exit-2 & Exit-3 \tabularnewline
 	\bottomrule
 	\endfirsthead
 	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:frozen-vs-unfrozen}:}} continued}\\
@@ -118,7 +127,14 @@ Table \ref{tbl:frozen-vs-unfrozen}  shows the improvement of the higest validati
 	Improvement & 350 \% & 389 \% & 140 \% &  96 \% \tabularnewline							
 	\bottomrule
 \end{longtabu}
-Although the final classifier have become less accurate by 4 \%, the early classifiers have been improved by 140 to almost 390 \%. The reduction in accuracy may be caused by the rather large resolution block before exit-2, the features of this block may be optimized to much for exit-2 and collapses the information, that the last resolution block learns for the conventional model. The two last exits of \gls{resnet} are almost equally accurate. Thus, not much gain in accuracy is obtained by running \gls{resnet} model all the way to the end. \gls{densenet} on the other hand always have an accuracy gain by continuing the inference process.     
+Although the final classifier have become less accurate by 4 \%, the early classifiers have been improved by 140 to almost 390 \%. The reduction in accuracy may be caused by;
+\begin{enumerate}
+	\item The features of the third and largste resolution block just before exit-2, may be optimized too much for exit-2, thus collapses the information, and the last block is not able to learn new and useful features. 
+	\item It can be a sign of overfitting, as the last two exits obtain a training accuracy close to 1. This can be caused by the size of the dataset, as it is only $\frac{1}{10}$ of the dataset used to train the model.
+\end{enumerate}
+The most probable reason is 1. the same trend is shown in \cite{bibid}. We also trained conventional versions of the two model on the same datasets and both models are abe to obtain over 0.9 in accuracy.
+
+As the two last exits of \gls{resnet} is almost equally accurate, not much gain is obtained by running the model all the way to the end. \gls{densenet} on the other hand always have a gain in accuracy by continuing the inference process and are able to achieve better accuracy at earlier exits.     
 
 \begin{figure}
 	\centering
@@ -133,7 +149,7 @@ Although the final classifier have become less accurate by 4 \%, the early class
 	\label{fig:b-densenet-miniimagenet-100}
 \end{figure}
 
-Figure \ref{fig:b-densenet-miniimagenet-100} show the training result of B-\gls{densenet}. The early exits of the model show further improvement compared to B-\gls{resnet}, however again at the cost of less accurate end exit. The figure shows the importance of the densely connected layers for an early exit model \cite{huang_multi-scale_2017}. The early exits of B-\gls{densenet} have a higher accuracy compared to B-\gls{resnet}, but the last two exits of  B-\gls{resnet} obtain higher accuracy, see table \ref{tbl:training-compariosn}. \gls{msdnet}, the early exiting version of \gls{densenet}, shows further improvement to early exits accuracy.
+Figure \ref{fig:b-densenet-miniimagenet-100} show the training result of B-\gls{densenet}. The early exits of the model show further improvement compared to B-\gls{resnet}, however again at the cost of less accurate end exit. The figure shows the importance of the densely connected layers for an early exit model \cite{huang_multi-scale_2017}. The early exits of B-\gls{densenet} have a higher accuracy compared to B-\gls{resnet}, but the last two exits of B-\gls{resnet} obtain higher accuracy, see table \ref{tbl:training-compariosn}. \gls{msdnet}, the early exiting version of \gls{densenet}, shows further improvement to early exits accuracy.
 
 \begin{figure}
 	\centering
@@ -148,7 +164,7 @@ Figure \ref{fig:b-densenet-miniimagenet-100} show the training result of B-\gls{
 	\label{fig:msdnet-miniimagenet-100}
 \end{figure}
 
-Figure \ref{fig:msdnet-miniimagenet-100} show the results of training the \gls{msdnet}. The model specifically designed for early exiting shows indeed improvement for classifiers at early exit, but once again at a small cost in end accuracy compared to the other two models. Table \ref{tbl:training-compariosn} compares the best obtained validation accuracy in the training processes of the three models.
+Figure \ref{fig:msdnet-miniimagenet-100} show the results of training the \gls{msdnet}. The model specifically designed for early exiting shows indeed improvements for classifiers at early exit, but once again at a small cost in end accuracy compared to the other two models. Table \ref{tbl:training-compariosn} compares the best obtained validation accuracy in the training processes of the three models.
 
 
 \begin{longtabu}{>{\bfseries}X[2]|X|X|X|X|X}
@@ -219,26 +235,27 @@ In this section we investigates the early exiting capabilities of the models. Ta
 	\hline
 	DenseNet & 0.912 & $ 121 $ & $ 7.056 $ & $ 2.897 $ \tabularnewline
 	\hline
-	B-ResNet & & $ 107 $ & $ 42.885 $ & $ 7.866 $ \tabularnewline 
-	\hspace{3mm} Exit-0 & 0.489  & & & \tabularnewline
-	\hspace{3mm} Exit-1 & 0.703  & & &\tabularnewline
-	\hspace{3mm} Exit-2 & 0.883  & & &\tabularnewline
-	\hspace{3mm} Exit-3 & 0.893  & & &\tabularnewline
+	B-ResNet & & $ 104 $ & $ 42.885 $ & $ 7.866 $ \tabularnewline 
+	\hspace{3mm} Exit-0 & 0.489  & 11 &   0.251 & 0.807 \tabularnewline
+	\hspace{3mm} Exit-1 & 0.703  & 13 &   1.270 & 1.041 \tabularnewline
+	\hspace{3mm} Exit-2 & 0.883  & 70 &  26.193 & 5.206 \tabularnewline
+	\hspace{3mm} Exit-3 & 0.893  & 11 &  15.170 & 0.812 \tabularnewline
 	\hline
-	B-DenseNet &  & $ 127 $ & $ 7.236 $ & $ 2.898 $\tabularnewline
-	\hspace{3mm} Exit-0 & 0.545 & & & \tabularnewline
-	\hspace{3mm} Exit-1 & 0.769 & & &\tabularnewline
-	\hspace{3mm} Exit-2 & 0.841 & & &\tabularnewline
-	\hspace{3mm} Exit-3 & 0.879 & & &\tabularnewline
+	B-DenseNet &  & $ 124 $ & $ 7.236 $ & $ 2.898 $\tabularnewline
+	\hspace{3mm} Exit-0 & 0.545 & 14 & 0.370 & 1.183  \tabularnewline
+	\hspace{3mm} Exit-1 & 0.769 & 26 & 1.004 & 0.836  \tabularnewline
+	\hspace{3mm} Exit-2 & 0.841 & 50 & 3.072 & 0.668  \tabularnewline
+	\hspace{3mm} Exit-3 & 0.879 & 34 & 2.789 & 0.211  \tabularnewline
 	\hline
-	MSDNet & & $ 24 $ & $ 23.958 $ & $ 1.374 $ \tabularnewline
-	\hspace{3mm} Exit-0 & 0.755 & & &\tabularnewline
-	\hspace{3mm} Exit-1 & 0.829 & & &\tabularnewline
-	\hspace{3mm} Exit-2 & 0.859 & & &\tabularnewline
-	\hspace{3mm} Exit-3 & 0.864 & & &\tabularnewline
-	\hspace{3mm} Exit-4 & 0.867 & & &\tabularnewline
+	MSDNet & & $ 25 $ & $ 23.958 $ & $ 1.374 $ \tabularnewline
+	\hspace{3mm} Exit-0 & 0.755 & 5 & 4.239 & 0.345 \tabularnewline
+	\hspace{3mm} Exit-1 & 0.829 & 5 & 4.534 & 0.349 \tabularnewline
+	\hspace{3mm} Exit-2 & 0.859 & 5 & 4.301 & 0.325 \tabularnewline
+	\hspace{3mm} Exit-3 & 0.864 & 5 & 3.675 & 0.248 \tabularnewline
+	\hspace{3mm} Exit-4 & 0.867 & 5 & 7.210 & 0.107 \tabularnewline
 	\bottomrule
 \end{longtabu}
+
 
 Interestingly the B-\gls{densenet} and \gls{msdnet} drastically reduces the mount of parameters and G\gls{flop}s compared to B-\gls{resnet}, but is still able to obtain competitive accuracy. The two conventional models \gls{resnet} and \gls{densenet} outperforms the early exiting model in terms of accuracy, however the models are inflexible, as they always require end-to-end inference. The early exit models should be able to reduce inference delay, as they need less parameters and \gls{flop}s.
 
@@ -276,8 +293,8 @@ In the next section we conduct a practical experiment by timing all exit predict
 
 \subsection{Inference Latency Analysis}
 
-We setup a test, where we inference the entire \gls{min100} validation set the in all 5 models on three different platforms. Table \ref{tbl:inference-stats} show statistical values mean, standard deviation, minimum and maximum for the model inference time on the different platforms. From the table one can see, that the early exiting framework adds additional delay when using the last exit of the compared to the models conventional pendant.  
-\begin{longtabu}{>{\bfseries}X[2.6]|[1pt]X[r]|X[0.8r]|X[r]|X[r]|[1pt]X[r]|X[0.8r]|X[r]|X[r]|[1pt]X[r]|X[0.8r]|X[r]|X[r]}
+We setup a test, where we inference the entire \gls{min100} validation set the in all 5 models on three different platforms. Table \ref{tbl:inference-stats} show statistical values mean, standard deviation, minimum and maximum for the model inference time on the different platforms. From the table one can see, that the early exiting framework adds only a small additional delay, when comparing the last exit the \gls{branchynet} version with its conventional pendant. For the \gls{gpu}-enabled platform only additional 1 to 3 ms is seen on average. On the NUC the B-\gls{resnet} is 7.5 ms slower. 
+\begin{longtabu}{>{\bfseries}X[2.6]|[1pt]X[r]|X[0.8r]|X[r]|X[1.2r]|[1pt]X[r]|X[0.7r]|X[r]|X[1.2r]|[1pt]X[r]|X[0.7r]|X[r]|X[1.2r]}
 	\caption[Inference time statistics]{Inference time statistics (mean, standard deviation, minimum, maximum) of the five models on the three platforms }\label{tbl:inference-stats} \\
 	\toprule
 	\rowfont{\bfseries}
@@ -299,28 +316,28 @@ We setup a test, where we inference the entire \gls{min100} validation set the i
 	\endfoot
 	\hline
 	\endlastfoot
-	ResNet  	& 44.55 & 2.69 & 40.09 &  85.83 & 64.19 & 1.95 & 61.28 & 110.17 & 215.76 & 21.98 & 132.98 & 275.55 \tabularnewline
+	ResNet  	& 36.01 & 1.72 & 33.24 & 69.02 & 64.19 & 1.95 & 61.28 & 110.17 & 215.76 & 21.98 & 132.98 & 275.55 \tabularnewline
 	\hline
-	DenseNet 	& 59.22 & 3.42 & 54.39 & 114.25 & 70.48 & 3.04 & 59.56 & 132.45 &  72.30 &  2.61 &  69.02 & 107.63 \tabularnewline
+	DenseNet 	& 47.74 & 1.95 & 4.48 & 86.88 & 70.48 & 3.04 & 59.56 & 132.45 &  72.30 &  2.61 &  69.02 & 107.63 \tabularnewline
 	\hline
 	B-ResNet & & & &&&&&&&& &  \tabularnewline 
-	\hspace{3mm} Exit-0 & 12.80 & 1.02 & 11.20 & 42.98 &  8.61 & 0.31 &  8.39 &  15.54 &  38.25 &  1.85 &  29.26 &  74.94 \tabularnewline
-	\hspace{3mm} Exit-1 & 18.61 & 1.45 & 16.23 & 68.41 & 19.30 & 1.08 & 16.42 &  38.41 &  66.69 &  3.15 &  50.41 & 110.80 \tabularnewline
-	\hspace{3mm} Exit-2 & 45.31 & 3.15 & 40.83 & 90.61 & 56.77 & 2.73 & 52.34 & 102.58 & 196.43 &  8.81 & 150.11 & 254.86 \tabularnewline
-	\hspace{3mm} Exit-3 & 49.45 & 3.38 & 45.01 & 99.01 & 67.04 & 2.86 & 62.47 & 116.74 & 223.32 & 10.35 & 170.95 & 289.67 \tabularnewline
+	\hspace{3mm} Exit-0 &  4.20 & 0.63 &  3.81 &  39.40 &  8.61 & 0.31 &  8.39 &  15.54 &  38.25 &  1.85 &  29.26 &  74.94 \tabularnewline
+	\hspace{3mm} Exit-1 &  9.40 & 1.28 &  8.19 &  70.23 & 19.30 & 1.08 & 16.42 &  38.41 &  66.69 &  3.15 &  50.41 & 110.80 \tabularnewline
+	\hspace{3mm} Exit-2 & 33.59 & 2.78 & 30.25 & 103.55 & 56.77 & 2.73 & 52.34 & 102.58 & 196.43 &  8.81 & 150.11 & 254.86 \tabularnewline
+	\hspace{3mm} Exit-3 & 37.14 & 2.94 & 33.65 & 109.94 & 67.04 & 2.86 & 62.47 & 116.74 & 223.32 & 10.35 & 170.95 & 289.67 \tabularnewline
 	\hline
 	B-DenseNet &  & & &&&&&&&& & \tabularnewline
-	\hspace{3mm} Exit-0 & 18.05 & 1.22 & 16.02 & 68.16 & 11.16 & 0.49 &	10.53 &   18.28 &  42.16 & 2.02 & 27.64 &  67.76 \tabularnewline
-	\hspace{3mm} Exit-1 & 30.18 & 2.29 & 26.57 & 77.42 & 30.51 & 2.05 & 23.95 &   50.56 &  70.44 & 3.30 & 45.01 & 128.94 \tabularnewline
-	\hspace{3mm} Exit-2 & 51.82 & 3.50 & 47.11 & 95.96 & 55.74 & 3.25 & 48.42 &   91.33 &  96.85 & 4.41 & 61.95 & 187.57 \tabularnewline
-	\hspace{3mm} Exit-3 & 66.32 & 3.89 & 60.91 & 115.25 & 72.90 & 3.92 & 65.13 & 124.61 & 107.92 & 4.91 & 69.49 & 219.40 \tabularnewline
+	\hspace{3mm} Exit-0 &  5.83 & 1.09 &  5.15 &  54.61 & 11.05 & 0.48 & 10.52 & 17.31 &  28.83 & 1.59 & 26.05 & 41.93 \tabularnewline
+	\hspace{3mm} Exit-1 & 17.03 & 1.89 & 14.60 &  76.78 & 30.26 & 2.02 & 23.75 & 47.54 &  46.71 & 2.31 & 43.47 & 71.85 \tabularnewline
+	\hspace{3mm} Exit-2 & 36.31 & 3.01 & 32.72 & 104.79 & 55.38 & 3.22 & 48.10 & 87.81 &  64.26 & 2.80 & 60.65 & 99.41 \tabularnewline
+	\hspace{3mm} Exit-3 & 49.14 & 3.36 & 45.13 & 127.07 & 72.41 & 3.89 & 64.77 & 120.29 & 72.21 & 2.97 & 68.37 & 112.06 \tabularnewline
 	\hline
 	MSDNet & & &&&&&&&&&& \tabularnewline
-	\hspace{3mm} Exit-0 & 38.40 & 4.53 & 34.89 &  84.85 &  40.37 & 2.77 & 29.36 & 209.89 & 19.99 & 1.27 & 16.99 &  35.12 \tabularnewline
-	\hspace{3mm} Exit-1 & 59.60 & 6.00 & 55.24 & 106.53 &  65.18 & 4.29 & 53.34 & 267.19 & 32.82 & 2.38 & 29.03 & 103.19 \tabularnewline
-	\hspace{3mm} Exit-2 & 75.70 & 6.99 & 70.58 & 116.71 &  83.81 & 5.43 & 71.39 & 312.55 & 42.89 & 3.03 & 38.72 & 130.52 \tabularnewline
-	\hspace{3mm} Exit-3 & 86.07 & 6.79 & 81.22 & 123.35 &  96.53 & 6.26 & 83.68 & 345.67 & 50.10 & 3.43 & 45.66 & 145.75 \tabularnewline
-	\hspace{3mm} Exit-4 & 91.63 & 7.71 & 86.04 & 142.07 & 103.29 & 6.65 & 90.14 & 361.02 & 56.02 & 3.62 & 51.28 & 154.08 \tabularnewline
+	\hspace{3mm} Exit-0 & 24.14 & 1.59 & 21.53 &  67.38 &  40.37 & 2.77 & 29.36 & 209.89 & 19.99 & 1.27 & 16.99 &  35.12 \tabularnewline
+	\hspace{3mm} Exit-1 & 42.24 & 2.54 & 38.87 & 119.85 &  65.18 & 4.29 & 53.34 & 267.19 & 32.82 & 2.38 & 29.03 & 103.19 \tabularnewline
+	\hspace{3mm} Exit-2 & 55.59 & 2.82 & 51.90 & 143.30 &  83.81 & 5.43 & 71.39 & 312.55 & 42.89 & 3.03 & 38.72 & 130.52 \tabularnewline
+	\hspace{3mm} Exit-3 & 64.49 & 2.99 & 60.59 & 156.26 &  96.53 & 6.26 & 83.68 & 345.67 & 50.10 & 3.43 & 45.66 & 145.75 \tabularnewline
+	\hspace{3mm} Exit-4 & 68.87 & 3.11 & 64.85 & 165.90 & 103.29 & 6.65 & 90.14 & 361.02 & 56.02 & 3.62 & 51.28 & 154.08 \tabularnewline
 	\bottomrule
 \end{longtabu}
 
@@ -535,10 +552,44 @@ We construct a test, where we use our three models, B-\gls{resnet}, B-\gls{dense
 		\hfill
 		\subfloat[$T= 0.9$\label{fig:model-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_9}}
 		
-		\caption[Model comparison of early exit capabilities]{Model comparison of early exit capabilities}
+		\caption[Model comparison of early exit capabilities]{Model comparison of early exit capabilities using score-margin}
 		\label{fig:model_threshold_comparison}
 	\end{figure}
 
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=0pt}
+		\centering
+		\includegraphics[width=.5\linewidth]{figures/inference_plots/model_bar_legend}
+	\end{figure}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=1pt}
+		\centering
+		\subfloat[$T= 0.1$\label{fig:model-c-threshold_comparison_t_1}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_1}}
+		\hfill
+		\subfloat[$T= 0.2$\label{fig:model-c-threshold_comparison_t_2}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_2}}
+		\hfill
+		\subfloat[$T= 0.3$\label{fig:model-c-threshold_comparison_t_3}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_3}}
+		\hfill
+		\subfloat[$T= 0.4$\label{fig:model-c-threshold_comparison_t_4}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_4}}
+		\hfill
+		\subfloat[$T= 0.5$\label{fig:model-c-threshold_comparison_t_5}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_5}}
+		\hfill
+		\subfloat[$T= 0.6$\label{fig:model-c-threshold_comparison_t_6}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_6}}
+		\hfill
+		\subfloat[$T= 0.7$\label{fig:model-c-threshold_comparison_t_7}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_7}}
+		\hfill
+		\subfloat[$T= 0.8$\label{fig:model-c-threshold_comparison_t_8}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_8}}
+		\hfill
+		\subfloat[$T= 0.9$\label{fig:model-c-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_9}}
+		
+		\caption[Model comparison of early exit capabilities using confidence threshold]{Model comparison of early exit capabilities}
+		\label{fig:model_c-threshold_comparison}
+	\end{figure}
+	
 \end{minipage}
 
 Figure \ref{fig:inferencethresholdtest} the exiting capabilities for the model at different \emph{score-margin threshold}. The frequency of correct and incorrect prediction are plotted for each exit. For each model the bars sum to one, equivalent to all samples of the test. The figure shows, that less samples are incorrect classified, as we select a higher threshold and thus forcing the model to use later exits. B-\gls{densenet} and especially \gls{msdnet}  designed for early-exiting, are able to more frequently exit samples at early exits even at high thresholds values. Given this insight we use timings from the test to evaluate threshold impact on the accuracy-latency trade-off.
@@ -580,27 +631,29 @@ If given a time threshold, what accuracy are we then able to achieve?
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/time_threshold_pc}}
+	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/gpu_delay_threshold}}
 	\hfill
-	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/time_threshold_jetson}}
+	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/jetson_delay_threshold}}
 	\hfill
-	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/time_threshold_nuc}}
+	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/nuc_delay_threshold}}
 	\caption[Time Threshold]{Time Threshold}
 	\label{fig:time-threshold}
 \end{figure}
 
-From figure \ref{fig:inference-time-dist} we know the inference time distribution for each exit on different hardwares. Given a time constraint, we can selective choose the exit with the best chance to provide a prediction within a certain time frame, similar to Edgent \cite{li_edge_2018}. The difference at first is we only focus on on-device or on-edge execution  with no collaboration, hence we do not need a regression model of the per layer execution of the \gls{dnn}. For device-only execution our only concern is the inference time on the specific hardware, a simple selection would be the exit with the largest inference time mean within the time constraint, as accuracy is monotically increasing over available time.
+\section{Summary}
+
+From figure \ref{fig:inference-time-dist} we know the inference time distribution for each exit on different hardwares. Given a time constraint, we can selective choose the exit with the best chance to provide a prediction within a certain time frame, similar to . The difference at first is we only focus on on-device or on-edge execution  with no collaboration, hence we do not need a. For device-only execution our only concern is the inference time on the specific hardware, a simple selection would be the exit with the largest inference time mean within the time constraint, as accuracy is monotically increasing over available time.
 \begin{maxi*}
-			{}{Reliabilty\sim\tau_{computation}}
+	{}{Reliabilty\sim\tau_{computation}}
 	{}{}
 	\addConstraint{\tau_{computation}}{\leq T}
 \end{maxi*}
- In an edge-offloading scenario we must consider communication latency. If the available networking conditions are good a later exit can be chosen to improve the reliability, however in scenarios, where networking conditions are poor an earlier exit must be chosen to meet latency requirements. 
- \begin{maxi*}
- 	{}{Reliabilty\sim\tau_{computation}}
- 	{}{}
- 	\addConstraint{(\tau_{computation}+\tau_{communication})}{\leq T}
- \end{maxi*}
+In an edge-offloading scenario we must consider communication latency. If the available networking conditions are good a later exit can be chosen to improve the reliability, however in scenarios, where networking conditions are poor an earlier exit must be chosen to meet latency requirements. 
+\begin{maxi*}
+	{}{Reliabilty\sim\tau_{computation}}
+	{}{}
+	\addConstraint{(\tau_{computation}+\tau_{communication})}{\leq T}
+\end{maxi*}
 The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the local obtained prediction from an earlier exit. 
 
 Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. Multiple early exits allows for successively sending back increasingly confident and reliable predictions, at a small overhead communication, the last received prediction would then be used by the application.

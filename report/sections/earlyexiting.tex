@@ -68,7 +68,7 @@ procedure $\textsc{BranchyNetFastInference}$$(x, T)$
 	return $\arg \max \hat{y}$ 
 \end{lstlisting}
 \end{minipage}
-In this thesis we use Cascaded Network Fast Inference also referred to as confidence threshold. We do also propose a new procedure for fast inference using the score-margin from \cite{park_big/little_2015} as threshold. The score-margin is defined in \ref{}. The procedure is still very similar, but instead of calculating the entropy from the score, we calculate the score-margin, see listing \ref{lst:score-margin-inference}.
+In this thesis we use Cascaded Network Fast Inference also referred to as confidence threshold. We do also propose a new procedure for fast inference using the score-margin from \cite{park_big/little_2015} as threshold. The score-margin is defined in \ref{sec:perf-metrics}. The procedure is still very similar, but instead of calculating the entropy from the score, we calculate the score-margin, see listing \ref{lst:score-margin-inference}.
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[language = {}, mathescape=true, caption={Early Exit using Score-margin }, label={lst:score-margin-inference}]
@@ -82,13 +82,16 @@ procedure $\textsc{EarlyExitScoreMargin}$$(x, T )$
 	return $\arg \max s$ 
 \end{lstlisting}
 \end{minipage}
-\subsection{Branchy-ResNet}
 
-In this section the design of Branchy-\gls{resnet} is explained. First is the building blocks of a residual network explained followed by the design of B-\gls{resnet}. 
+Coherence \todo{add an outro to ease into next section}
 
-Depth of \gls{dnn} is of paramount importance to extract increasingly richer features from images to obtain highly accurate classification models cite{who}. Training very deep models with more than ten layer for convergence is not easy due to vanishing/exploding gradients. Residual Networks or \gls{resnet} \cite{he_deep_2015} have for long been a state-of-the-art network and won ILSVRC15 using 152 layers. The network is build of residual blocks, a novel \gls{dnn} layer designed for extremely deep networks. 
+\subsection{Branchy-ResNet} 
 
-Instead of simply stacking convolutional layers as plain \gls{vgg} nets, residual network adds a shortcut connection, which skip a layer or a block of layers. The skip connection adds the identity of input to the output of the layers/block, see figure \ref{fig:residualblock}
+In this section is the residual layers, the building block of the residual network, is explained. Followed by a design description of Branchy-\gls{resnet}.
+
+The depth of \gls{dnn} is of paramount importance to extract increasingly richer features from images to obtain highly accurate classification models cite{who}. Training very deep models with more than ten layer for convergence is not easy due to vanishing/exploding gradients. Residual Networks or \gls{resnet} \cite{he_deep_2015} have for long been a state-of-the-art network and won ILSVRC15 using up to 152 layers. The network is build of residual blocks, a \gls{dnn} layer designed for extremely deep networks. 
+
+Just as plain \gls{vgg} nets, residual networks is still a stacking of  convolutional layers. The \gls{resnet}, however, adds a shortcut connection, which skips a layer or a block of layers. The skip connection adds the identity of input to the output of the layers/block, see figure \ref{fig:residualblock}
 
 \begin{figure}
 	\centering
@@ -99,16 +102,13 @@ Instead of simply stacking convolutional layers as plain \gls{vgg} nets, residua
 
 Information from earlier layers are preserved by the residual, which diminishes the vanishing gradient problem. Thus this type of network have shown to be easier to train compared to it’s plain counterpart and able to obtain superior accuracy.  
 
-Very deep residual networks comprised of up to 152 layers have also shown to be far more efficient requiring less \gls{flop}s, than \gls{vgg}16 comprised of only 16 layers, by introducing a bottleneck unit. The bottleneck reduces the dimensions by a $1 \times 1$ convolution, followed by a $3 \times 3$ convolution and then restoring the dimensions using a $1 \times 1$ convolution. 
+Very deep residual networks comprised of up to 152 layers have also shown to be far more efficient requiring less \gls{flop}s, than \gls{vgg}16 comprised of only 16 layers, by introducing a bottleneck unit. The bottleneck reduces the dimensions by a $1 \times 1$ convolution, followed by a $3 \times 3$ convolution and then restoring the dimensions using a $1 \times 1$ convolution. \todo{fact check this!!}
 
-The residual layers proposed in \cite{he_deep_2015} are grouped into 4 resolutions block with different number of layers (18, 34, 50, 101, 152) depending on the depth of the network. \gls{pytorch} provide implementations of these network. The networks can be trained from scratch or pretrained weights based on ImageNet can be downloaded. \gls{resnet}101 have been chosen for this project, as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}121 implementation and weights and also have roughly equal inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
-
-
-The architecture is further divided into 4 resolution blocks, each of which downsamples the input data. Table \ref{tbl:resnet50} describes the block and layers of the \gls{resnet} architecture. 
+The residual networkds proposed in \cite{he_deep_2015} are grouped into 4 resolutions block each of which downsamples the input data. The network are proposed with different number of layers (18, 34, 50, 101, 152) depending on the depth of the network. Table \ref{tbl:resnet101} describes the blocks and layers of the \gls{resnet} architecture. \gls{pytorch} provide implementations of these networks. The implementations can be trained from scratch or can be initialized with downloadable pretrained weights based on ImageNet. \gls{resnet}101 have been chosen for this project, as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}-121 implementation and also have similar inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
 
 \begin{minipage}{\linewidth}
 \begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
-	\caption[\gls{resnet}50 description]{\gls{resnet}50 description. The table describes the blocks of \gls{resnet}50, the size of the block and the layers of the block.} \label{tbl:resnet50} \\
+	\caption[\gls{resnet}101 description]{\gls{resnet}101 description. The table describes the blocks of \gls{resnet}101, the size of the block and the layers of the block.} \label{tbl:resnet101} \\
 	\toprule
 	\rowfont{\bfseries}
 	Resolution block & Output size & Layer description \tabularnewline
@@ -148,7 +148,7 @@ The architecture is further divided into 4 resolution blocks, each of which down
 	\multirow{4}{*}{conv4\_x} 	& \multirow{4}{*}{$14\times 14$} & \multirow{4}{*}{
 		$\begin{bmatrix}
 		1 \times 1, 256 \\ 3 \times 3, 256 \\1 \times 1, 1024
-		\end{bmatrix} \times 6$}		\tabularnewline										
+		\end{bmatrix} \times 23$}		\tabularnewline										
 	& & 	\tabularnewline
 	& & 	\tabularnewline
 	& & 	\tabularnewline
@@ -169,23 +169,26 @@ The architecture is further divided into 4 resolution blocks, each of which down
 \color{caption-color}{\textit{Source: \citetitle{he_deep_2015}, by \citeauthor{he_deep_2015} \cite{he_deep_2015}, describes a full list of Residual Networks (\gls{resnet}18, \gls{resnet}34, \gls{resnet}50, \gls{resnet}101 and \gls{resnet}152)}}\color{main-color}
 \end{minipage}
 
-The early exits of Branchy-\gls{resnet}50 is placed immediately after a resolution block, as 1) we have to go deep enough, that the model is actually able to correctly predict some input samples. 2) we wish a smaller representation of the input and within a resolution block the data size is unchanged. Hence if offloading after a resolution block 2) is fulfilled and we must by experiment determine how deep within the model exits should be in order to classify some portion of input.
-
-For each exit, the intermediate features are fed to a pooling-layer and a fully-connected softmax classifier. If the output of the  softmax classifier is acceptable the sample is exited. Figure \ref{fig:b-resnet} visualizes the early exiting model B-\gls{resnet}50.
+The early exits of B-\gls{resnet}101 is placed immediately after a resolution block, as;
+\begin{enumerate}
+	\item The exit must be placed sufficiently deep, so that the model is actually able to correctly predict some input samples
+	\item If used in a collaborative setup, a smaller feature representation is desired. The exits are placed after the resolution block, as the filter size is unchanged within the block. 
+\end{enumerate}
+To contruct the early exits a pooling-layer followed by a fully-connected linear classifier is added. Figure \ref{fig:b-resnet} illustrates the early exiting model B-\gls{resnet}101.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/BResNet}
-	\caption[B-\gls{resnet} architecture]{Branchy-\gls{resnet}50: \gls{resnet}50 extended to implement the BranchyNet framework. The figure illustrates how classification confidence grows, as we go deeper in the model. The first exit actually fails to classify the elephant. }
+	\caption[B-\gls{resnet} architecture]{Branchy-\gls{resnet}101: \gls{resnet}101 extended to implement the BranchyNet framework. The figure illustrates how classification confidence grows, as we go deeper in the model. The first exit actually fails to classify the elephant. }
 	\label{fig:b-resnet}
 \end{figure}
 
 
 \subsection{Branchy-DenseNet}
 
-In this section the design of Branchy-\gls{densenet} is explained. First is the building blocks of a dense network explained followed by the design of B-\gls{densenet}.
+In this section is the dense layers, the building block of the densely connected network, is explained. Followed by a design description of Branchy-\gls{densenet}.
 
-DenseNet \cite{huang_densely_2016} is build on the assumption, that many layers of a \gls{resnet} only have a small contribution to the output and can in fact be dropped during training \cite{huang_densely_2016}. Instead of adding previously learned information to the output, \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to relearn redundant information. Figure \ref{fig:denseblock} show the dense connections, that combine features from previous layers and show how the features size grows throughout a densely connected block
+DenseNet \cite{huang_densely_2016} is build on the assumption, that many layers of a \gls{resnet} only have a small contribution to the output and can in fact be dropped during training \cite{huang_densely_2016}. Instead of adding previously learned information to the output, \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to relearn redundant information. Figure \ref{fig:denseblock} show the dense connections, that combine features from previous layers and how the features size grows throughout a densely connected block \todo{maybe a bit sharper explanation and more figure near.}
 
 \begin{figure}
 	\centering
@@ -287,7 +290,7 @@ In the same fashion as B-ResNet early exits have been placed to construct B-Dens
 
 \section{MSDNet}
 
-In contrast to the early exiting framework of \gls{branchynet} for any model comprised of stacking layers on top of each other, \gls{msdnet} \cite{huang_multi-scale_2017} is a \gls{dnn} specifically designed for early exiting. \gls{msdnet} takes advantage of densely connected layers and add multi-scale paths to further improve upon early exiting, see figure \ref{fig:msdnet}.
+In contrast to the \gls{branchynet} framework, that can be applied to existing \gls{dnn} architectures, \gls{msdnet} \cite{huang_multi-scale_2017} is a \gls{dnn} specifically designed for early exiting. \gls{msdnet} takes advantage of densely connected layers and add multi-scale paths to further improve early exiting capabilities, see figure \ref{fig:msdnet}.
 
 \begin{figure}
 	\centering
@@ -296,7 +299,7 @@ In contrast to the early exiting framework of \gls{branchynet} for any model com
 	\label{fig:msdnet}
 \end{figure}
 
-\gls{msdnet} addresses two main problems concerning early exiting. The first problem is the lack of coarse-level features in early classifiers. Traditional \gls{dnn}s uses stacking of layers to get coarse level features, which the early classifier lacks, thus giving unsatisfactory high error-rates. important for classification. Multi-scale feature maps addresses this issues by preserving high-resolution information and allow constructing coarse-level features for all classifiers in the network.
+\gls{msdnet} addresses two main problems concerning early exiting. The first problem is the lack of coarse-level features in early classifiers. Traditional \gls{dnn}s uses stacking of layers to get coarse level features, which the early classifier lacks, thus giving unsatisfactory high error-rates. Multi-scale feature maps addresses this issues by preserving high-resolution information and allow constructing coarse-level features for all classifiers in the network.
 
 The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely,thus harming the later and final classifiers. Their study reveals, that densely connected layers suffers mush less from intermediate classifiers, as a layer is connected to all previous layer and is therefore able to recover collapsed information.
 
