@@ -85,6 +85,31 @@
 \usepackage{subfig}
 \usepackage[labelfont=bf, justification=justified]{caption}
 
+
+\usepackage{enumitem}
+\newcounter{descriptcount}
+\newlist{enumdescript}{description}{4}
+\setlist[enumdescript,1]{%
+	before={\setcounter{descriptcount}{0}%
+		\renewcommand*\thedescriptcount{\arabic{descriptcount}.}}
+	,font=\bfseries\stepcounter{descriptcount}\thedescriptcount~
+}
+\setlist[enumdescript,2]{%
+	before={\setcounter{descriptcount}{0}%
+		\renewcommand*\thedescriptcount{\alph{descriptcount}.}}
+	,font=\bfseries\stepcounter{descriptcount}\thedescriptcount~
+}
+\setlist[enumdescript,3]{%
+	before={\setcounter{descriptcount}{0}%
+		\renewcommand*\thedescriptcount{\arabic{descriptcount})}}
+	,font=\itshape\stepcounter{descriptcount}\thedescriptcount~
+}
+\setlist[enumdescript,4]{%
+	before={\setcounter{descriptcount}{0}%
+		\renewcommand*\thedescriptcount{\roman{descriptcount})}}
+	,font=\itshape\stepcounter{descriptcount}\thedescriptcount~
+}
+
 %
 % variables for title and author
 %

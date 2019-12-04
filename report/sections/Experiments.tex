@@ -614,6 +614,8 @@ As previously shown the models using densely connected layers are able to exit m
 \end{figure}
 
 
+
+
 %  \begin{figure}
 %	\captionsetup[subfigure]{justification=centering}
 %	\centering
@@ -639,6 +641,22 @@ If given a time threshold, what accuracy are we then able to achieve?
 	\caption[Time Threshold]{Time Threshold}
 	\label{fig:time-threshold}
 \end{figure}
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
+	\centering
+	\includegraphics[height=.05\textheight]{figures/delay_plots/delay_threshold_legend}
+	\hfill
+	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/gpu__delay_threshold}}
+	\hfill
+	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/jetson__delay_threshold}}
+	\hfill
+	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/nuc__delay_threshold}}
+	\caption[Delay Threshold]{Time Threshold}
+	\label{fig:delay-threshold}
+\end{figure}
+
+
 
 \section{Summary}
 

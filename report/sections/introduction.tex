@@ -2,6 +2,16 @@
 \chapter{Introduction}\label{sec:introduction}}
 \thispagestyle{fancy}
 
+{\color{sns-red}{
+	from JIanhui: 
+	
+	1) I strongly suggest to use a seperated section or sub-section to explain the latency and reliability model you are using in your experiments and analysis, as well as the opt problem you formulated.  Place this section in front of the implementation ( I guess it's in front of Section Early Exiting). Although you discussed related performance metrics in section 2.3, but some metrics, like energy, you did not really measure it. In my opinion,  these metrics can be simpliy explained as part of related work, and for the metrics we cared, model it with math. 
+	
+	2) You should explain the meaning of each symbol showing in the euqation. For example, explain the meaning of variable in loss function in page 23, and explain the meaning of 'x' in Listing 3.1 in page 23. 
+	
+	3) Page 55, I don't think it is necessary to use a equation to show the early score may larger than the later score.
+}}
+
 \section{Background \& Motivation}
 
 The emerging applications, such as \gls{ar}/\gls{vr}, autonomous driving, mission critical \gls{iot} applications, and others, require extreme low latency of \gls{ai} decision feedback. The conventional approach is sending the sensor data, e.g., images, to the central cloud or data center to perform advanced \gls{ml} algorithms and send the results, e.g., object detection, classification, back to the end mobile devices. The conventional cloud-centric \gls{ml} framework cannot fulfill the stringent requirements of these emerging applications. \gls{mec} is a new computing paradigm which brings the computing units from the core of the network to the network edge. \gls{mec} has many benefits such as lower communication latency, higher reliability and resiliency, better security and privacy, scalability and context-awareness and others. Pushing \gls{ai} to the Edge is also known as Edge \gls{ai} or \gls{ei}. \todo{Write a proper background and motivation}
