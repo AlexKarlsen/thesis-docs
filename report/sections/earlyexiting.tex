@@ -90,7 +90,7 @@ Assume $ K $ denotes the number of image classes, $ N $ denotes the number of th
 		\begin{enumdescript}
 			\item[Conventional Inference Model] The conventional inference model only have a single exit at block $ N $, hence all $ N $ blocks of the \gls{dnn} must have inferred the image $ i $ before $ i $ i classified at exit $ N $. Thus the latency model for a conventional inference model is presented as
 			\begin{align}
-			T^{ci}_{i,N}= \sum_{j=1}^{N} \left(T_{i,n}^{block}\right) + T_{i,N}^{exit}
+			T^{ci}_{i,N}= \sum_{j=1}^{N} T_{i,n}^{block} + T_{i,N}^{exit}
 			\end{align}
 			\item[Early Exit Inference Model] The early exit inference model is adaptive. The inference of image $ i $ can terminate at any exit $ n $. If the classification exits from exit point $ n $, then the latency model for early exit inference model is presented as
 			\begin{align}
@@ -105,7 +105,7 @@ Assume $ K $ denotes the number of image classes, $ N $ denotes the number of th
 		
 		Assume
 		\begin{itemize}
-			\item $ \mathbf{\hat{y}}_{i,n} = \left[\begin{array}{cccc}\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \dots & \hat{y}_{i,n,K}\end{array}\right] $ denotes the output score vector from the softmax classifier at exit point $ n $ for image $ i $
+			\item $ \mathbf{\hat{y}}_{i,n} = \left[\begin{array}{ccccc}\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,k} & \dots & \hat{y}_{i,n,K}\end{array}\right] $ denotes the output score vector from the softmax classifier at exit point $ n $ for image $ i $
 			\item $ \hat{y}_{i,n,k} $ denotes the score of class $ k $ from exit point $ n $ by processing image $ i $
 				
 			\end{itemize}
@@ -118,7 +118,7 @@ Assume $ K $ denotes the number of image classes, $ N $ denotes the number of th
 			
 			\item[Accuracy] Assuming the ground truth of image $ i $ is $ y_i$ a class label taking values of $\left(1, 2, k, \dots, K \right) $. The inference accuracy of exit point $ n $ can be expressed by
 			\begin{align}
-			\bar{A}_{n}=1-\frac{1}{I} \sum_{i=1}^{I} \mathbb{I}\left(\left|\hat{y}_{i,n}-y_{i}\right|\right)
+			\bar{A}_{n}=1-\frac{1}{I} \sum_{i=1}^{I} \mathbb{I}\left(\left|\hat{y}_{i,n}-y_{i}\right|\right) \label{eq:accuracy}
 			\end{align}
 			where $ \mathbb{I(\cdot)}  $ is a indicating function defined by
 			\begin{align}
@@ -178,13 +178,15 @@ Assume $ K $ denotes the number of image classes, $ N $ denotes the number of th
 		\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i}-\delta\right)
 		\end{align}
 		
+		\item[Reliability] We can formulate our reliability model, as the obtainable accuracy times the amount of samples able to meet the latency constraint.
+		
+		\begin{align}
+		R= \bar{A} \cdot (1-\overline{F}^{to})
+		\end{align}
+		
 	\end{enumdescript}
 
-	No we can formulate or reliability model, as the obtainable accuracy times the amount of samples able to meet the latency constraint.
 	
-	\begin{align}
-	R= \bar{A} \cdot (1-\overline{F}^{to})
-	\end{align}
 	
 	\item[Problem formulation] we can formulate our problem, as maximization of the accuracy with a time constraint. The inference time of image $ i $, cannot be greater than or equal to $ \delta $, our latency threshold. 
 	

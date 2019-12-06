@@ -24,141 +24,97 @@ We send back the top-5 predictions to allow info-combination and reduce the data
 
 To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
 
-Each exit outputs two 5-dimensional vectors denoted $\mathbf{c}_{i,k}$ and $ \mathbf{\hat{y}}_{i,k}  $.
-$\mathbf{c}_{i,k}$ contains the class labels associated with the scores of $ \mathbf{\hat{y}}_{i,k}  $ at the same index. The scores are sorted from highest to lowest score of the top-5.
+Each exit outputs two 5-dimensional vectors. $\mathbf{l}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
+
 \begin{align}
 \begin{split}
-\mathbf{l}_{i,k} &= \begin{bmatrix}
-l_{i,k,1} & l_{i,k,2} & l_{i,k,3} & l_{i,k,4} & l_{i,k,5}
+\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
+l_{i,n}^{1st} & \phantom{.}l_{i,n}^{2nd} & \phantom{.}l_{i,n}^{3rd} & \phantom{.}l_{i,n}^{4th} & \phantom{.}l_{i,n}^{5th}
 \end{bmatrix}, \\
-\mathbf{c}_{i,k} &= \begin{bmatrix}
-c_{i,k,l_{i,k,1}} & c_{i,k,l_{i,k,2}} & c_{i,k,l_{i,k,3}} & c_{i,k,l_{i,k,4}} & c_{i,k,l_{i,k,5}}
+\mathbf{\hat{y}}^{top5}_{i,n} &= \begin{bmatrix}
+\hat{y}_{i,n}^{1st} & \hat{y}_{i,n}^{2nd} & \hat{y}_{i,n}^{3rd} & \hat{y}_{i,n}^{4th} & \hat{y}_{i,n}^{5th}
 \end{bmatrix}
 \end{split}
 \end{align}
 
-We define an expansion function, which takes the score at s and insert it into a full dimensional vector at the index of its corresponding value of the label vector. Or formulated like this, for the score vector $\mathbf{c_{i,k}}$ we pad zero-value scores for all missing class labels of $ l_{i,k} $.Thus, after expansion the vector only have non-zero values at the top-5 prediction indices.
-\begin{align*}
-\mathbf{c}_{i,k} = 
+The vectors are sorted from highest to lowest, hence the score $ \hat{y}_{i,k}^{1st} $ is associated the label $ l_{i,k}^{1st} $ etc. 
+
+We define an expansion function, which takes the top-5 score vector $ \mathbf{\hat{y}}_{i,n}^{top5}$ and top-5 label vector  $\mathbf{l}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
+\begin{align}
+f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) = 
 \begin{bmatrix}
-c_{i,k,l_{i,k,1}} & \dots c_{i,k,l_{i,k,5}}
-\end{bmatrix}_{1 \times 5} 
-\xrightarrow{expand}
-\mathbf{c^{N}_{î,k}}
-\begin{bmatrix}
-c_{i,k,1} & c_{i,k,12} & \dots & c_{i,k,N}
-\end{bmatrix} 
-\end{align*}
-\todo{expansion to original class space, how to write that?}
+\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,c} & \dots & \hat{y}_{i,n,C}
+\end{bmatrix}_{1 \times C}
+\end{align}
+\todo{is this implementation?}
 
 \paragraph{Example: Expansion of a 10 class problem} 
 \blockquote[]{	 	
-	For this classification example, the number of classes $k=10$. From a prediction we get the two output vectors $\mathbf{c}$ and $\mathbf{s}$.
+	For this classification example, the number of classes $C=10$. From a prediction we get the two output vectors $\mathbf{l}_{i,n}^{top5}$ and $ \mathbf{\hat{y}}_{i,n}^{top5}$.
 	\begin{align*}
-	\mathbf{l} &= \begin{bmatrix}
+	\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
 	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
 	\end{bmatrix},\\
-	\mathbf{c} &= \begin{bmatrix}
+	\mathbf{\hat{y}}_{i,n}^{top5} &= \begin{bmatrix}
 	0.80 & 0.10 & 0.05 & 0.03 & 0.01
 	\end{bmatrix}
 	\end{align*}
-	We use or expansion method and two vectors $\mathbf{c}$ and $\mathbf{s}$ becomes expanded version two vectors $\mathbf{c^*}$ and $\mathbf{s^*}$.
+	We use our expansion function $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $, which return the score vector $ \mathbf{\hat{y}}_{i,n}$.
 	\begin{align*}
-	\mathbf{l^*} &= \begin{bmatrix}
+	\mathbf{l}_{i,n} &= \begin{bmatrix}
 	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
 	\end{bmatrix}_{1 \times 10},\\
-	\mathbf{C^*} &= \begin{bmatrix}
+	\mathbf{\hat{y}}_{i,n}  &= \begin{bmatrix}
 	0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
 	\end{bmatrix}_{1 \times 10}
 	\end{align*}
-}
-Given we receive $n$ prediction within the time frame, we can formulate $n \times k$ matrix S. 
-%Each row contain the top-5 prediction from the corresponding exit and the columns contain the highest to lowest scoring of the top-5 prediction at all exits.
-\begin{align*}
-\mathbf{c}_{n,k} = \begin{bmatrix}
-s^*_{0,0} & s^*_{0,1} & \dots  & s^*_{0,k-1} 	\\
-s^*_{1,0} & s^*_{1,1} & \dots  & s^*_{1,k-1}	\\
-\vdots 	& \vdots  & \ddots & \vdots 	\\
-s^*_{n,0} & s^*_{n,1} & \dots  & s^*_{n,k-1}
-\end{bmatrix}
-\end{align*}      
-
+}      
 
 \section{System Model}
-	Assume that $ N $ denotes the number of the image classes, $ K $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
+
+	
+	Assume that $ C $ denotes the number of the image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
 	\begin{enumdescript}
-		\item[Latency Model] the latency model consists of two schemes 1) local execution and 2) remote execution. 3) Image Processing Delay.
+		\item[Latency Model] We limit ourselves to only use the early exit model, but in two different scenarios local processing and edge offloading.  %3) Image Processing Delay.
 		
 		Assume:
-		\begin{itemize}
-			\item $T_{i,k}^{loc,bl}$ denotes the runtime of the block between two exit points to process image $ i $ at local $(1 \leq k \leq K, 1 \leq i \leq I)$
-			\item $T_{i,k}^{loc,br}$ denotes the runtime of classifier in each exit point to process image $i$ at local.
-			\item $T_{i,k}^{edge,bl}$ denotes the runtime of the block between two exit points to process image $ i $ at edge $(1 \leq k \leq K, 1 \leq i \leq I)$
-			\item $T_{i,k}^{edge,br}$ denotes the runtime of classifier in each exit point to process image $i$ at edge.
-			\item $ T_{i}^{tran} $ denotes the transmission delay of image i from local device to edge server.
-		\end{itemize}
+		%\begin{itemize}
+%			\item $T_{i,n}^{loc,block}$ denotes the runtime of the block between two exit points to process image $ i $ at local $(1 \leq k \leq K, 1 \leq i \leq I)$
+%			\item $T_{i,n}^{loc,exit}$ denotes the runtime of classifier in each exit point to process image $i$ at local.
+%			\item $T_{i,n}^{edge,block}$ denotes the runtime of the block between two exit points to process image $ i $ at edge $(1 \leq k \leq K, 1 \leq i \leq I)$
+%			\item $T_{i,n}^{edge,exit}$ denotes the runtime of classifier in each exit point to process image $i$ at edge.
+%			\item $ T_{i}^{tran} $ denotes the transmission delay of image i from local device to edge server.
+		%\end{itemize}
 		\begin{enumdescript}
-			\item[Local Execution] If the classification exits from exit point $ k $, the processing delay of image $ i $ at local is presented as
+			\item[Local Execution] If the classification exits from exit point $ n $, the processing delay of image $ i $ at local is presented as
 			\begin{align}
-			T_{i,k}^{loc}=\sum_{j=1}^{k} T_{i,k}^{loc,bl} + T_{i,k}^{loc,br} 
+			T_{i,n}^{loc}=\sum_{j=1}^{n} T^{ee}_{i,n} 
 			\end{align}
-			\item[Remote Execution] If the classification exits from exit point $ k $, the processing delay of image $ i $ at edge is presented as
+			\item[Remote Execution] If the classification exits from exit point $ n $, the processing delay of image $ i $ at edge is presented as
 			\begin{align}
-			T_{i,k}^{edge}=T_{i}^{tran}+\sum_{j=1}^{k} T_{i,k}^{loc,bl} + T_{i,k}^{loc,br}
+			T_{i,n}^{edge}=T_{i}^{tran}+\sum_{j=1}^{n} T^{ee}_{i,n}
 			\end{align}
-			\item[Image Processing delay] $ x_i $ is used to indicate if the computation is offloaded to edge or not and $ x_i \in 0,1$. If image $ i $ is classified at local, $ x_i = 1; $ otherwise, $ x_i = 0 $. In this way, the delay to classify the image $ i $ can be expressed as
-			\begin{align}
-			T_{i,k}=x_i T_{i,k}^{loc} +(1-x_i)T_{i,k}^{edge}
-			\end{align}
+%			\item[Image Processing delay] $ x_i $ is used to indicate if the computation is offloaded to edge or not and $ x_i \in 0,1$. If image $ i $ is classified at local, $ x_i = 1; $ otherwise, $ x_i = 0 $. In this way, the delay to classify the image $ i $ can be expressed as
+%			\begin{align}
+%			T_{i,n}=x_i T_{i,n}^{loc} +(1-x_i)T_{i,n}^{edge}
+%			\end{align}
 		\end{enumdescript}
-		\item[Reliability Model] consists of two phases 1) Transmission Phase and 2) Computation Phase 
-		\begin{enumdescript}
-			\item[Transmission Phase] As \gls{tcp} is used for offloading, the transmission reliability can be
-			regarded as 1, i.e., error-free transmission.
-			\item[Computation Phase]  The computation reliability depends on the inference accuracy of
-			image classification.
-			\begin{itemize}
-				\item $ c_{i,k,n} $ denotes the confidence score of class $ n $ from exit point $ k $ by processing image $ i $
-				\item $ \mathbf{c}_{i,k} = \left[\begin{array}{cccc}c_{i,k,1} & c_{i,k,2} & \dots & c_{i,k,N}\end{array}\right] $ denotes the score vector of exit point $ k $ for image $ i $
-			\end{itemize}
-			\begin{enumdescript}
-				\item[Prediction] The prediction of image $ i $ from the exit point $ k $ will be
-				\begin{align}
-				p_{i,k} = \arg \underset{n}{\max}\: \mathbf{c}_{i,k}
-				\end{align}
-				Note that the prediction to go through the entire DNN is $ p_i  = p_{i,K} $
-				\item[Accuracy] Assuming the ground truth of image $ i $ is $ g_i $, the average inference accuracy of exit point $ k $ can be expressed by
-				\begin{align}
-				\bar{A}_{k}=1-\frac{1}{I} \sum_{i=1}^{I} \mathbb{I}\left(\left|p_{i,k}-g_{i}\right|\right)
-				\end{align}
-				where $ \mathbb{I(\cdot)}  $ is a indicating function defined by
-				\begin{align}
-				\mathbb{I}(y)= \begin{cases}
-				0, & \mathrm{if\:} y \leq 0, \\
-				1, & \mathrm{otherwise}
-				\end{cases}
-				\end{align}
-			\end{enumdescript}
-			\item[Delay Violation] Each image has to be processed with a latency threshold $ \delta $, i.e., $ T_{i} \leq \delta $. Thus, the timeout probability is
-			\begin{align}
-			\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i}-\delta\right)
-			\end{align}
-			\item[Overall Reliability]\begin{align}
-			R= \bar{A} \cdot (1-\overline{F}^{to})
-			\end{align}
-			
-		\end{enumdescript}
+	
 		\item[Problem formulation] 
 		This scheme opens up for the opportunities to receive multiple predictions within the time frame. The accuracy may be improved by using the output results of the first $ k $ exit points to classify image $ i $, of which problem can be reformulated as
 		\begin{maxi}
-			{k,x_i}{\bar{A}_f}
+			{n}{\bar{A}_f}
 			{}{}
-			\addConstraint{T_i,k}{\leq \delta}
+			\addConstraint{\hat{T}_{i,n}}{\leq \delta}
 		\end{maxi}
 		where the accuracy $ \bar{A}_f $ is now using a combination function $ f $ to determine the prediction.
 		\begin{align*}
-		\bar{A}_f = 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c_{i,k}}\right)-g_i\right|\right)
+		\bar{A}_f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c_{i,k}}\right)-y_i\right|\right)
 		\end{align*}
+		
+		$$\hat{T}_{i,n}^{loc}=\sum_{j=1}^{n} T^{ee}_{i,n}, $$ \\
+		$$\hat{T}_{i,n}^{edge}=T_{i}^{tran}+\sum_{j=1}^{n} T^{ee}_{i,n}$$
+		%			\item[Image Processing
 		
 			\item[Combination function] There are several ways to define combination function $ f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c}_{i,k}\right) $
 		\begin{enumdescript}
@@ -184,7 +140,7 @@ s^*_{n,0} & s^*_{n,1} & \dots  & s^*_{n,k-1}
 				\end{align}
 
 				\item[weighted sum confidence]
-				\todo{How is this guaranteed to find the right class label?}
+
 				\begin{align}
 				\begin{split}
 					f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{n}{\max} \{s_{i,1}, \cdots, s_{i,N}\},\\ \text{where\:} s_{i,n} = \sum_{j=1}^{k}w_n c_{i,k,n} \text{\:for\:} \forall \ 1\le n \le N
@@ -201,9 +157,7 @@ s^*_{n,0} & s^*_{n,1} & \dots  & s^*_{n,k-1}
 		\end{enumdescript}
 	\end{enumdescript}
 
-We define several proposals for using the additional predictions provided from the early exiting framework, with the purpose to improve the accuracy under time constraints. 
-
-Each prediction contains 
+We define several proposals for using the additional predictions provided from the early exiting framework, with the purpose to improve the accuracy under time constraints.  
 
 
 
