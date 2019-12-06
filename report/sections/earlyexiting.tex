@@ -2,13 +2,16 @@
 	\chapter{Early Exiting}\label{ch:earlyexit}}
 \thispagestyle{fancy}
 
-Early exiting \gls{dnn} draws inspiration from another \gls{cv} algorithm, Viola-Jones \cite{viola_rapid_2001}. Viola Jones Face Detection was proposed in \citeyear{viola_rapid_2001}. The idea is a stacking or cascaded less accurate predictors to build a strong predictor. The predictors increasingly gain confidence when running the algorithm which termintates when the confidence has reached a threshold. Early exiting \gls{dnn} likewise stacks multiple classifiers. The \gls{dnn} can too be terminated when a prediction with satisfying confidence is obtained. Early exiting \gls{dnn} have primarily been used to solve two challenges in current literature and have shown promising results in \cite{leroux_cascading_2017, teerapittayanon_branchynet:_2016, leroux_resource-constrained_2015, teerapittayanon_distributed_2017, huang_multi-scale_2017, li_edge_2018}.
+In this chapter we study accuracy latency trade-off of the early exiting \gls{dnn}s, by experimentation of exit thresholds and delay thresholds. We have found, that the early exiting have capabilities to better accommodate delay threshold, than conventional single-exit \gls{dnn}s. The chapter is structured as follows, section \ref{sec:ee-theory} present the theoretical background for early exit models. In section \ref{sec:ee-metrics} we define the metrics used in our experiments. In section \ref{sec:ee-exp-setup} we descibe our experimental setup. In Section \ref{sec:ee-implementation} we describe the implementation details of our early exiting models B-\gls{resnet} and B-\gls{densenet}. In section \ref{sec:ee-results} we present our results of training the models and experimenting with the fast inference framework using exit threshold and delay threshold. In section \ref{sec:ee-summary} we discuss our results.
+
+\section{Theory} \label{sec:ee-theory}
+
+Early exiting \gls{dnn} draws inspiration from another \gls{cv} algorithm, Viola-Jones \cite{viola_rapid_2001}. Viola Jones Face Detection was proposed in \citeyear{viola_rapid_2001}. The idea is a stacking or cascaded less accurate predictors to build a strong predictor. The predictors increasingly gain confidence when running the algorithm which termintates when the confidence has reached a threshold. Early exiting \gls{dnn} likewise stacks multiple classifiers. The \gls{dnn} can too be terminated, when a prediction with satisfying confidence is obtained. The early exit \gls{dnn} have shown promising results in \cite{leroux_cascading_2017, teerapittayanon_branchynet:_2016, leroux_resource-constrained_2015, teerapittayanon_distributed_2017, huang_multi-scale_2017, li_edge_2018}, and have primarily been used to solve two challenges in current literature.
 
 \begin{enumerate}
 	\item Reducing average inference latency and power consumption by letting samples prematurely exit the model based on random distributions \cite{bibid} or samples passing a threshold measure of confidence \cite{teerapittayanon_branchynet:_2016}.
 	\item Comply with application time constraints by exit selection or sub-model selection. By only inference samples up to a selected exit possible to meet stringent delay constraints and reduce waste of computation \cite{li_edge_2018}. 
 \end{enumerate}
-
 
 Early exiting relies on the assumption, that the majority of samples are easy to classify correctly, and that \gls{dnn}s only have become deeper to accurately classify more difficult samples.
 
@@ -23,11 +26,7 @@ Early exiting relies on the assumption, that the majority of samples are easy to
 
 As figures \ref{fig:hardvseasydog} exemplifies, samples where the object is easily separated from the background, are not occluded, and are viewed from angles which makes it easier to classify. Contrary samples that are not, are harder, additionally if the sample, should be discriminated from classes, with similar features are difficult such as different dog breeds etc. These examples have been found by running an early exit model. The hard examples have been found from looking at samples, that the \gls{dnn}s failed to classify, or can only classify using the last exit. The easy example are found by looking at samples, that can be correctly classified with high confidence by the first exit. 
 
-\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} or cascaded network \cite{leroux_resource-constrained_2015} are both frameworks for constructing \gls{dnn}s with early exiting or stopping mechanisms. The difference between the two proposals are, cascaded network are seen as a general framework for adding intermediate classifiers after a layer, or a block of layer in a \gls{dnn}. \gls{branchynet} shows, that the framework can be applied to existing \gls{dnn} architectures. Commonly the two proposals addresses the same challenge of reducing the inference latency by not necessarily computing all layer of the network.
-
-\section{BranchyNet or Cascaded DNN}
-
-The \gls{branchynet} framework, proposed by \citeauthor{teerapittayanon_branchynet:_2016} It is a framework aimed at reducing the inference time by a small cost in accuracy. The original framework proposed is an modification of \gls{alexnet}, but is easily extended to other architectures. 
+\gls{branchynet} \cite{teerapittayanon_branchynet:_2016} and cascaded network \cite{leroux_resource-constrained_2015}, mentioned in \ref{label}, are both frameworks for constructing \gls{dnn}s with early exiting or stopping mechanisms. The difference between the two proposals are, cascaded network are seen as a general framework for adding intermediate classifiers after a layer, or a block of layers in a \gls{dnn}, wheres \gls{branchynet} construct early exit branches with additional layers, see figure \ref{fig:cascaded-vs-branchy}.
 
 \begin{figure}
 	\centering
@@ -35,161 +34,174 @@ The \gls{branchynet} framework, proposed by \citeauthor{teerapittayanon_branchyn
 	\hspace{2em}
 	\subfloat[Cascaded \gls{dnn}, Source \citetitle{leroux_resource-constrained_2015}\cite{leroux_resource-constrained_2015}]{\includegraphics[height=.3\textheight]{figures/articles/cascade_dnn}}
 	\caption[\gls{branchynet} vs. Cascaded \gls{dnn}]{\gls{branchynet} vs. Cascaded \gls{dnn}}
+	\label{fig:cascaded-vs-branchy}
 \end{figure}
 
+\paragraph{Fast Inference Framework} The inference framework for the two proposal \gls{branchynet} and Cascaded \gls{dnn} is almost identical. A sample is inferred up to an exit and based on an exit criteria, it is decided to exit og continue the inference. The only difference is the choice of exit threshold. Cascaded \gls{dnn} uses the softmax score of the prediction, and evaluates if the score higher than a selected threshold, it is exited. \gls{branchynet} determines the entropy of the softmax output, and evaluates if the entropy is less a selected threshold, the sample is is is exited.
 
-\paragraph{Training Framework} Training cascaded \gls{dnn}, in \cite{leroux_resource-constrained_2015} it is proposed to train a network using a single end classifier. Once the model has convergence, the weights of the network are frozen and intermediate classfiers are attached. The next phase is training all intermediate classifiers. The approach was tested and gave unsatisfactory results, see \ref{sec:training-results}. However, this particular method may work on datasets with small image sizes such as \gls{mnist} or \gls{cifar10}. Both \cite{leroux_resource-constrained_2015} and \cite{teerapittayanon_branchynet:_2016} uses the \gls{mnist} and \gls{cifar10} datasets. One may argue, that the two datasets used are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples. In \cite{leroux_cascading_2017}, the follow-up paper to Cascaded \gls{dnn}, they train a frozen base network on the ImageNet dataset, but does not achieve particularly high accuracy on early exits.  
-
-The \gls{branchynet} approach is remarkably similar. In \cite{teerapittayanon_branchynet:_2016} the network is trained solving a joint-optimization problem. The optimization problem is defined as the weighted sum of each branch-prediction. Where the loss function is the softmax cross-entropy objective.
-\begin{align*}
-L(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_m L(\hat{\mathbf{y}}_{exit_n},\mathbf{y};\theta)
-\end{align*}
-In \cite{teerapittayanon_branchynet:_2016} they claim, the joint-optimization comes with the positive side-effect, that each exit provides regularization on the others, thus countering over-fitting and potentially improves test accuracy. Additionally is also mitigates vanishing gradient, due to additional gradient signal from the early exits, which promotes more discriminative feature in early layers. In \gls{googlenet} \cite{szegedy_going_2015} auxiliary classifiers are place in the middle of the network for this very purpose. It is also the only purpose for these auxiliary classifiers, as they are only used when training the network, hence no samples will be classified to exit an inference process. 
-
-In \cite{teerapittayanon_branchynet:_2016} they have too found, that first training the network end-to-end or using a pre-trained model, and then attach the intermediate classifier both improves the performance and shortens the training time. However, they do not suggest freezing the features of the networks, which we also show to be a far superior approach. This thesis studies BranchyNet on state-of-the-art \gls{dnn} \gls{resnet}101 and \gls{densenet}-121 on a subset of the ImageNet dataset with an average size of 400 $\times$ 350 pixels per images.  
-
-\paragraph{Inference Framework} The inference framework for the two proposal \gls{branchynet} and Cascaded \gls{dnn} is almost identical. Cascaded \gls{dnn} uses the score output from the softmax function and checks if the score is higher than a selected threshold, if true the sample is exited. See listing \ref{lst:cascaded-inference}, where $ x $ is the input image, $f_{exit_n}$ is the output of the $n$-th exit.
+We use the fast inference framework defined in both \cite{leroux_resource-constrained_2015,teerapittayanon_branchynet:_2016}. However, we use two different score functions to evaluate, if the sample should be exited based on a threshold. The inference framework are written in pseudo code,  see listing \ref{lst:score-margin-inference}.
 
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[language = {}, mathescape=true, caption={Cascaded Network Fast Inference (Reformulated)}, label={lst:cascaded-inference}]
-procedure $\textsc{CascadedNetworkFastInference}$$(x, T )$
-	for $n = 1\dots N$ do
-		$ z = f_{exit_n}(x) $
-		$ \hat{y} =softmax(z) $
-		if $\hat{y} > T_n$ then
-			return $\arg \max s$
-	return $\arg \max \hat{y}$ 
-\end{lstlisting}
-\end{minipage}
-
-\gls{branchynet} uses one step more and determines the entropy from the softmax output, and evaluates if the entropy is less a selected threshold, if true the sample is exited. See listing \ref{lst:branchy-inference}.
-
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language = {}, mathescape=true, caption={BranchyNet Fast Inference}, label={lst:branchy-inference}]
-procedure $\textsc{BranchyNetFastInference}$$(x, T)$
-	for $n = 1\dots N$ do
-		$z = f_{exit_n}(x)$
-	 	$\hat{y} = softmax(z)$
-		$e = entropy(\hat{y})$
-		if $e < T_n$ then
-	 		return $\arg \max \hat{y}$
-	return $\arg \max \hat{y}$ 
-\end{lstlisting}
-\end{minipage}
-In this thesis we use Cascaded Network Fast Inference also referred to as confidence threshold. We do also propose a new procedure for fast inference using the score-margin from \cite{park_big/little_2015} as threshold. The score-margin is defined in \ref{sec:perf-metrics}. The procedure is still very similar, but instead of calculating the entropy from the score, we calculate the score-margin, see listing \ref{lst:score-margin-inference}.
-
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[language = {}, mathescape=true, caption={Early Exit using Score-margin }, label={lst:score-margin-inference}]
-procedure $\textsc{EarlyExitScoreMargin}$$(x, T )$
-	for $n = 1\dots N$ do
-		$z = f_{exit_n}(x)$
+	\begin{lstlisting}[language = {}, mathescape=true, caption={Early Exit using Score-margin }, label={lst:score-margin-inference}]
+procedure $\textsc{EarlyExitFastInference}$$(x, T )$
+	for $k = 1\dots K$ do
+		$z = f_{exit_k}(x)$
 		$ \hat{y} = softmax(z) $
-		$ m = scoremargin(s) $
-		if $m > T_n$ then
+		if $$\hat{y}$ > T_k$ then
 			return $\arg \max \hat{y}$
 	return $\arg \max \hat{y}$ 
-\end{lstlisting}
+	\end{lstlisting}
 \end{minipage}
 
-\section{Metrics}
+\paragraph{Training Framework} 
+Training cascaded \gls{dnn}, in \cite{leroux_resource-constrained_2015} it is proposed to train a network using a single end classifier. Once the model has convergence, the weights of the network are frozen and intermediate classfiers are attached, equivalent to use a pre-trained model and convert it to a cascaded models and train the entire network for a single epoch before freezing the network weights. The next phase is training all intermediate classifiers. The approach was tested and gave unsatisfactory results, see \ref{sec:training-results}. However, this particular method may work on datasets with small image sizes such as \gls{mnist} or \gls{cifar10}. Both \cite{leroux_resource-constrained_2015} and \cite{teerapittayanon_branchynet:_2016} uses the \gls{mnist} and \gls{cifar10} datasets. One may argue, that the two datasets used are not applicable to real-life scenarios, as the images are only 32x32 pixels and the datasets only contain 10.000 samples. In \cite{leroux_cascading_2017}, the follow-up paper to Cascaded \gls{dnn}, they train a frozen base network on the ImageNet dataset, but does not achieve particularly high accuracy on early exits.  
 
-\begin{enumdescript}
-	\item[System Model]
-	Assume that $ N $ denotes the number of the image classes, $ K $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
+The \gls{branchynet} approach is remarkably similar. In \cite{teerapittayanon_branchynet:_2016} they define the \gls{branchynet} loss function, as an adaptation of the widely used softmax cross-entropy loss function.
+\begin{align}
+L\left(\mathbf{y},\hat{\mathbf{y}}\right) = - \frac{1}{C} \sum_{j =1}^{C} y_c \log \hat{y}_c
+\end{align}
+Where $ \bm{y} $ is a on-hot encoded ground truth vector, $ \bm{\hat{y}} $ is the output score vector of the softmax classfier and $ C $ is the number of class labels $ (1, 2, c, \dots, C) $.
+	
+The \gls{branchynet} loss function is defined as the weighted sum of the softmax cross-entropy loss of each branch-prediction. 
+
+\begin{align}
+	L_{\mathrm{BranchyNet}}(\hat{\mathbf{y}},\mathbf{y};\theta) = \sum_{n=1}^{N} w_n L \left(\hat{\mathbf{y}}_{n},\mathbf{y};\theta\right)
+\end{align}
+
+Where $ \bm{\hat{y}} $ is the output score vector of exit $ n $, $ w_n $ is the weight for exit $ n $ and $ \theta $ represents the parameters of the layers from an entry point to the exit point $ n $.
+
+They claim, that the joint-optimization of multiple exits provides a regularization effect, thus countering over-fitting and potentially improves test accuracy. Additionally is also mitigates vanishing gradient, due to additional gradient signal from the early exits, which promotes more discriminative feature in early layers. In \gls{googlenet} \cite{szegedy_going_2015} auxiliary classifiers are too place in the middle of the network to counter vanishing gradients. However, that is also the only purpose for the auxiliary classifiers og \gls{googlenet}, as they are only used when training the network, hence no samples can exit the inference process prematurely. 
+
+They have also too found, that first training the network end-to-end or using a pre-trained model, and then attach the intermediate exits/classifiers both improves the performance and shortens the training time. However, they do not suggest freezing the features of the networks. We have tried both freezing and unfreezing the network base and have found, that training the entire model is the far superior approach. 
+
+ In the next section we describe the mathematical models used to evaluate the latency, accuracy and early exiting capabilities using confidence and delay thresholds.
+
+\section{Metrics} \label{sec:ee-metrics}
+
+Assume $ K $ denotes the number of image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
 	\begin{enumdescript}
-		\item[Latency Model] Early exiting vs. conventional inference
+		\item[Latency Model] We adapt the same notation for the early exiting inference model and the conventional inference model with a single exit at the end of the \gls{dnn}. The \gls{dnn}s are build of blocks and classifiers.
 		
-			Assume:
+		Assume:
 		\begin{itemize}
-			\item $T_{i}^{ci,bl}$ denotes the runtime of the feature extractor to process image $ i $ of a conventional model $1 \leq i \leq I$
-			\item $T_{i}^{ci,br}$ denotes the runtime of classifier to process image $i$ of a conventional model 
-			\item $T_{i,k}^{ee,bl}$ denotes the runtime of the block between two exit points to process image $ i $ of an early exit model $(1 \leq k \leq K, 1 \leq i \leq I)$
-			\item $T_{i,k}^{ee,br}$ denotes the runtime of classifier in each exit point to process image $i$ at of an early exit model.
-			
+			\item $T_{i,n}^{block}$ denotes the runtime inference an image $ i $ to the $ n $th block of the \gls{dnn} $ i $ for $ \left(1\leq n \leq N, 1 \leq i \leq I\right) $
+			\item $T_{i,n}^{exit}$ denotes the runtime of the exit $ n $  to process image $i$ for $ \left(1\leq n \leq N, 1 \leq i \leq I\right) $
 		\end{itemize}
 		\begin{enumdescript}
-			\item[Conventional Inference]  The processing delay of image $ i $ of conventional model is presented as
+			\item[Conventional Inference Model] The conventional inference model only have a single exit at block $ N $, hence all $ N $ blocks of the \gls{dnn} must have inferred the image $ i $ before $ i $ i classified at exit $ N $. Thus the latency model for a conventional inference model is presented as
 			\begin{align}
-			T_{i}^{ci}=T_{i}^{ci,bl} + T_{i}^{ci,br}
+			T^{ci}_{i,N}= \sum_{j=1}^{N} \left(T_{i,n}^{block}\right) + T_{i,N}^{exit}
 			\end{align}
-			\item[Early Exiting] If the classification exits from exit point $ k $, the processing delay of image $ i $ of early exit model is presented as
+			\item[Early Exit Inference Model] The early exit inference model is adaptive. The inference of image $ i $ can terminate at any exit $ n $. If the classification exits from exit point $ n $, then the latency model for early exit inference model is presented as
 			\begin{align}
-			T_{i,k}^{ee}=\sum_{j=1}^{k} \left(T_{i,k}^{ee,bl} + T_{i,k}^{ee,br} \right) 
+			T_{i,n}^{ee}=\sum_{j=1}^{n} \left(T_{i,n}^{block} + T_{i,n}^{exit} \right) 
 			\end{align}
+			The additional classifiers of the early exit inference model add a overhead compared to the conventional inference model, however it may not be required to run all $ n $ blocks and classifiers of the early exiting inference model. 
 		\end{enumdescript}
+		
 					
 		
-		\item[Reliability Model] consists of a Computation Phase 
-		\begin{enumdescript}
-			\item[Computation Phase]  The computation reliability depends on the inference accuracy of image classification.
-			\begin{itemize}
-				\item $ c_{i,k,n} $ denotes the confidence score of class $ n $ from exit point $ k $ by processing image $ i $
-				\item $ \mathbf{c}_{i,k} = \left[\begin{array}{cccc}c_{i,k,1} & c_{i,k,2} & \dots & c_{i,k,N}\end{array}\right] $ denotes the score vector of exit point $ k $ for image $ i $
+		\item[Accuracy Model] The accuracy model is independent of conventional or early exiting inference model. 
+		
+		Assume
+		\begin{itemize}
+			\item $ \mathbf{\hat{y}}_{i,n} = \left[\begin{array}{cccc}\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \dots & \hat{y}_{i,n,K}\end{array}\right] $ denotes the output score vector from the softmax classifier at exit point $ n $ for image $ i $
+			\item $ \hat{y}_{i,n,k} $ denotes the score of class $ k $ from exit point $ n $ by processing image $ i $
+				
 			\end{itemize}
-			\begin{enumdescript}
-				\item[Prediction] The prediction of image $ i $ from the exit point $ k $ will be
-				\begin{align}
-				p_{i,k} = \arg \underset{n}{\max}\: \mathbf{c}_{i,k}
-				\end{align}
-				Note that the prediction to go through the entire DNN is $ p_i  = p_{i,K} $
-				\item[Accuracy] Assuming the ground truth of image $ i $ is $ g_i $, the average inference accuracy of exit point $ k $ can be expressed by
-				\begin{align}
-				\bar{A}_{k}=1-\frac{1}{I} \sum_{i=1}^{I} \mathbb{I}\left(\left|p_{i,k}-g_{i}\right|\right)
-				\end{align}
-				where $ \mathbb{I(\cdot)}  $ is a indicating function defined by
-				\begin{align}
-				\mathbb{I}(y)= \begin{cases}
-				0, & \mathrm{if\:} y \leq 0, \\
-				1, & \mathrm{otherwise}
-				\end{cases}
-				\end{align}
-			\end{enumdescript}
-			\item[Early Exiting] an image $ i $ is allowed to exit the model at exit point $ k $, if a confidence threshold $ \gamma $ is exceeded, i.e. $S^\varepsilon \geq \gamma$. For notational simplicity, we use $ \varepsilon = \{con, mar\} $ to represent the two types of thresholds used, which are explained next. Thus, the probability of early exit is
+		\begin{enumdescript}
+			\item[Prediction] The prediction of image $ i $ from the exit point $ n $ is denoted $ \hat{y}^*_{i,n} $ and will be
 			\begin{align}
-			\overline{F}^{exit} = \frac{1}{I}\sum_{i=1}^{I} \mathbb{I} \left(\gamma-C_i\left(\cdot\right)\right)
+			\hat{y}^*_{i,n} = \arg \underset{n}{\max}\: \mathbf{\hat{y}}_{i,n}
 			\end{align}
-				\begin{enumdescript}
-					\item[Confidence Threshold] the confidence score \cite{leroux_resource-constrained_2015} is denoted as $ S_{i,k}^{con} $, which is the maximum score of the score vector $ \mathbf{C}_{i,k} $ for image $ i $ at exit point $ k $ 
-					\begin{align}
-					S_{i,k}^{con} = \max \mathbf{c}_{i,k}
-					\end{align}
-					\item[Score Margin] defined in \cite{park_big/little_2015}, is denoted $ S_{i,k}^{mar} $ and the set of output scores at exit point $ k $ as $ \mathcal{C}_{i,k} $, where $ \mathcal{C} = \left\{ \begin{array}{cccc}
-					c_{i,k,1}, & c_{i,k,2}, & \dots , & c_{i,k,N} \end{array}\right\}$
-					In set $ \mathcal{C}_{i,k}$,  the highest score is denoted by 
-					\begin{align}
-					c_{i,k}^{1st}=\max \mathcal{C}_{i,k}
-					\end{align}
-					The second highest core is denoted by
-					\begin{align}
-					c_{i,k}^{2nd}=\max \left(\mathcal{C}_{i,k}\backslash \{c_{i,k}^{1st}\}\right)
-					\end{align}
-					where $\mathcal{A}\backslash\mathcal{B}$ means the elements belonging to set $ \mathcal{A} $ while not belonging set $ \mathcal{B} $, i.e. \\ $ \{y \colon y \in \mathcal{A}\: \&\: y \notin \mathcal{B}\} $
-					
-					The score margin becomes
-					\begin{align}
-					S_{i,k}^{mar} = c_{i,k}^{1st} - c_{i,k}^{2nd}
-					\end{align}
-					
-				\end{enumdescript}
-			\item[Delay Violation] Each image has to be processed with a latency threshold $ \delta $, i.e., $ T_{i} \leq \delta $. Thus, the timeout probability is
+			Note that the prediction to go through the entire \gls{dnn} is $ \hat{y}^*_i  = \hat{y}_{i,N} $, i.e. the last exit $ N $ of the early exit model, or equivalent to the prediction of conventional inference model.
+			
+			\item[Accuracy] Assuming the ground truth of image $ i $ is $ y_i$ a class label taking values of $\left(1, 2, k, \dots, K \right) $. The inference accuracy of exit point $ n $ can be expressed by
 			\begin{align}
-			\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i}-\delta\right)
+			\bar{A}_{n}=1-\frac{1}{I} \sum_{i=1}^{I} \mathbb{I}\left(\left|\hat{y}_{i,n}-y_{i}\right|\right)
 			\end{align}
-			\item[Overall Reliability]\begin{align}
-			R= \bar{A} \cdot (1-\overline{F}^{to})
+			where $ \mathbb{I(\cdot)}  $ is a indicating function defined by
+			\begin{align}
+			\mathbb{I}(a)= \begin{cases}
+			0, & \mathrm{if\:} a \leq 0, \\
+			1, & \mathrm{otherwise}
+			\end{cases}
 			\end{align}
+			We sum the number of errors or misclassifications. When $ \hat{y} \neq y $ our indicating function return a 1. The determine the probability of misclassification as, the number of errors divided by the total number of images. To convert into accuracy we subtract the error probability from 1.    
+			
+			
+			
+		\end{enumdescript}
+	
+		\item[Early Exit Condition] we define an early exit condition based on the output vector from the softmax classifier $ \bm{s}_{i,n} $ for image $ i $ at exit point $ n $. An image $ i $ is allowed to exit the model at exit point $ n $, if a score threshold $ \gamma_n $ at exit $ n $ is surpassed.
+		
+		Assume
+		\begin{itemize}
+			\item $ \bm{\gamma} = \left[\begin{array}{cccc}
+			\gamma_{1} & \gamma_{n} & \dots & \gamma_{N} \end{array}\right]  $ denotes the threshold vector at exit point $ n $. It is seen in \cite{teerapittayanon_finding_2018}, that finding different threshold values for the exits can improve the accuracy. However, in our experiments, we have set $ \gamma_{1} = \gamma_{n} = \dots, = \gamma_{N}  $, as we are more concerned with latency. Evidently selecting a higher threshold value at an early exit, will cause less samples to exit and promote the use a later exit, which will cause additional inference delay.
+		\end{itemize}
+		
+		We use two different score functions, the score-max $ f_{max}(\cdot) $ and the score-margin $ f_{margin} $, to evaluate against the threshold $ \gamma $. 
+		
+		\begin{enumdescript}
+			
+			
+			\item[Score-Max] the score-max function $ f_{max}(\cdot)$ also used in \cite{leroux_resource-constrained_2015}, is a simple function, that takes the score vector $ \bm{s}_{i,n} $ of image $ i $ at exit $ n $ as input and outputs the maximum value of the vector. We express it as 
+			\begin{align}
+			f_{max}\left(\bm{\hat{y}}_{i,n}\right) = \max \bm{\hat{y}}_{i,n}
+			\end{align}
+			
+			
+			\item[Score-Margin] the score-margin function $ f_{margin}(\cdot)$, is defined and used in \cite{park_big/little_2015}- However, used for model selection and not early exiting. The function also takes the $ \bm{s}_{i,n} $ as input and returns the difference between the two largest elements. We express it as
+			
+			\begin{align}
+			f_{margin}\left(\bm{\hat{y}}_{i,n}\right) = \hat{y}_{i,n}^{1st} - \hat{y}_{i,n}^{2nd}
+			\end{align}
+			where $ \hat{y}_{i,k}^{1st} $ denotes the largest element of $ \bm{\hat{y}}_{i,n} $ 
+			and $ \hat{y}_{i,n}^{2nd} $ the second largest element of $ \bm{\hat{y}}_{i,n} $.
+			
 			
 		\end{enumdescript}
 		
 		
+		We express the probability of early exit, given the score function. For notation simplicity we write $ f_{\phi} = \{f_{max}, f_{margin}\}$, meaning we can choose to use either function. 
+		\begin{align}
+		\overline{F}^{exit} = \frac{1}{I}\sum_{i=1}^{I} \mathbb{I} \left(\gamma-f_{\phi}\left(\hat{y}_{i}\right) \right)
+		\end{align}
+	
+	\item[Reliability Model] as we are concerned with time-sensitive real-time applications and services. We define a latency threshold $ \delta $. We have a delay violation if $ T_i \leq \delta $, hence the model have not provided a prediction within the time frame.
+	
+	\begin{enumdescript}
+		\item[Timeout Probability]  We define the probability of timeout, the amount of samples not able to meet the delay requirement out of all samples.
+		
+		\begin{align}
+		\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i}-\delta\right)
+		\end{align}
+		
 	\end{enumdescript}
-\end{enumdescript} 
+
+	No we can formulate or reliability model, as the obtainable accuracy times the amount of samples able to meet the latency constraint.
+	
+	\begin{align}
+	R= \bar{A} \cdot (1-\overline{F}^{to})
+	\end{align}
+	
+	\item[Problem formulation] we can formulate our problem, as maximization of the accuracy with a time constraint. The inference time of image $ i $, cannot be greater than or equal to $ \delta $, our latency threshold. 
+	
+	\begin{maxi}
+		{}{\bar{A}}
+		{}{}
+		\addConstraint{T_i}{\leq \delta}
+	\end{maxi}
+	
+		
+	\end{enumdescript}
 
 
 Coherence \todo{add an outro to ease into next section}
 
 
-\section{Implementation}
+\section{Implementation} \label{sec:ee-implementation}
 
 \subsection{Branchy-ResNet} 
 

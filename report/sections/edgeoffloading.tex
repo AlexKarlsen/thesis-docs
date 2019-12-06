@@ -1,23 +1,90 @@
 \chapter{Edge Offloading \& Early Exiting}
 
-Edgent \cite{li_edge_2018} is to our knowledge the only proposal in current literature, that uses early exiting models in an offloading scenario. Edgent combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. The downside of edgent is an upfront selection of exit i.e gls{dnn} right-sizing, which can be troublesome with unpredictable communication delays. 
+In this chapter we implement a edge-based offloading scheme utilizing early exiting \gls{dnn}s. Our scheme a more flexible and adaptive than currently proposed in literature. In section \ref{} we present our offloading scheme and implementation details. In section \ref{label} we define the system model used to evaluate our result. In section \ref{} we describe our experimental setup. In section \ref{} we present our results and in section \ref{} we discuss our results.
 
-We propose a more flexible edge offloading scheme, compared to upfront exit selection. We argue, that allowing the edge server to reach as far as possible, within the time budget and continuously sending back increasingly confident predictions, will in any case achieve at least the same accuracy. Even though a sub-model exit have been chosen with care e.g. using \gls{dnn} right-sizing, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
+\section{Do we have a catchy name for offloading scheme?}
 
-Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is offloaded from the end device, to edge server as soon as acquired. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. The end device then decides the prediction based upon the information received from the edge server. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available.
+We propose a more flexible edge offloading scheme compared to Edgent \cite{li_edge_2018}. Edgent is to our knowledge the only proposal in current literature, that uses early exiting models in an offloading scenario. Edgent combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. The downside of edgent is an upfront selection of exit i.e gls{dnn} right-sizing, which can be troublesome with unpredictable communication delays. 
+
+We argue, that allowing the edge server to reach as far as possible, within the time budget and continuously sending back increasingly confident predictions, will in any case achieve at least the same accuracy. Even though a sub-model exit have been chosen with care e.g. using \gls{dnn} right-sizing, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
+
+Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is immediately offloaded from the end device, to edge server. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. Multiple early exits allows for successively receiving, what is expectedly, increasingly reliable predictions. The most recent received prediction i.e. from the latest exits are accepted as the prediction.
+
+We send back the top-5 predictions to allow info-combination and reduce the data size of the reply. We use top-5, since the correct class is within these 5 predictions close to 90 \% of the time having just two predictions available for any of the models, see figure \ref{fig:top-5-cumulative}. The end device then decides the prediction based upon the information received from the edge server. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
-	\subfloat[Continuois predictions\label{fig:offloading-scheme-successful}]{\includegraphics[width=\linewidth]{figures/models/timeline_all}}
+	\centering
+	\subfloat[Continuois predictions\label{fig:offloading-scheme-successful}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_all}}
 	\hfill
-	\subfloat[Timeout of Continuois predictions\label{fig:offloading-scheme-timeout}]{\includegraphics[width=\linewidth]{figures/models/timeline_timeout}}
+	\subfloat[Timeout of Continuois predictions\label{fig:offloading-scheme-timeout}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_timeout}}
 	\caption[Offloading scheme]{offloading scheme}
 	\label{fig:offloading-scheme}
 \end{figure} 
 
+To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
 
-\begin{enumdescript}
-	\item[System Model]
+Each exit outputs two 5-dimensional vectors denoted $\mathbf{c}_{i,k}$ and $ \mathbf{\hat{y}}_{i,k}  $.
+$\mathbf{c}_{i,k}$ contains the class labels associated with the scores of $ \mathbf{\hat{y}}_{i,k}  $ at the same index. The scores are sorted from highest to lowest score of the top-5.
+\begin{align}
+\begin{split}
+\mathbf{l}_{i,k} &= \begin{bmatrix}
+l_{i,k,1} & l_{i,k,2} & l_{i,k,3} & l_{i,k,4} & l_{i,k,5}
+\end{bmatrix}, \\
+\mathbf{c}_{i,k} &= \begin{bmatrix}
+c_{i,k,l_{i,k,1}} & c_{i,k,l_{i,k,2}} & c_{i,k,l_{i,k,3}} & c_{i,k,l_{i,k,4}} & c_{i,k,l_{i,k,5}}
+\end{bmatrix}
+\end{split}
+\end{align}
+
+We define an expansion function, which takes the score at s and insert it into a full dimensional vector at the index of its corresponding value of the label vector. Or formulated like this, for the score vector $\mathbf{c_{i,k}}$ we pad zero-value scores for all missing class labels of $ l_{i,k} $.Thus, after expansion the vector only have non-zero values at the top-5 prediction indices.
+\begin{align*}
+\mathbf{c}_{i,k} = 
+\begin{bmatrix}
+c_{i,k,l_{i,k,1}} & \dots c_{i,k,l_{i,k,5}}
+\end{bmatrix}_{1 \times 5} 
+\xrightarrow{expand}
+\mathbf{c^{N}_{î,k}}
+\begin{bmatrix}
+c_{i,k,1} & c_{i,k,12} & \dots & c_{i,k,N}
+\end{bmatrix} 
+\end{align*}
+\todo{expansion to original class space, how to write that?}
+
+\paragraph{Example: Expansion of a 10 class problem} 
+\blockquote[]{	 	
+	For this classification example, the number of classes $k=10$. From a prediction we get the two output vectors $\mathbf{c}$ and $\mathbf{s}$.
+	\begin{align*}
+	\mathbf{l} &= \begin{bmatrix}
+	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
+	\end{bmatrix},\\
+	\mathbf{c} &= \begin{bmatrix}
+	0.80 & 0.10 & 0.05 & 0.03 & 0.01
+	\end{bmatrix}
+	\end{align*}
+	We use or expansion method and two vectors $\mathbf{c}$ and $\mathbf{s}$ becomes expanded version two vectors $\mathbf{c^*}$ and $\mathbf{s^*}$.
+	\begin{align*}
+	\mathbf{l^*} &= \begin{bmatrix}
+	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
+	\end{bmatrix}_{1 \times 10},\\
+	\mathbf{C^*} &= \begin{bmatrix}
+	0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
+	\end{bmatrix}_{1 \times 10}
+	\end{align*}
+}
+Given we receive $n$ prediction within the time frame, we can formulate $n \times k$ matrix S. 
+%Each row contain the top-5 prediction from the corresponding exit and the columns contain the highest to lowest scoring of the top-5 prediction at all exits.
+\begin{align*}
+\mathbf{c}_{n,k} = \begin{bmatrix}
+s^*_{0,0} & s^*_{0,1} & \dots  & s^*_{0,k-1} 	\\
+s^*_{1,0} & s^*_{1,1} & \dots  & s^*_{1,k-1}	\\
+\vdots 	& \vdots  & \ddots & \vdots 	\\
+s^*_{n,0} & s^*_{n,1} & \dots  & s^*_{n,k-1}
+\end{bmatrix}
+\end{align*}      
+
+
+\section{System Model}
 	Assume that $ N $ denotes the number of the image classes, $ K $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
 	\begin{enumdescript}
 		\item[Latency Model] the latency model consists of two schemes 1) local execution and 2) remote execution. 3) Image Processing Delay.
@@ -93,160 +160,132 @@ Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not was
 		\bar{A}_f = 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c_{i,k}}\right)-g_i\right|\right)
 		\end{align*}
 		
-		\item[Information Combination] To combine top-5 prediction information from $ k $ exits, we must expand the vectors back to the original class space of $ N $ dimensions. Using the top-5 reduce the data size of the transmission of the output back to local device. 
-		
-		Each exit outputs two 5-dimensional vectors denoted $\mathbf{l_{i,k}}$ and $ \mathbf{c_{i,k}}  $.
-		$\mathbf{l_{i,k}}$ contains the class labels associated with the scores of $ \mathbf{c_{i,k}}  $ at the same index. The scores are sorted from highest to lowest score of the top-5.
-		\begin{align}
-		\begin{split}
-		\mathbf{l}_{i,k} &= \begin{bmatrix}
-		l_{i,k,1} & l_{i,k,2} & l_{i,k,3} & l_{i,k,4} & l_{i,k,5}
-		\end{bmatrix}, \\
-		\mathbf{c}_{i,k} &= \begin{bmatrix}
-		c_{i,k,l_{i,k,1}} & c_{i,k,l_{i,k,2}} & c_{i,k,l_{i,k,3}} & c_{i,k,l_{i,k,4}} & c_{i,k,l_{i,k,5}}
-		\end{bmatrix}
-		\end{split}
-		\end{align}
-		
-		We define an expansion function, which takes the score at s and insert it into a full dimensional vector at the index of its corresponding value of the label vector. Or formulated like this, for the score vector $\mathbf{c_{i,k}}$ we pad zero-value scores for all missing class labels of $ l_{i,k} $.Thus, after expansion the vector only have non-zero values at the top-5 prediction indices.
-		\begin{align*}
-		\mathbf{c}_{i,k} = 
-		\begin{bmatrix}
-		c_{i,k,l_{i,k,1}} & \dots c_{i,k,l_{i,k,5}}
-		\end{bmatrix}_{1 \times 5} 
-		\xrightarrow{expand}
-		\mathbf{c^{N}_{î,k}}
-		\begin{bmatrix}
-		c_{i,k,1} & c_{i,k,12} & \dots & c_{i,k,N}
-		\end{bmatrix} 
-		\end{align*}
-		\todo{expansion to original class space, how to write that?}
+			\item[Combination function] There are several ways to define combination function $ f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c}_{i,k}\right) $
 		\begin{enumdescript}
-			\item[Combination function] There are several ways to define combination function $ f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c_{i,k}}\right) $
+		
+			
+				\item[Latest] We define the method \emph{lastest}, where we constrain ourselves to only use the most recent prediction $n$.
+				\begin{align}
+					f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = p_{i,k}^{*}
+				\end{align}
+				
+				\item[max confidence] This method is based on the naive assumption, that given a higher score, it will lead to a higher accuracy independent of the uncertainty of classifier at an earlier exits.
+				\begin{align}
+				\begin{split}
+				f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{{p_{i,j}^{*}, 1 \le j 
+						\le k}}{\max} \{c_{i,1}^*, \cdots, c_{i,k}^*\},\\ \text{where\:} c_{i,j}^* = \max\bm{c}_{i,j} \text{\:for\:} \forall \ 1 \le j \le k
+				\end{split}	
+				\end{align}
+				\item[sum confidence]
+				\begin{align}
+				\begin{split}
+				f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{n}{\max} \{s_{i,1}, \cdots, s_{i,N}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{k}c_{i,k,n} \text{\:for\:} \forall \ 1\le n \le N
+				\end{split}
+				\end{align}
+
+				\item[weighted sum confidence]
+				\todo{How is this guaranteed to find the right class label?}
+				\begin{align}
+				\begin{split}
+					f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{n}{\max} \{s_{i,1}, \cdots, s_{i,N}\},\\ \text{where\:} s_{i,n} = \sum_{j=1}^{k}w_n c_{i,k,n} \text{\:for\:} \forall \ 1\le n \le N
+				\end{split}	
+				\end{align}
+				
+				\item[max score margin] 
+				\begin{align}
+				\begin{split}
+				f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{{p_{i,j}^{*}, 1 \le j 
+						\le k}}{\max} \{s^{*}_{i,1}, \cdots, s^{*}_{i,k}\},\\ \text{where\:} s^{*}_{i,j} = s^{mar}(\bm{c}_{i,j}) \text{\:for\:} \forall \ 1 \le j \le k
+				\end{split}	
+				\end{align}
 		\end{enumdescript}
 	\end{enumdescript}
-\end{enumdescript} 
 
 We define several proposals for using the additional predictions provided from the early exiting framework, with the purpose to improve the accuracy under time constraints. 
 
 Each prediction contains 
 
 
-\paragraph{Example: Expansion of a 10 class problem} 
-\blockquote[]{	 	
-	For this classification example, the number of classes $k=10$. From a prediction we get the two output vectors $\mathbf{c}$ and $\mathbf{s}$.
-	\begin{align*}
-	\mathbf{c} &= \begin{bmatrix}
-	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
-	\end{bmatrix},\\
-	\mathbf{s} &= \begin{bmatrix}
-	0.80 & 0.10 & 0.05 & 0.03 & 0.01
-	\end{bmatrix}
-	\end{align*}
-	We use or expansion method and two vectors $\mathbf{c}$ and $\mathbf{s}$ becomes expanded version two vectors $\mathbf{c^*}$ and $\mathbf{s^*}$.
-	\begin{align*}
-	\mathbf{c^*} &= \begin{bmatrix}
-	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
-	\end{bmatrix}_{1 \times 10},\\
-	\mathbf{s^*} &= \begin{bmatrix}
-	0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
-	\end{bmatrix}_{1 \times 10}
-	\end{align*}
-}
-Given we receive $n$ prediction within the time frame, we can formulate $n \times k$ matrix S. 
-%Each row contain the top-5 prediction from the corresponding exit and the columns contain the highest to lowest scoring of the top-5 prediction at all exits.
-\begin{align*}
-\mathbf{S}_{n,k} = \begin{bmatrix}
-s^*_{0,0} & s^*_{0,1} & \dots  & s^*_{0,k-1} 	\\
-s^*_{1,0} & s^*_{1,1} & \dots  & s^*_{1,k-1}	\\
-\vdots 	& \vdots  & \ddots & \vdots 	\\
-s^*_{n,0} & s^*_{n,1} & \dots  & s^*_{n,k-1}
-\end{bmatrix}
-\end{align*}      
-
-\begin{description}
-	
-	\item[Lastest prediction] We define the method \emph{lastest prediction}, where we constraint ourselves to only use the most recent prediction $n$. We do not need to do any class expansion nor to formulate the matrix $\mathbf{S}$. We only need to consider the first index of the vector $\mathbf{c}_{exit_n}$. The class label becomes our prediction $p$.
-	\begin{align*}
-	p = \mathbf{c}_{exit_n,0}
-	\end{align*}
-	Equivalently we could expand our score vector to $\mathbf{s^*}$ and find the argument of the maxima.
-	\begin{align*}
-	p = \arg \max \mathbf{s^*}_{exit_n}	
-	\end{align*}
-	Choosing the most confident prediction from the most recent result available, gives us the highest accuracy on average. However, we only use information form a single prediction, we might be able to formulate a mathematical function able to use information form multiple predictions to further improve the accuracy, as we have seen, that the later exit might make a correct prediction from an earlier exit incorrect. 
-	
-	\item[Confidence (max)] This method is based on the naive assumption, that given a higher score, it will lead to a higher accuracy independent of the uncertainty of classifier at an earlier exits. We use class expansion and  formulation our score matrix $\mathbf{S}$. From $\mathbf{S}$ we find the prediction $p$ as the argument of the maxima.
-	\begin{align*}
-	p = \arg \max  \mathbf{S}
-	\end{align*}
-	
-	\todo{How do I take first the row containing the max value, and then find the column/index of the maxium value?}
-	Here we neglect the fact, that the later exits are in general more accurate and assume, that a higher confidence despite the exit leads to a correct prediction and we do not account for the uncertainty introduces be less accurate exits.
-	
-	\item[Confidence (add)] We define a method, that additive combines information from all available predictions and selects the highest scoring class. The score vector are be expanded to the class space and represented as a matrix. We sum all columns of $\mathbf{S}$ to a 1-dimensional vector $s_{sum}$ of length $k$. 
-	
-	\todo{how to sum column of matrix?}
-	\begin{align*}
-	\mathbf{s}_{sum} &= \sum_{i=0}^{k} \mathbf{S}_{n,i}, \text{for\:} n=0, 2, \dots, j\\ 
-	&=	\begin{bmatrix}
-	s^*_0 & s^*_1 \dots & s^*_{k-1}
-	\end{bmatrix}_{1 \times k,\: k=100} 
-	\end{align*}
-	Our prediction becomes the argument of the maxima of $\mathbf{s}_{sum}$
-	\begin{align*}
-	p = \arg \max \mathbf{s}_{sum}
-	\end{align*}
-	
-	
-	\item[Confidence (add,weight)] Almost identical to \emph{confidence (add)}, but uses a weighted sum of all available exits to combine the information. Each exit are weighted to acknowledge the increasing accuracy as the predictions comes from a deeper exit in the model.  The weights can be represented by a column vector $\mathbf{w}$.
-	\begin{align*}
-	\mathbf{w}_{n} =
-	\begin{bmatrix}
-	w_0 &
-	w_1 &
-	\dots &
-	w_n
-	\end{bmatrix}^T
-	\end{align*}
-	The weights of row $n$ are multiplied all entries at row $n$ of $S$. Then we sum all columns of $\mathbf{S}$ to a 1-dimensional vector $s_{sum}$ of length $k$.  
-	\begin{align*}
-	\mathbf{s}_{ws} &= \sum_{i=0}^{k} w_n \cdot \mathbf{S}_{n,i}\\
-	&= 		
-	\begin{bmatrix}
-	s_0 & s_1 \dots & s_{k-1}
-	\end{bmatrix}_{1 \times k,\: k=100} 
-	\end{align*}
-	Our prediction becomes the argument of the maxima of $\mathbf{s}_{ws}$
-	\begin{align*}
-	p = \arg \max \mathbf{s}_{ws}
-	\end{align*}
-	
-	\item[Score-margin (max)] We use the score-margin, defined in \ref{}, to find the best prediction among the available predictions. We do not need to expand our score vector nor to formulate the score matrix. Instead we define a $n$-dimensional column vector, where row $n$ represent the score-margin at the corresponding exit-$n$.  
-	\begin{align*}
-	\mathbf{s}_{sm} = \begin{bmatrix}
-	\mathrm{ScoreMargin}(s_{0,0}, s_{0,1}) \\
-	\mathrm{ScoreMargin}(s_{1,0}, s_{1,1}) \\
-	\vdots \\
-	\mathrm{ScoreMargin}(s_{n,0}, s_{n,1})
-	\end{bmatrix}
-	\end{align*}
-	Our prediction becomes the argument of the maxima of the score-margin vector.
-	\begin{align*}
-	p = \arg \max \mathbf{s}_{sm}
-	\end{align*}
-	determines the score-margin between the two top-scoring predictions. We select the prediction from the exit with the highest score-margin. From the previous chapter, we know that the score-margin threshold gave a smaller proportion of incorrrectly exited samples at the small cost of samples, that could have been correctly classified using only highest scoring confidence.	
-	\item[Score-margin (add)] Similarly we define a method, that determines the score-margin using the two highest scoring classes from each prediction and additive combines the informations.
-	
-	\item[Score-margin (add,weight)] Similarly we define a weighted sum version of the score-margin. 
-\end{description}
 
 
-What about lost prediction? Should we have small model running on end?
+%\begin{description}
+%	
+%	\item[Lastest prediction] We define the method \emph{lastest prediction}, where we constraint ourselves to only use the most recent prediction $n$. We do not need to do any class expansion nor to formulate the matrix $\mathbf{S}$. We only need to consider the first index of the vector $\mathbf{c}_{exit_n}$. The class label becomes our prediction $p$.
+%	\begin{align*}
+%	p = \mathbf{c}_{exit_n,0}
+%	\end{align*}
+%	Equivalently we could expand our score vector to $\mathbf{s^*}$ and find the argument of the maxima.
+%	\begin{align*}
+%	p = \arg \max \mathbf{s^*}_{exit_n}	
+%	\end{align*}
+%	Choosing the most confident prediction from the most recent result available, gives us the highest accuracy on average. However, we only use information form a single prediction, we might be able to formulate a mathematical function able to use information form multiple predictions to further improve the accuracy, as we have seen, that the later exit might make a correct prediction from an earlier exit incorrect. 
+%	
+%	\item[Confidence (max)] This method is based on the naive assumption, that given a higher score, it will lead to a higher accuracy independent of the uncertainty of classifier at an earlier exits. We use class expansion and  formulation our score matrix $\mathbf{S}$. From $\mathbf{S}$ we find the prediction $p$ as the argument of the maxima.
+%	\begin{align*}
+%	p = \arg \max  \mathbf{S}
+%	\end{align*}
+%	
+%	\todo{How do I take first the row containing the max value, and then find the column/index of the maxium value?}
+%	Here we neglect the fact, that the later exits are in general more accurate and assume, that a higher confidence despite the exit leads to a correct prediction and we do not account for the uncertainty introduces be less accurate exits.
+%	
+%	\item[Confidence (add)] We define a method, that additive combines information from all available predictions and selects the highest scoring class. The score vector are be expanded to the class space and represented as a matrix. We sum all columns of $\mathbf{S}$ to a 1-dimensional vector $s_{sum}$ of length $k$. 
+%	
+%	\todo{how to sum column of matrix?}
+%	\begin{align*}
+%	\mathbf{s}_{sum} &= \sum_{i=0}^{k} \mathbf{S}_{n,i}, \text{for\:} n=0, 2, \dots, j\\ 
+%	&=	\begin{bmatrix}
+%	s^*_0 & s^*_1 \dots & s^*_{k-1}
+%	\end{bmatrix}_{1 \times k,\: k=100} 
+%	\end{align*}
+%	Our prediction becomes the argument of the maxima of $\mathbf{s}_{sum}$
+%	\begin{align*}
+%	p = \arg \max \mathbf{s}_{sum}
+%	\end{align*}
+%	
+%	
+%	\item[Confidence (add,weight)] Almost identical to \emph{confidence (add)}, but uses a weighted sum of all available exits to combine the information. Each exit are weighted to acknowledge the increasing accuracy as the predictions comes from a deeper exit in the model.  The weights can be represented by a column vector $\mathbf{w}$.
+%	\begin{align*}
+%	\mathbf{w}_{n} =
+%	\begin{bmatrix}
+%	w_0 &
+%	w_1 &
+%	\dots &
+%	w_n
+%	\end{bmatrix}^T
+%	\end{align*}
+%	The weights of row $n$ are multiplied all entries at row $n$ of $S$. Then we sum all columns of $\mathbf{S}$ to a 1-dimensional vector $s_{sum}$ of length $k$.  
+%	\begin{align*}
+%	\mathbf{s}_{ws} &= \sum_{i=0}^{k} w_n \cdot \mathbf{S}_{n,i}\\
+%	&= 		
+%	\begin{bmatrix}
+%	s_0 & s_1 \dots & s_{k-1}
+%	\end{bmatrix}_{1 \times k,\: k=100} 
+%	\end{align*}
+%	Our prediction becomes the argument of the maxima of $\mathbf{s}_{ws}$
+%	\begin{align*}
+%	p = \arg \max \mathbf{s}_{ws}
+%	\end{align*}
+%	
+%	\item[Score-margin (max)] We use the score-margin, defined in \ref{}, to find the best prediction among the available predictions. We do not need to expand our score vector nor to formulate the score matrix. Instead we define a $n$-dimensional column vector, where row $n$ represent the score-margin at the corresponding exit-$n$.  
+%	\begin{align*}
+%	\mathbf{s}_{sm} = \begin{bmatrix}
+%	\mathrm{ScoreMargin}(s_{0,0}, s_{0,1}) \\
+%	\mathrm{ScoreMargin}(s_{1,0}, s_{1,1}) \\
+%	\vdots \\
+%	\mathrm{ScoreMargin}(s_{n,0}, s_{n,1})
+%	\end{bmatrix}
+%	\end{align*}
+%	Our prediction becomes the argument of the maxima of the score-margin vector.
+%	\begin{align*}
+%	p = \arg \max \mathbf{s}_{sm}
+%	\end{align*}
+%	determines the score-margin between the two top-scoring predictions. We select the prediction from the exit with the highest score-margin. From the previous chapter, we know that the score-margin threshold gave a smaller proportion of incorrrectly exited samples at the small cost of samples, that could have been correctly classified using only highest scoring confidence.	
+%	\item[Score-margin (add)] Similarly we define a method, that determines the score-margin using the two highest scoring classes from each prediction and additive combines the informations.
+%	
+%	\item[Score-margin (add,weight)] Similarly we define a weighted sum version of the score-margin. 
+%\end{description}
 
-Or collaboratively?
 
-We send back top-5 to allow info-combination, since almost always the correct is within these 5 prediction. 
 
 
 
@@ -260,7 +299,12 @@ The client code is deployed on the NUC and server code on the Jetson TX2. The sa
 
 \section{Results}
 
-
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/edge/top5cumulative}
+	\caption[Top-5 Cumulative]{Top-5 Cumulative}
+	\label{fig:top-5-cumulative}
+\end{figure}
 
 \subsection{Exit Score Analysis}
 
@@ -330,16 +374,44 @@ Given this insight we define methods to combine the prediction information from 
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.7\linewidth, keepaspectratio]{figures/edge/theoretical_score_combination_legend}
-	\subfloat[subcaption]{\includegraphics[width=.7\linewidth, height=.27\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\subfloat[subcaption]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[width=.7\linewidth,height=.27\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\subfloat[subcaption]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[width=.7\linewidth,height=.27\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
+	\subfloat[subcaption]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
 	\caption[short text]{text}
-	\label{fig:info-combi}
+	\label{fig:theoretical-info-combi}
 \end{figure}
 
 The blue line optimum-top5 show the maximum achievable accuracy, if we were always able to pick the right class among the top5 predictions given the number of exit results received. The orange line optimum-top1 show the optimal line if, we were always able to pick the correct class among the top1 prediction given the number exit results received.
+
+
+\subsection{Time}
+
+\begin{longtabu}{>{\bfseries}X|X|X}
+	\caption[]{} \label{tbl:time-offloadinf} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Communication Time (ms) &    \tabularnewline
+	\bottomrule
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Communication Time (Up- \& down-link) &    \tabularnewline
+	\bottomrule
+	\endhead % all the lines above this will be repeated on every page
+	\bottomrule
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	B-Resnet	& 66.95	&  \tabularnewline
+	\hline
+	B-DenseNet	& 66.42	& \tabularnewline 								
+	\bottomrule
+\end{longtabu}
+
 
 \subsection{Delay Constraint}
 
@@ -354,11 +426,18 @@ How far are we able to in inference process under different time constraints?
 	\label{fig:exit-reached}
 \end{figure}
 
+\todo{NB. I have not made MSDNet work on offloading the intermittent error still persists. I've brought it home to check if its a network error.}
+
+
 \begin{figure}
+	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
-	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-resnet_information-combination.png}}
+	\includegraphics[width=.7\linewidth]{figures/edge/combinations_legend}
+	\subfloat[subcaption]{\includegraphics[height=.27\textheight]{figures/edge/b-resnet_information-combination.png}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[width=\linewidth]{figures/edge/b-densenet_information-combination.png}}
+	\subfloat[subcaption]{\includegraphics[height=.27\textheight]{figures/edge/b-densenet_information-combination.png}}
+	\hfill
+	\subfloat[subcaption]{\includegraphics[height=.27\textheight]{figures/edge/msdnet_information-combination.png}}
 	\caption[short text]{text}
 	\label{fig:info-combi}
 \end{figure}
@@ -382,10 +461,14 @@ In this experiment the \gls{tcp} transmission time and retransmission rate is in
 
 \section{Summary}
 
+Edgent: The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the local obtained prediction from an earlier exit. 
+
+Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. 
+
 All offloading can lead to lost predictions under time stringent time constraints. If local processing is possible, then;
 
-\begin{enumerate}
-	\item \textbf{Collaborative Edge} where local inference of an early exit \gls{dnn} up to the first exit and then offload to the edge for remaining inference. The upside is, that running locally up to an exit, that should always be achievable guarantee a single prediction is available and mitigates lost prediction. The downsides are wasted idle time on edge server, as the slower end-device must do the most demanding early layers of the \gls{dnn}. Additionally offloading intermediate features that are typically larger than the original compressed images, hence the overall time becomes worse as communication is the bottleneck. This collaborative scheme require sophisticated compression of intermediate feature as in \cite{choi_near-lossless_2018} or a using \gls{bottlenet} layers.
-	\item \textbf{Big/Little} A modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it as more accurate prediction arrives or combine information local and incoming predictions.
-\end{enumerate}
+\begin{enumdescript}
+	\item[Collaborative Edge] where local inference of an early exit \gls{dnn} up to the first exit and then offload to the edge for remaining inference. The upside is, that running locally up to an exit, that should always be achievable guarantee a single prediction is available and mitigates lost prediction. The downsides are wasted idle time on edge server, as the slower end-device must do the most demanding early layers of the \gls{dnn}. Additionally offloading intermediate features that are typically larger than the original compressed images, hence the overall time becomes worse as communication is the bottleneck. This collaborative scheme require sophisticated compression of intermediate feature as in \cite{choi_near-lossless_2018} or a using \gls{bottlenet} layers.
+	\item[Big/Little] A modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it as more accurate prediction arrives or combine information local and incoming predictions.
+\end{enumdescript}
 

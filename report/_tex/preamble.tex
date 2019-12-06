@@ -48,6 +48,7 @@
 
 \setstretch{1.2}
 \usepackage{amssymb,amsmath}
+\usepackage{bm}
 
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
@@ -87,28 +88,35 @@
 
 
 \usepackage{enumitem}
-\newcounter{descriptcount}
+
+
+%-----------------------%
+% Further settings for "enumitem"
+%-----------------------%
+% Custom counters:
+\newcounter{enumdesci}
+\newcounter{enumdescii}
+\newcounter{enumdesciii}
+\newcounter{enumdesciv}
+% Redefinition:
+\renewcommand*{\theenumdesci}{\arabic{enumdesci})}
+\renewcommand*{\theenumdescii}{\Alph{enumdescii})}
+\renewcommand*{\theenumdesciii}{\Roman{enumdesciii}}
+\renewcommand*{\theenumdesciv}{\alph{enumdesciv}}
+%
 \newlist{enumdescript}{description}{4}
-\setlist[enumdescript,1]{%
-	before={\setcounter{descriptcount}{0}%
-		\renewcommand*\thedescriptcount{\arabic{descriptcount}.}}
-	,font=\bfseries\stepcounter{descriptcount}\thedescriptcount~
-}
-\setlist[enumdescript,2]{%
-	before={\setcounter{descriptcount}{0}%
-		\renewcommand*\thedescriptcount{\alph{descriptcount}.}}
-	,font=\bfseries\stepcounter{descriptcount}\thedescriptcount~
-}
-\setlist[enumdescript,3]{%
-	before={\setcounter{descriptcount}{0}%
-		\renewcommand*\thedescriptcount{\arabic{descriptcount})}}
-	,font=\itshape\stepcounter{descriptcount}\thedescriptcount~
-}
-\setlist[enumdescript,4]{%
-	before={\setcounter{descriptcount}{0}%
-		\renewcommand*\thedescriptcount{\roman{descriptcount})}}
-	,font=\itshape\stepcounter{descriptcount}\thedescriptcount~
-}
+\setlist[enumdescript,1]{
+	before={\stepcounter{enumdesci}\setcounter{enumdesci}{0}},%
+	font={\phantomsection\normalfont\normalsize\bfseries\refstepcounter{enumdesci}\theenumdesci~}}
+\setlist[enumdescript,2]{
+	before={\stepcounter{enumdescii}\setcounter{enumdescii}{0}},%
+	font={\phantomsection\normalfont\normalsize\bfseries\refstepcounter{enumdescii}\theenumdescii~}}
+\setlist[enumdescript,3]{
+	before={\stepcounter{enumdesciii}\setcounter{enumdesciii}{0}},%
+	font={\phantomsection\normalfont\normalsize\bfseries\refstepcounter{enumdesciii}\theenumdesciii~}}
+\setlist[enumdescript,4]{
+	before={\stepcounter{enumdesciv}\setcounter{enumdesciv}{0}},%
+	font={\phantomsection\normalfont\normalsize\bfseries\refstepcounter{enumdesciv}\theenumdesciv~}}
 
 %
 % variables for title and author
