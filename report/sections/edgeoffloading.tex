@@ -253,8 +253,9 @@ The client code is deployed on the NUC and server code on the Jetson TX2. The sa
 
 \section{Results}
 
-We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of predictions results from all exits, revealed that in some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is sample 57. 
-\begin{align*}y=0,
+We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of predictions results from all exits, revealed that in some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is sample 6 from the B-\gls{resnet}, $ y_6 $ is the ground truth, $ s^*_6 $ is the maximum score vector at each exit. $ k $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
+\begin{align*}
+y_6=0,
 \mathbf{l}_{6}=
 \begin{bmatrix}
 0 \\
@@ -262,22 +263,37 @@ We want to examine the possibility to combine predictions from multiple exits to
 62 \\
 62
 \end{bmatrix},
-\mathbf{p}_{6}=
-\begin{bmatrix}
-1 \\
-0 \\
-0 \\
-0
-\end{bmatrix},
-\mathbf{s}^{max}_{6}=
+\mathbf{s}^{*}_{6}=
 \begin{bmatrix}
 0.56 \\
 0.32 \\
 0.52 \\
 0.62
+\end{bmatrix},
+\mathbf{k}_{6}=
+\begin{bmatrix}
+1 \\
+0 \\
+0 \\
+0
 \end{bmatrix}
-\end{align*} 
-Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits. Table \ref{tbl:latest-vs-max} show, that simply using the latest exit of the model is slightly better, than using the highest scoring among all predictions, as uncertainty is introduced using earlier exits.  
+\end{align*}
+Based on the scores the models is more confident about the last exit prediction, even though the prediction from the first exit is correct. Having all predictions available using the combination functions Latest, max and add will all give the label 62, hence cherry-picking the correct prediction from this set of predictions, is not trivial. Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits, see figure \ref{fig:exit-highscore}.
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\includegraphics[width=.7\linewidth]{figures/edge/exit0-4_legend}
+	\subfloat[B-ResNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-resnet_correctness}}
+	\hfill
+	\subfloat[B-DenseNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-densenet_correctness}}
+	\hfill
+	\subfloat[MSDNet]{\includegraphics[width=.33\linewidth]{figures/edge/msdnet_correctness}}
+	\caption[short text]{text}
+	\label{fig:exit-highscore}
+\end{figure}
+
+In fact, using the maximum score reduces the accuracy of the model, see table \ref{tbl:latest-vs-max}. It seems, that although the early exits achieve a higher score, they also introduces more uncertainty.  
 
 \begin{longtabu}{>{\bfseries}X|X|X}
 	\caption[]{} \label{tbl:latest-vs-max} \\
@@ -299,11 +315,13 @@ Analyzing the exit score have shown, that the score of a later exit is not alway
 	\endlastfoot
 	B-Resnet	& 0.8826	& 0.8794  \tabularnewline
 	\hline
-	B-DenseNet	& 0.8660 	& 0.8602 \tabularnewline 								
+	B-DenseNet	& 0.8660 	& 0.8602 \tabularnewline
+	\hline
+	MSDNet		& 0.8640 	& 0.8598 \tabularnewline							
 	\bottomrule
 \end{longtabu}
 
-Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit given the amount of prediction received, and whether the the highest score is correctly and incorrectly classified. The question is if using multiple scores from each exit an combines the predictions to obtain higher accuracy. Figure \ref{fig:top-5-cumulative} plots the top-5 accuracy against a cumulative top-5, that contains the top-5 from all previous exits. 
+Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit given the amount of prediction received, and whether the the highest score is correctly and incorrectly classified. The question is, if using top-5 scores from each exit, we can combine the scores to more confidently selecting the correct prediction among, to obtain a higher accuracy. Figure \ref{fig:top-5-cumulative} plots the top-5 accuracy against a cumulative top-5, that contains the top-5 from all previous exits. 
 
 \begin{figure}
 	\centering
@@ -312,48 +330,26 @@ Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit g
 	\label{fig:top-5-cumulative}
 \end{figure}
 
-From the figure we can tell, that having multiple predictions does indeed improve the cumulative top-5. However, cherry-picking the correct prediction from the available predictions is not trivial. Figure \ref{} plots the results using the combination function defined in \ref{}. 
-
-\begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
-	\includegraphics[width=.7\linewidth]{figures/edge/exit0-4_legend}
-	\subfloat[B-ResNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-resnet_correctness}}
-	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-densenet_correctness}}
-	\hfill
-	\subfloat[MSDNet]{\includegraphics[width=.33\linewidth]{figures/edge/msdnet_correctness}}
-	\caption[short text]{text}
-	\label{fig:exit-highscore}
-\end{figure}
-
-
-Given this insight we define methods to combine the prediction information from multiple exit as efforts to improving the overall model accuracy. 
-
-\subsection{Combining Prediction Information}
-
+From the figure we can tell, that having multiple predictions does indeed improve the cumulative top-5. Using the defined methods to combine the prediction information from multiple exits, as efforts to improve the overall model accuracy, is shown in figure \ref{fig:theoretical-info-combi}. The figure shows the obtainable accuracy given the number of exit predictions received. The blue line \textit{optimum-top5} show the maximum achievable accuracy, if we were always able to pick the right class among the cumulative top-5. The orange line, \textit{optimum-top1}, show the optimal line if, we were always able to pick the correct class among the cumulative top-1 predictions. None of the propose combination methods are able to improve the accuracy, when predictions from all exits is not available. Only the MSDNet shows a small improvement when adding predictions score, when all predictions are available.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.7\linewidth, keepaspectratio]{figures/edge/theoretical_score_combination_legend}
-	\subfloat[subcaption]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\subfloat[B-ResNet]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\subfloat[B-DenseNet]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[subcaption]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
-	\caption[short text]{text}
+	\subfloat[MSDNet]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
+	\caption[Combination Function with $ n $ Available Exits]{Combination Function with $ n $ Available Exits}
 	\label{fig:theoretical-info-combi}
 \end{figure}
 
-The blue line optimum-top5 show the maximum achievable accuracy, if we were always able to pick the right class among the top5 predictions given the number of exit results received. The orange line optimum-top1 show the optimal line if, we were always able to pick the correct class among the top1 prediction given the number exit results received.
 
-\subsection{Delay Constraint}
 
-How far are we able to in inference process under different time constraints? 
+\subsection{Practical Experiment}
 
-\todo{NB. I have not made MSDNet work on offloading the intermittent error still persists. I've brought it home to check if its a network error.}
-
+We run test where the images are offloaded from NUC to Jetson. We set different delay threshold and plot the achievable reliability using the prediction from the latest exit, see figure \ref{fig:practical-offloading}. If we compare with figure \ref{fig:delay-threshold}, we obtain less sharp steps, in the areas where a new exit begin to be obtainable, due to the added deviation from the communication. Given this figure, we can select the proper model under different delay threshold, be always selecting the model achieving the highest reliability.  
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
@@ -362,13 +358,14 @@ How far are we able to in inference process under different time constraints?
 	\subfloat[]{\includegraphics[width=\linewidth]{figures/edge/jetson_offloading}}
 	\hfill
 %	\subfloat[Local Jetson TX2]{\includegraphics[width=\linewidth]{figures/delay_plots/jetson__delay_threshold}}
-	\caption[short text]{text}
+	\caption[Offloading NUC to Jetson]{Offloading NUC to Jetson}
 	\label{fig:practical-offloading}
-\end{figure} \todo{should I compare these two?}
+\end{figure}
 
+In table \ref{tbl:time-offloading} we present the measured communication time stats, mean, standard deviation, minimum- and maximum value. From the table we see the largest deviation, which support our assertion of the softer steps. 
 
 \begin{longtabu}{>{\bfseries}X|X|X|X|X}
-	\caption[]{} \label{tbl:time-offloadinf} \\
+	\caption[]{} \label{tbl:time-offloading} \\
 	\toprule
 	\rowfont{\bfseries}
 	 & \multicolumn4{c}{Communication Time (ms)}    \tabularnewline
@@ -376,7 +373,7 @@ How far are we able to in inference process under different time constraints?
 	\rowfont{\bfseries} Offloading & Mean & Std. & Min & Max   \tabularnewline
 	\bottomrule
 	\endfirsthead
-	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:time-offloading}:}} continued}\\
 	\toprule
 	\rowfont{\bfseries}
 	Offloading & Up- and downlink Communication Time (ms) &    \tabularnewline
@@ -387,11 +384,11 @@ How far are we able to in inference process under different time constraints?
 	\endfoot
 	\hline
 	\endlastfoot
-	NUC to Jetson	& 25.68	& 110.93 & 2.35 & 962.76  \tabularnewline
-									
+	NUC to Jetson	& 25.68	& 110.93 & 2.35 & 962.76  \tabularnewline						
 	\bottomrule
 \end{longtabu}
-Should I create hybrid combinations? Maybe only combine info from exit-0 and -1 and always let exit-2 and -3 have the final say if available? What if we can combine info from those two and omit the poor ones? 
+
+We compare running the various model locally on the NUC with offloading to the Jetson, see figure \ref{fig:offloading-vs-local}. Evidently, especially under stringent delay thresholds, i.e. the lower region of the plots, we are able to improve the accuracy significantly. However, as the delay threshold are relaxed running locally becomes preferable. One may notice the small drop in reliability, these are cause by extreme delays in the \gls{tcp} protocol, that does not occur locally. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
@@ -412,7 +409,6 @@ Should I create hybrid combinations? Maybe only combine info from exit-0 and -1 
 
 Offloading tasks over the network, irregardless fully or partially requires a transport protocol. The selection is typically a choice of either \gls{tcp} or \gls{udp}. \gls{tcp} is a reliable protocol, that guarantee no losses by retransmission of lost packets. \gls{udp} on the other hand is a best-effort protocol, that accept packets loss, thus not introducing retransmission communication overhead. 
 
-
 Fully offloading \gls{jpeg} compressed images for classification require no losses for human-readability. Sending intermediate features of a \gls{dnn} may not be as intolerant to losses and might be able to function with the far more lightweight \gls{udp}. In current research literature the choice of \gls{tcp} seems given in advance.  
 
 In this experiment the \gls{tcp} transmission time and retransmission rate is investigated under different communication environments. 
@@ -424,6 +420,8 @@ In this experiment the \gls{tcp} transmission time and retransmission rate is in
 \end{figure}
 
 \section{Summary}
+
+The NUC is a very powerful end device equipped with a \gls{cpu}. The end device are more likely to be equipped with ARM processors or even smaller processing unit. Some end devices may even not be able to run any of the models locally. However, given the results the servers may not need to be equipped with powerful \gls{gpu}s, as the NUC is able to achieve such high performance running especially the \gls{msdnet}. 
 
 Edgent: The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the local obtained prediction from an earlier exit. 
 

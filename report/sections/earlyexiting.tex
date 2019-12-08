@@ -47,7 +47,7 @@ procedure $\textsc{EarlyExitFastInference}$$(x, T )$
 	for $k = 1\dots K$ do
 		$z = f_{exit_k}(x)$
 		$ \hat{y} = softmax(z) $
-		if $$\hat{y}$ > T_k$ then
+		if $\hat{y} > T_k$ then
 			return $\arg \max \hat{y}$
 	return $\arg \max \hat{y}$ 
 	\end{lstlisting}
@@ -118,21 +118,14 @@ Assume $ K $ denotes the number of image classes, $ N $ denotes the number of th
 			
 			Assuming the ground truth of image $ i $ is $ y_i$ a class label taking values of $\left(1, 2, k, \dots, K \right) $. We can express the ground truth as a one-hot encoded vector $ \bm{y}_i $
 			
-			We denote a prediction vector $ \bm{p_{i}} $ containing binary values $ p_{i,n} $ indicating if the exit correctly predicted the sample or not.
-			
+			We denote a vector $ \bm{l}_{i} $ to express the class label of the exit prediction. 
 			\begin{align}
-				\bm{p_i} = \begin{bmatrix}
-				\hat{y}^*_{i,1} == y_i \\
-				\hat{y}^*_{i,2} == y_1 \\
-				\hat{y}^*_{i,n} == y_i \\
+				\bm{l}_i = \begin{bmatrix}
+				\hat{y}^*_{i,1} \\
+				\hat{y}^*_{i,2} \\
+				\hat{y}^*_{i,n} \\
 				\vdots  \\
-				\hat{y}^*_{i,N} == y_i\\
-				\end{bmatrix}= \begin{bmatrix}
-					p_{i,1} \\
-					p_{i,2} \\
-					p_{i,n} \\
-					\vdots  \\
-					p_{i,N} \\
+				\hat{y}^*_{i,N} \\
 				\end{bmatrix}
 			\end{align}
 			
