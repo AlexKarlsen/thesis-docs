@@ -116,7 +116,27 @@ Assume $ K $ denotes the number of image classes, $ N $ denotes the number of th
 			\end{align}
 			Note that the prediction to go through the entire \gls{dnn} is $ \hat{y}^*_i  = \hat{y}_{i,N} $, i.e. the last exit $ N $ of the early exit model, or equivalent to the prediction of conventional inference model.
 			
-			\item[Accuracy] Assuming the ground truth of image $ i $ is $ y_i$ a class label taking values of $\left(1, 2, k, \dots, K \right) $. The inference accuracy of exit point $ n $ can be expressed by
+			Assuming the ground truth of image $ i $ is $ y_i$ a class label taking values of $\left(1, 2, k, \dots, K \right) $. We can express the ground truth as a one-hot encoded vector $ \bm{y}_i $
+			
+			We denote a prediction vector $ \bm{p_{i}} $ containing binary values $ p_{i,n} $ indicating if the exit correctly predicted the sample or not.
+			
+			\begin{align}
+				\bm{p_i} = \begin{bmatrix}
+				\hat{y}^*_{i,1} == y_i \\
+				\hat{y}^*_{i,2} == y_1 \\
+				\hat{y}^*_{i,n} == y_i \\
+				\vdots  \\
+				\hat{y}^*_{i,N} == y_i\\
+				\end{bmatrix}= \begin{bmatrix}
+					p_{i,1} \\
+					p_{i,2} \\
+					p_{i,n} \\
+					\vdots  \\
+					p_{i,N} \\
+				\end{bmatrix}
+			\end{align}
+			
+			\item[Accuracy] The inference accuracy of exit point $ n $ can be expressed by
 			\begin{align}
 			\bar{A}_{n}=1-\frac{1}{I} \sum_{i=1}^{I} \mathbb{I}\left(\left|\hat{y}_{i,n}-y_{i}\right|\right) \label{eq:accuracy}
 			\end{align}
@@ -310,12 +330,12 @@ In this section is the dense layers, the building block of the densely connected
 
 DenseNet \cite{huang_densely_2016} is build on the assumption, that many layers of a \gls{resnet} only have a small contribution to the output and can in fact be dropped during training \cite{huang_densely_2016}. Instead of adding previously learned information to the output, \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to relearn redundant information. Figure \ref{fig:denseblock} show the dense connections, that combine features from previous layers and how the features size grows throughout a densely connected block \todo{maybe a bit sharper explanation and more figure near.}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=.5\linewidth]{figures/models/denseblock}
-	\caption[Densely Connected Block]{Densely Connected Block}
-	\label{fig:denseblock}
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=.5\linewidth]{figures/models/denseblock}
+%	\caption[Densely Connected Block]{Densely Connected Block}
+%	\label{fig:denseblock}
+%\end{figure}
 
 The densely connected layers are similarly to residual network grouped into resolution block called dense blocks, but for \gls{densenet} intermediate transition layers are added between dense block to downsample the feature size. 
 
@@ -405,13 +425,649 @@ Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet}
 \color{caption-color}{\textit{Source: \citetitle{huang_densely_2016}, by \citeauthor{huang_densely_2016} \cite{huang_densely_2016}, describes a full list of Densely Connected Networks (\gls{densenet}-121, \gls{densenet}-169, \gls{densenet}-201 and \gls{densenet}-264)}} \color{main-color}
 \end{minipage}
 
-
 In the same fashion as B-ResNet early exits have been placed to construct B-DenseNet. The exits are placed after a DenseBlock to obtain feature of sufficient quality and exiting as quickly as possible. If used in Edge-Device mode and the confidence was insufficient the transition layer after the DenseBlock is executed, before data is being preprocess for offloading.
 
+\section{Experimental Setup} \label{sec:ee-exp-setup}
+
+All code is written in \gls{python} 3.7 \cite{van_rossum_python_1995} using the \gls{pytorch} 1.2
+framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 library \cite{marcel_torchvision_2010}. All code is available at:
+{\color{sns-grey}\url{https://github.com/AlexKarlsen/thesis-src}}. 
+
+Table \ref{tbl:platforms} lists the hardware and its characteristics used for the experiments. Table \ref{tbl:models} lists the models used in the experiment and compares the number of layers, parameters and \gls{flop}s of the models. The number of parameters and \gls{flop}s have been found using \gls{thop} \cite{zhu_thop_nodate}, by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models.
+ 
+\begin{longtabu}{>{\bfseries}X[0.8]|X[0.8]|X[1.5]|X[r0.3]}
+	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC and NVIDIA Jetson TX2 Edge Computer} \label{tbl:platforms} \\
+	\toprule
+	\rowfont{\bfseries}
+	Platform & CPU & GPU & RAM  \tabularnewline
+	\bottomrule
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:platforms}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Platform & CPU & GPU & RAM  \tabularnewline
+	\bottomrule
+	\endhead % all the lines above this will be repeated on every page
+	\bottomrule
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	GPU Workstation	& Intel i5-6600K.	& NVIDIA GeForce GTX 1080, 2560 CUDA cores	& 16GB \tabularnewline
+	\hline
+	Jetson TX2	& ARM Cortex-A57 	& NVIDIA Pascal GPU, 256 CUDA cores 		& 8GB \tabularnewline
+	\hline
+	NUC		  	& Intel i7-7567U	& None										& 16GB \tabularnewline									
+	\bottomrule
+\end{longtabu}%equipped with a NVIDIA GeForce 1080 GTX \gls{gpu} using CUDA 10.1 and cuDNN 7.6.3.
+\begin{longtabu}{>{\bfseries}X|X[r]|X[r]|X[r]}
+	\caption[Model comparison]{ Model Parametric Comparison. The B-\gls{densenet} and \gls{msdnet} drastically reduces the mount of parameters and G\gls{flop}s compared to B-\gls{resnet}. The early exit models should be able to reduce inference delay, as they need less parameters and \gls{flop}s.}\label{tbl:models} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model  & Layers & Parameters (M) & G\gls{flop}s \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:models}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Layers & Parameters (M) & G\gls{flop}s \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	ResNet & $ 101 $ & $ 42.705 $ & $ 7.864 $ \tabularnewline
+	\hline
+	DenseNet & $ 121 $ & $ 7.056 $ & $ 2.897 $ \tabularnewline
+	\hline
+	B-ResNet & $ 104 $ & $ 42.885 $ & $ 7.866 $ \tabularnewline 
+	\hspace{3mm} Exit-0  & 11 &   0.251 & 0.807 \tabularnewline
+	\hspace{3mm} Exit-1  & 13 &   1.270 & 1.041 \tabularnewline
+	\hspace{3mm} Exit-2  & 70 &  26.193 & 5.206 \tabularnewline
+	\hspace{3mm} Exit-3  & 11 &  15.170 & 0.812 \tabularnewline
+	\hline
+	B-DenseNet & $ 124 $ & $ 7.236 $ & $ 2.898 $\tabularnewline
+	\hspace{3mm} Exit-0  & 14 & 0.370 & 1.183  \tabularnewline
+	\hspace{3mm} Exit-1  & 26 & 1.004 & 0.836  \tabularnewline
+	\hspace{3mm} Exit-2  & 50 & 3.072 & 0.668  \tabularnewline
+	\hspace{3mm} Exit-3  & 34 & 2.789 & 0.211  \tabularnewline
+	\hline
+	MSDNet & $ 25 $ & $ 23.958 $ & $ 1.374 $ \tabularnewline
+	\hspace{3mm} Exit-0  & 5 & 4.239 & 0.345 \tabularnewline
+	\hspace{3mm} Exit-1  & 5 & 4.534 & 0.349 \tabularnewline
+	\hspace{3mm} Exit-2  & 5 & 4.301 & 0.325 \tabularnewline
+	\hspace{3mm} Exit-3  & 5 & 3.675 & 0.248 \tabularnewline
+	\hspace{3mm} Exit-4  & 5 & 7.210 & 0.107 \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+
+\begin{enumdescript}
+	\item[Training] All training of the models of table \ref{tbl:models} have been accomplished using the \gls{gpu}-workstation of table \ref{tbl:platforms}. In each epoch the training- and validation-, -loss and -accuracy have been logged and used for analysis in section \ref{sec:ee-results}. The trained models are available at: {\color{sns-grey}\url{https://drive.google.com/open?id=1EAl9qGxcm2U3kPhEsHp0HotgNn_LMWa1}}.
+	The listed and described training hyperparameters have been used for all training sessions. 
+	
+	\begin{enumdescript}
+		\item[Epochs] An epoch is a step of training in which every training sample have been presented to the model. A training time of 50 epochs have been selected to limit overall training time to give time for multiple attempts and training multiple model.
+		
+		Training the models on the available hardware took $\sim$30 to  $\sim$40 hours depending on the model. In total 5 models have been fully trained once the rest of training settings had been found.
+		
+		\item[Early Stopping] Early stopping is finding the best obtained model by alternating between training and validation phases for each epoch. The best model is the one obtaining the highest accuracy on the validation data. Early stopping is a mechanism to avoid overtraining a model, that then overfits the training data and obtain poor validation accuracy. For \gls{branchynet} we use the model with the highest average accuracy to not favour any part of the model.  
+		
+		\item[Exit Weights] The same unit weights have been selected for all exits of the model to not favour any part of the model. In \cite{teerapittayanon_branchynet:_2016} they claim, that putting more weight on early branches have a regularizing impact on the later classifiers and can actually achieve better performance. They too have chosen the same unit weights for all branches, for comparison of multiple models and avoid time consuming search for specific branch weights on a per model basis.
+		
+		\item[Optimizer] The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd}. Some more about \gls{sgd} \cite{goodfellow_deep_2016}.
+		
+		\gls{sgdr} \cite{loshchilov_sgdr:_2016} is a variant of \gls{sgd}, the method have shown faster convergence on a number of datasets, due to its ability to escape local minimas. It follows a cyclic learning rate schedule in contrast to former decaying learning rate schedules. It has shown, in general, to perform better than adaptive optimizers such as Adam \cite{kingma_adam:_2014}, which implement adaptive learnining rate to avoid being stuck in local minimas. 
+		
+		\gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
+		
+		\begin{figure}
+			\centering
+			\includegraphics[width=.7\linewidth]{figures/lr.png}
+			\caption[Cosine Annealing Learning Rate]{Cosine Annealing Learning Rate} \label{fig:cosineannealing}
+		\end{figure}
+		
+		\item[Batch Size] Batch Size are recommend to be between 1 and a few hundreds \cite{bengio_practical_2012}, to better utilize \gls{gpu}s a batch size in the power of 2 gives better runtime, e.g. 32 to 256 \cite{goodfellow_deep_2016}. Larger batch sizes have been driving by advancements in parallelism \cite{dean_large_2012}, which can improve the training time, however smaller batch size, have shown better generalization performance due to a regularizing effect \cite{masters_revisiting_nodate}, which especially large model, that tends to overfit can benefit from \cite{goodfellow_deep_2016}. 
+		
+		A batch size of 16 was found to be the maximum power of 2 possible with the computational budget of 8Gb RAM. The standard choice of 32 caused memory exhaustions. However, a batch size of 16 provide decent training times and may provide additional regularization over 32. Smaller batch sizes were not experimented with due to time constraints. The batch size of 16 was chosen for all \gls{dnn} training sessions.
+		
+		\item[Datasets] \gls{min100} is a subset of the \gls{ilsvrc2012} dataset \cite{russakovsky_imagenet_2015} created for this project, to reduce training time from several weeks to only days on available hardware. The subset is inspired by MiniImageNet \cite{vinyals_matching_2016}, that uses a subset of 100 classes with 600 samples for each class. \gls{min100} contains 100 out of 1.000 randomly sampled classes, which gives 127.300 out of 1.2m training samples and 5.000 out of 50.000 validation samples. A full list of classes are found in the table \ref{tbl:min100}. 
+		
+		Compared to other sufficiently dense classification datasets e.g \gls{tinyimagenet} \cite{li_cs231n:_2018}, \gls{cifar10} and \gls{cifar100} \cite{krizhevsky_cifar-10_nodate}, the image sizes of these datasets are respectively $(64\times 64$), $(32\times 32)$, $(32\times 32)$ pixels, all of which are considered too small for this project. Other datasets such as MS COCO and Pascal VOC are better suited for object detection/segmentation, as images are not cropped to only focus on a single object, thus too challenging for classification. In fact Pascal VOC was initially tested, the model however, clearly overfitted the training data due to data sparsity. 
+		
+		\item[Image Augmentation] A models ability generalize a specific classification problem has a close connection with the number of available training samples. Data augmentation haven proven to be powerful tool in order to virtually create more training data \cite{perez_effectiveness_2017}. Enlarging a training dataset by data augmentation can help create new versions of an image, that are different from but still similar to the original image, without actually having to acquire and annotate new samples \cite{goodfellow_deep_2016}.  
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=.7\linewidth]{figures/augmentation/augmentation_high_resolution.png}
+			\caption[Image Augmentaion Example]{Image Augmentation of an elephant}
+			\label{fig:augmentation}
+		\end{figure}
+		
+		Image augmentation involves transformations using tools from image processing to randomly apply noise injection, and color space transformations including contrast and saturation distortions, as well as geometric transformations, such as simple transformations of flipping the image to more complex affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant, achieved using \gls{imgaug} \cite{jung_imgaug:_nodate}. 
+		
+		New methods have been proposed where image transformations are learned to improve generalization e.g. AutoAugment \cite{cubuk_autoaugment:_2018}. 
+		
+		Other methods involves actually enlarging the training dataset by synthetically creating more data using a \gls{gan}. \gls{gan}s can help overcome limited data given the available training data or a 3D model, by artificially constructing synthetic samples in different background, light setting and from alternate perspectives.
+		
+		Methods that do not cover enriching the available training, but alters the learning procedure are called regularization and covers; weight decay, dropout, batch normalization etc. We do not experiment with these regularization technique, but uses the settings set in the implementation of the models.
+		
+		\item[Transfer Learning] Transfer learning is the procedure of using a pre-trained model to train on a new dataset, under the assumption, that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset enables models to learn general features suitable for other domains \cite{kornblith_better_2019}. Transfer learning are especially suited for when the new data domain is of limited quantity and the similarities between the two data domains are strong. If the similarity is weak a model can be partially trained, the shallow layers containing general features are frozen and only the deeper layers with more specialized features are fine-tuned for the new data domain \cite{li_cs231n:_2018}. Thus, transfer learning can reduce the training time to learn general features of shallow layers and possibly learn more specific features at deeper layers, adapted to the new dataset.
+	\end{enumdescript}
+	
+	\item[Inference] The inference experiment have been conducted by letting all samples inference the model, the output and measured time of all exits have been logged and used for analysis in section \ref{sec:ee-results}. All hardware of table \ref{tbl:platforms} and all trained models of table \ref{tbl:models} have been used. The inference experiment does not require nearly the same amount of setting as the training does, those required are listed here:
+	\begin{enumdescript}
+		\item[Batch Size] A batch size of 1 have been chosen to simulate a real scenario, and to measure time of each samples
+		\item[Dataset] The validation dataset of \gls{min100} have been used.
+	\end{enumdescript} 
+	
+\end{enumdescript}
+
+\section{Results} \label{sec:ee-results}
+
+\subsection{Training Results}
+
+We trained the three early exiting models B-\gls{resnet}, B-\gls{densenet} and \gls{msdnet}, along with conventional versions of the \gls{resnet}101 and \gls{densenet}-121. The \gls{dnn}s were trained on the \gls{min100} training set..
+
+First we trained B-\gls{resnet} using transfer learning from the ImageNet dataset. We froze the features of the network and only trained the classifiers of all the exits. Figure \ref{fig:frozen-b-resnet-miniimagenet-100} show the results from the training. The figure shows, that the features learned from a conventional single exit model, are not suitable for an early exit model. None of the intermediate classifiers are able to obtain acceptable accuracy on neither the training nor the validation set. The features for the shallower part of the network are not optimized for the early classifiers. This study clearly reveals the need to train the entire model, to obtain an early exit model with decent accuracy.  
+
+\begin{figure}
+	\centering
+	\captionsetup[subfigure]{justification=centering, farskip=1pt,captionskip=1pt}
+	\includegraphics[width=.5\textwidth]{figures/training_plots/frozen_b-resnet_exit_legend}
+	\subfloat[Train loss\label{fig:frozen-b-resnet-train-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/frozen_b-resnet_train-loss}}
+	\subfloat[Test loss \label{fig:frozen-b-resnet-test-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/frozen_b-resnet_test-loss}}
+	\hfill
+	\subfloat[Train accuracy\label{fig:frozen-b-resnet-train-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/frozen_b-resnet_train-accuracy}}
+	\subfloat[Test accuracy\label{fig:frozen-b-resnet-test-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/frozen_b-resnet_test-accuracy}}
+	\caption[Frozen Bresnet Training summary]{Frozen B-resnet Training summary: shows the progression of model attributes over times of epochs, \protect\subref{fig:frozen-b-resnet-train-loss} train loss, \protect\subref{fig:frozen-b-resnet-test-loss} test loss, \protect\subref{fig:frozen-b-resnet-train-acc} train accuracy, \protect\subref{fig:frozen-b-resnet-test-acc}, test accuracy.}
+	\label{fig:frozen-b-resnet-miniimagenet-100}
+\end{figure}
+
+As found in \cite{teerapittayanon_branchynet:_2016}, we unfreeze the model, to allow the features of the model to be optimized for the intermediate classifiers of the early exit model. Figure \ref{fig:b-resnet-miniimagenet-100} show the training results. The accuracy at early exits classifiers are greatly improved by 140 \% to almost 390 \%. However, the accuracy of the final classifier are reduced by 4 \%. The reduction in accuracy may be caused by;
+\begin{enumerate}
+	\item The features of the third and largest resolution block just before exit-2, see table \ref{tbl:resnet101}, may be optimized too much for exit-2, thus collapses the information, that the last block should use to learn more descriptive features. 
+	\item It could be a sign of overfitting, due to the size of dataset is only $\frac{1}{10}$ of the dataset used to train the original model. 
+\end{enumerate}
+However, the last two exits obtain a training accuracy close to 1. However, there is no notable degradation in validation loss or accuracy, which would have been the clearest sign of overfitting. We did also train conventional versions of the two models on the same datasets, and since both models are able to obtain over 0.9 in accuracy, we argue, that the most probable reason is optimization to earlier exit, as the same trend is shown in \cite{huang_multi-scale_2017}.
+
+\begin{figure}
+	\centering
+	\captionsetup[subfigure]{justification=centering, farskip=1pt,captionskip=1pt}
+	\includegraphics[width=.5\textwidth]{figures/training_plots/b-resnet_exit_legend}
+	\subfloat[Train loss\label{fig:b-resnet-train-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-resnet_train-loss}}
+	\subfloat[Test loss \label{fig:b-resnet-test-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-resnet_test-loss}}
+	\hfill
+	\subfloat[Train accuracy\label{fig:b-resnet-train-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-resnet_train-accuracy}}
+	\subfloat[Test accuracy\label{fig:b-resnet-test-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-resnet_test-accuracy}}
+	\caption[B-ResNet Training summary]{B-ResNet Training summary: shows the progression of model attributes over times of epochs, \protect\subref{fig:b-resnet-train-loss} train loss, \protect\subref{fig:b-resnet-test-loss} test loss, \protect\subref{fig:b-resnet-train-acc} train accuracy, \protect\subref{fig:b-resnet-test-acc}, test accuracy.}
+	\label{fig:b-resnet-miniimagenet-100}
+\end{figure}
+
+Table \ref{tbl:frozen-vs-unfrozen}  shows the improvement of the higest validation score obtained in the training process. Comparing the two show, that we are able to improve the accuracy at early exits, thus the features located in the shallower part of the model now provides information that enables the classifiers to better discriminate the classes. 
+
+\begin{longtabu}{>{\bfseries}X[2]|X|X|X|X}
+	\caption[Comparison of Transfer Learning Approaches]{Comparison of transfer learning approaches frozen model vs. fine-tuning on validation accuracy} \label{tbl:frozen-vs-unfrozen} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Exit-0 & Exit-1 & Exit-2 & Exit-3 \tabularnewline
+	\bottomrule
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:frozen-vs-unfrozen}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Exit-0 & Exit-1 & Exit-2 & Exit-1 \tabularnewline
+	\bottomrule
+	\endhead % all the lines above this will be repeated on every page
+	\bottomrule
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Frozen B-\gls{resnet}	& 0.14	& 0.18	& 0.63 & 0.93 \tabularnewline
+	\hline
+	Unfrozen B-\gls{resnet}	& 0.49 	& 0.70 & 0.88 & 0.89 \tabularnewline
+	\hline
+	Change & 350 \% & 389 \% & 140 \% &  96 \% \tabularnewline							
+	\bottomrule
+\end{longtabu}
+
+As the two last exits of \gls{resnet} is almost equally accurate, not much gain is obtained by running the model all the way to the end. Figure \ref{fig:b-densenet-miniimagenet-100} show the training result of B-\gls{densenet}. B-\gls{densenet} on the other hand always have a gain in accuracy by continuing the inference process all the way to the end, and are also able to achieve better accuracy at earlier exits than B-\gls{resnet}. However, again at the cost of less accurate end exit. The figure shows the same importance of the densely connected layers for an early exit model as in \cite{huang_multi-scale_2017}. Eventhough the two first exits of B-\gls{densenet} have a higher accuracy, the last two exits obtain higher accuracy for the Figure \ref{fig:b-densenet-miniimagenet-100} show the training result of B-\gls{densenet}, see table \ref{tbl:training-compariosn}. \gls{msdnet}, the early exiting version of \gls{densenet}, shows further improvement to early exits accuracy.     
+
+\begin{figure}
+	\centering
+	\captionsetup[subfigure]{justification=centering, farskip=1pt,captionskip=1pt}
+	\includegraphics[width=.5\textwidth]{figures/training_plots/b-densenet_exit_legend}
+	\subfloat[Train loss\label{fig:b-densenet-train-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-densenet_train-loss}}
+	\subfloat[Test loss \label{fig:b-densenet-test-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-densenet_test-loss}}
+	\hfill
+	\subfloat[Train accuracy\label{fig:b-densenet-train-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-densenet_train-accuracy}}
+	\subfloat[Test accuracy\label{fig:b-densenet-test-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/b-densenet_test-accuracy}}
+	\caption[B-densenet Training summary]{B-densenet Training summary: shows the progression of model attributes over times of epochs, \protect\subref{fig:b-densenet-train-loss} train loss, \protect\subref{fig:b-densenet-test-loss} test loss, \protect\subref{fig:b-densenet-train-acc} train accuracy, \protect\subref{fig:b-densenet-test-acc}, test accuracy.}
+	\label{fig:b-densenet-miniimagenet-100}
+\end{figure}
+
+Figure \ref{fig:msdnet-miniimagenet-100} show the results of training the \gls{msdnet}. The model specifically designed for early exiting shows indeed improvements for classifiers at early exit, but the overall accuracy i.e. the accuracy of the final classifier is slightly smaller compared to the other two models.
+
+\begin{figure}
+	\centering
+	\captionsetup[subfigure]{justification=centering, farskip=1pt,captionskip=1pt}
+	\includegraphics[width=.5\textwidth]{figures/training_plots/msdnet_exit_legend}
+	\subfloat[Train loss\label{fig:msdnet-train-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/msdnet_train-loss}}
+	\subfloat[Test loss \label{fig:msdnet-test-loss}]{\includegraphics[width=.49\textwidth]{figures/training_plots/msdnet_test-loss}}
+	\hfill
+	\subfloat[Train accuracy\label{fig:msdnet-train-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/msdnet_train-accuracy}}
+	\subfloat[Test accuracy\label{fig:msdnet-test-acc}]{\includegraphics[width=.49\textwidth]{figures/training_plots/msdnet_test-accuracy}}
+	\caption[MSDNet Training summary]{MSDNet Training summary: shows the progression of model attributes over times of epochs, \protect\subref{fig:msdnet-train-loss} train loss, \protect\subref{fig:msdnet-test-loss} test loss, \protect\subref{fig:msdnet-train-acc} train accuracy, \protect\subref{fig:msdnet-test-acc}, test accuracy.}
+	\label{fig:msdnet-miniimagenet-100}
+\end{figure}
+
+Table \ref{tbl:training-compariosn} compares the best obtained validation accuracy in the training processes of the three models.
+
+
+\begin{longtabu}{>{\bfseries}X[2]|X|X|X|X|X}
+	\caption[Early Exiting Validation Accuracy from Training]{Early Exiting Validation Accuracy from Training} \label{tbl:training-compariosn} \\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Exit-0 & Exit-1 & Exit-2 & Exit-3 & Exit-4 \tabularnewline
+	\bottomrule
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:frozen-vs-unfrozen}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Model & Exit-0 & Exit-1 & Exit-2 & Exit-3 & Exit-4 \tabularnewline
+	\bottomrule
+	\endhead % all the lines above this will be repeated on every page
+	\bottomrule
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	B-\gls{resnet} & 0.49 	& 0.70 & 0.88 & 0.89 & N/A \tabularnewline
+	\hline
+	B-\gls{densenet}	& 0.55 	& 0.77 & 0.84 & 0.88 & N/A \tabularnewline
+	\hline
+	\gls{msdnet} & 0.73 & 0.82 & 0.85 &  0.87 & 0.87 \tabularnewline							
+	\bottomrule
+\end{longtabu}
+
+In the next section we evaluate the trained models on the \gls{min100} validation set.
+
+\subsection{Inference Results}
+
+In this section we evaluate the accuracy of the early exit models. All validation samples are inferred to all model of table \ref{tbl:models}. Figure \ref{fig:exit-accuracy} show top-1 and top-5 accuracy of all exits of the three models.  
+
+\begin{figure}
+	\includegraphics[width=\linewidth]{figures/inference_plots/accuracy-comparison}
+	\caption[Accuracy of Early Exit Models]{Accuracy of Early Exit Models, B-\gls{resnet}, B-\gls{densenet} and \gls{msdnet}}
+	\label{fig:exit-accuracy}
+\end{figure}
+
+As expected the models become more accurate, as the samples are predicted deeper in the network, as the increasingly complex features deep within the network have more discriminative characteristics. As stated in \cite{huang_multi-scale_2017} the densely connected features are important factors for obtaining intermediate classifiers with decent accuracy. The B-\gls{densenet} and \gls{msdnet} have as expected more accurate early classifiers, however the end-exit of B-\gls{resnet} achieves superior top-1 accuracy compared to the other models. Close to 50 \% of the samples can be accurately classified at the first exit of any of the model, which justifies the assumption for early exiting and promisingly, we should be able to save time. 
+
+\subsubsection{Inference Time Analysis}
+
+We setup a test, where we inference the entire \gls{min100} validation set the in all 5 models on three different platforms. Table \ref{tbl:inference-stats} show statistical values mean, standard deviation, minimum and maximum for the model inference time on the different platforms. From the table one can see, that the early exiting framework adds only a small additional delay, when comparing the last exit the \gls{branchynet} version with its conventional pendant. For the \gls{gpu}-enabled platforms, \gls{gpu} Workstation Jetson TX2, only additional 1.1ms and 2.4ms respectively on average. On the NUC the B-\gls{resnet} is 7.5 ms slower. 
+\begin{longtabu}{>{\bfseries}X[2.6]|[1pt]X[r]|X[0.8r]|X[r]|X[1.2r]|[1pt]X[r]|X[0.7r]|X[r]|X[1.2r]|[1pt]X[r]|X[0.7r]|X[r]|X[1.2r]}
+	\caption[Inference time statistics]{Inference time statistics (mean, standard deviation, minimum, maximum) of the five models on the three platforms }\label{tbl:inference-stats} \\
+	\toprule
+	\rowfont{\bfseries}
+	& \multicolumn4{c|[1pt]}{GPU Workstation} &  \multicolumn4{c|[1pt]}{Jetson TX2} & \multicolumn4{c}{Intel NUC} \tabularnewline
+	\tabucline{2-13}
+	\rowfont{\bfseries} Model & Mean & Std.  & Min & Max & Mean & Std. & Min & Max & Mean & Std.  & Min & Max  \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:inference-stats}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	& \multicolumn4{c|[1pt]}{GPU Workstation} &  \multicolumn4{c|[1pt]}{Jetson TX2} & \multicolumn4{c}{Intel NUC} \tabularnewline
+	\tabucline{2-13}
+	\rowfont{\bfseries} Model & Mean & Std.  & Min & Max & Mean & Std.  & Min & Max & Mean & Std.  & Min & Max  \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	ResNet  	& 36.01 & 1.72 & 33.24 & 69.02 & 64.19 & 1.95 & 61.28 & 110.17 & 215.76 & 21.98 & 132.98 & 275.55 \tabularnewline
+	\hline
+	DenseNet 	& 47.74 & 1.95 & 4.48 & 86.88 & 70.48 & 3.04 & 59.56 & 132.45 &  72.30 &  2.61 &  69.02 & 107.63 \tabularnewline
+	\hline
+	B-ResNet & & & &&&&&&&& &  \tabularnewline 
+	\hspace{3mm} Exit-0 &  4.20 & 0.63 &  3.81 &  39.40 &  8.61 & 0.31 &  8.39 &  15.54 &  38.25 &  1.85 &  29.26 &  74.94 \tabularnewline
+	\hspace{3mm} Exit-1 &  9.40 & 1.28 &  8.19 &  70.23 & 19.30 & 1.08 & 16.42 &  38.41 &  66.69 &  3.15 &  50.41 & 110.80 \tabularnewline
+	\hspace{3mm} Exit-2 & 33.59 & 2.78 & 30.25 & 103.55 & 56.77 & 2.73 & 52.34 & 102.58 & 196.43 &  8.81 & 150.11 & 254.86 \tabularnewline
+	\hspace{3mm} Exit-3 & 37.14 & 2.94 & 33.65 & 109.94 & 67.04 & 2.86 & 62.47 & 116.74 & 223.32 & 10.35 & 170.95 & 289.67 \tabularnewline
+	\hline
+	B-DenseNet &  & & &&&&&&&& & \tabularnewline
+	\hspace{3mm} Exit-0 &  5.83 & 1.09 &  5.15 &  54.61 & 11.05 & 0.48 & 10.52 & 17.31 &  28.83 & 1.59 & 26.05 & 41.93 \tabularnewline
+	\hspace{3mm} Exit-1 & 17.03 & 1.89 & 14.60 &  76.78 & 30.26 & 2.02 & 23.75 & 47.54 &  46.71 & 2.31 & 43.47 & 71.85 \tabularnewline
+	\hspace{3mm} Exit-2 & 36.31 & 3.01 & 32.72 & 104.79 & 55.38 & 3.22 & 48.10 & 87.81 &  64.26 & 2.80 & 60.65 & 99.41 \tabularnewline
+	\hspace{3mm} Exit-3 & 49.14 & 3.36 & 45.13 & 127.07 & 72.41 & 3.89 & 64.77 & 120.29 & 72.21 & 2.97 & 68.37 & 112.06 \tabularnewline
+	\hline
+	MSDNet & & &&&&&&&&&& \tabularnewline
+	\hspace{3mm} Exit-0 & 24.14 & 1.59 & 21.53 &  67.38 &  40.37 & 2.77 & 29.36 & 209.89 & 19.99 & 1.27 & 16.99 &  35.12 \tabularnewline
+	\hspace{3mm} Exit-1 & 42.24 & 2.54 & 38.87 & 119.85 &  65.18 & 4.29 & 53.34 & 267.19 & 32.82 & 2.38 & 29.03 & 103.19 \tabularnewline
+	\hspace{3mm} Exit-2 & 55.59 & 2.82 & 51.90 & 143.30 &  83.81 & 5.43 & 71.39 & 312.55 & 42.89 & 3.03 & 38.72 & 130.52 \tabularnewline
+	\hspace{3mm} Exit-3 & 64.49 & 2.99 & 60.59 & 156.26 &  96.53 & 6.26 & 83.68 & 345.67 & 50.10 & 3.43 & 45.66 & 145.75 \tabularnewline
+	\hspace{3mm} Exit-4 & 68.87 & 3.11 & 64.85 & 165.90 & 103.29 & 6.65 & 90.14 & 361.02 & 56.02 & 3.62 & 51.28 & 154.08 \tabularnewline
+	\bottomrule
+\end{longtabu}
+
+Figure \ref{fig:inference-time-dist} shows the result as a histogram of the inference time for a classification at the corresponding exit. The inference timings are very different on the three platforms, and is very much dependent on the hardware characteristics. The GPU Workstation are enabled with the strongest \gls{gpu}, thus have the most parallelization capabilities and able to run \gls{resnet} faster, as it requires enormous amounts of multiply-adds well-suited for \gls{gpu} acceleration. \gls{densenet} and \gls{msdnet} uses concatenation which might be a more expensive operation on the \gls{gpu}. Using only a \gls{cpu}-only device the same level of parallelization cannot be achieved to accelerate model inference. The Intel NUC, shows the opposite trend, in fact the \gls{msdnet} outperform the other models on the NUC, as it requires far fewer G\gls{flop}s and are comprised of far fewer layers and parameters. \todo{Is this discussion material?}
+
+\begin{figure}
+	\begin{minipage}{\textwidth}
+		\centering
+		\includegraphics[width=.5\linewidth]{figures/inference_plots/time_dist_legend}
+	\end{minipage}
+	\begin{minipage}{0.33\textwidth}
+		\captionsetup[subfigure]{farskip=0pt,captionskip=0pt, justification=centering}
+		\centering
+		GPU Workstation
+		\subfloat[\gls{resnet} ]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/gpu_resnet_inference_time_distribution}}
+		\hfill
+		\subfloat[B-\gls{resnet}]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/gpu_b-resnet_inference_time_distribution}}
+		\hfill
+		\subfloat[\gls{densenet} ]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/gpu_densenet_inference_time_distribution}}
+		\hfill
+		\subfloat[B-\gls{densenet}]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/gpu_b-densenet_inference_time_distribution}}
+		\hfill
+		\subfloat[\gls{msdnet}]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/gpu_msdnet_inference_time_distribution}}
+	\end{minipage}
+	\begin{minipage}{0.33\textwidth}
+		\captionsetup[subfigure]{farskip=0pt,captionskip=0pt,justification=centering}
+		\centering
+		Jetson TX2
+		\subfloat[\gls{resnet} ]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/jetson_resnet_inference_time_distribution}}
+		\hfill
+		\subfloat[B-\gls{resnet}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/inference_plots/jetson_b-resnet_inference_time_distribution}}
+		\hfill
+		\subfloat[\gls{densenet} ]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/jetson_densenet_inference_time_distribution}}
+		\hfill
+		\subfloat[B-\gls{densenet}]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/jetson_b-densenet_inference_time_distribution}}
+		\hfill
+		\subfloat[\gls{msdnet}]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/jetson_msdnet_inference_time_distribution}}
+	\end{minipage}
+	\begin{minipage}{.33\textwidth}
+		\captionsetup[subfigure]{farskip=0pt,captionskip=0pt,justification=centering}
+		\centering
+		Intel NUC
+		\subfloat[\gls{resnet} ]{\includegraphics[width=\textwidth,keepaspectratio]{figures/inference_plots/nuc_resnet_inference_time_distribution}}
+		\hfill
+		\subfloat[B-\gls{resnet}]{\includegraphics[width=\textwidth,height=.2\textheight,keepaspectratio]{figures/inference_plots/nuc_b-resnet_inference_time_distribution}}
+		\hfill
+		\subfloat[\gls{densenet} ]{\includegraphics[width=\textwidth,keepaspectratio]{figures/inference_plots/nuc_densenet_inference_time_distribution}}
+		\hfill
+		\subfloat[B-\gls{densenet}]{\includegraphics[width=\textwidth,keepaspectratio]{figures/inference_plots/nuc_b-densenet_inference_time_distribution}}
+		\hfill
+		\subfloat[\gls{msdnet}]{\includegraphics[width=\textwidth,keepaspectratio]{figures/inference_plots/nuc_msdnet_inference_time_distribution}}	
+	\end{minipage}
+	\caption[Platform Inference Time of \gls{dnn}s]{Inference Time Distribution, left column: GPU Workstation (a-e), center column: Jetson TX2 (f-j), right column NUC (k-o)}
+	\label{fig:inference-time-dist}
+\end{figure}
+
+Still the challenge remains, how to determine when to let samples exit? It can be done using the output from the softmax classifier, which can be interpreted as a confidence measure for the prediction. In the next section we investigate how to allow samples to exit the model prematurely by a study of threshold metrics.
+
+
+\subsubsection{Confidence Threshold Analysis}
+
+Selecting threshold is a vital hyper-parameter for the accuracy-latency trade-off of early exiting \gls{branchynet}. If a too high threshold is selected only a few samples can confidently exit the model at an early exit, thus no significant delay improvements may be found. Contrary if too low a threshold is selected a huge delay improvement may be found, however at the cost of overall model accuracy. 
+
+The analysis is theoretical, as the early exiting mechanism is in fact not exploited. All samples are allowed to pass all the way to the end of the network, thus all samples are classified at each exit, where both the prediction and score is logged. The prediction is evaluated against the ground truth and the score against different thresholds. If the score is higher than the threshold, the samples is marked as exited. We use both \emph{Score-max} and \emph{Score-Margin} to . \Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compares the performance of each exit on all samples. The figures show for each of the three networks under test, a plot of the two thresholds metrics for all exit of the model. The figures shows the frequency of exited samples, that have been correctly classified ({\color{sns-green}green}) and incorrectly classified ({\color{sns-red}red}), and samples that could not be classified with proper confidence given the threshold metric, hence not exited at the exit ({\color{sns-blue}blue}). Along with a plot of the change in accuracy for the exit as the confidence grows ({\color{sns-orange}orange}).  
+
+The aim is to find the metric, that reduces the amount of incorrectly exited samples ({\color{sns-red}red}). Whenever samples are exited incorrectly, the overall accuracy of the models are reduced, if it could have been correctly classifed at later exit. The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits shows exactly this. As the threshold requirements are raised, it results in a higher accuracy for the exit, as the ratio between correctly exited and incorrectly exited grows. 
+
+Generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited ({\color{sns-red}red}), at the expense of additional samples not exited ({\color{sns-blue}blue}). \emph{Score-margin} is thus slower, but also more accurate, as fewer samples are incorrectly exited. The results matches \cite{park_big/little_2015}, which show a stronger correlation between \emph{score-margin} and accuracy, than confidence score and accuracy. Henceforth the \emph{score-margin threshold} are used.
+
+Comparing the three models we can see the impact of densely connected layer of B-\gls{densenet} and \gls{msdnet}. The two model are able to obtain higher scores at early exits, thus accurately exiting more samples prematurely. B-\gls{resnet} on the other hand are able to achieve higher end accuracy, ass we did show in the previous section \ref{sec:early-exit-analysis}. The theoretical analysis is followed up by a practical test, where samples are exited if the threshold is passed. The test evaluates the threshold impact on accuracy and latency. 
+
+\newcounter{imagenumber}
+\begin{minipage}{\textwidth}
+	\begin{figure}
+		\centering
+		\paragraph{B-ResNet}
+		\includegraphics[width=\linewidth]{figures/threshold_plots/threshold_analysis_legend}
+	\end{figure}
+	
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:confidence_resnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-resnet_confidence_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[ResNet Confidence Threshold]{Confidence Threshold}
+			\label{fig:resnet_confidence}
+		\end{figure}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:score-margin_resnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-resnet_score-margin_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[ResNet Score-margin Threshold]{Score-margin Threshold}
+			\label{fig:resnet_score-margin}
+		\end{figure}
+	\end{minipage}
+\end{minipage}
+
+\begin{minipage}{\textwidth}
+	\begin{figure}
+		\centering
+		\paragraph{B-DenseNet}
+	\end{figure}
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:confidence_dense_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-densenet_confidence_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[DenseNet Confidence Threshold]{Confidence Threshold}
+			\label{fig:densenet_confidence}
+		\end{figure}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\begin{figure}
+			\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+			\centering
+			\forloop{imagenumber}{0}{\value{imagenumber} < 4}{
+				
+				\subfloat[Exit-\arabic{imagenumber}\label{fig:score-dense_resnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_b-densenet_score-margin_\arabic{imagenumber}}}
+				\hfill
+			}
+			\caption[DenseNet Score-margin Threshold]{Score-margin Threshold}
+			\label{fig:densenet_score-margin}
+		\end{figure}
+	\end{minipage}
+\end{minipage}
+
+\noindent\makebox[\textwidth][c]{\begin{minipage}{0.9\textwidth}
+		\begingroup
+		\leftskip=0cm plus 0.5fil \rightskip=0cm plus -0.5fil
+		\parfillskip=0cm plus 1fil
+		\paragraph{MSDNet}\par
+		\endgroup
+		
+		\begin{minipage}{0.5\textwidth}
+			\begin{figure}
+				\captionsetup[subfloat]{farskip=0pt,captionskip=0pt, justification=centering}
+				\centering
+				\forloop{imagenumber}{0}{\value{imagenumber} < 5}{
+					
+					\subfloat[Exit-\arabic{imagenumber}\label{fig:confidence_msd_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_msdnet_confidence_\arabic{imagenumber}}}
+					\hfill
+				}
+				\caption[MSDNet Confidence Threshold]{Confidence Threshold}
+				\label{fig:msdnet_confidence}
+			\end{figure}
+		\end{minipage}
+		\begin{minipage}{0.5\textwidth}
+			\begin{figure}
+				\captionsetup[subfloat]{farskip=1pt,captionskip=1pt, justification=centering}
+				\centering
+				\forloop{imagenumber}{0}{\value{imagenumber} < 5}{
+					
+					\subfloat[Exit-\arabic{imagenumber}\label{fig:score-msdnet_exit_\arabic{imagenumber}}]{\includegraphics[width=.9\linewidth]{figures/threshold_plots/threshold_analysis_msdnet_score-margin_\arabic{imagenumber}}}
+					\hfill
+				}
+				\caption[MSDNet Score-margin Threshold]{Score-margin Threshold}
+				\label{fig:msdnet_score-margin}
+			\end{figure}
+		\end{minipage}
+\end{minipage}}
+
+\subsubsection{Practical Threshold Exiting}
+
+We construct a test, where we use our three models, B-\gls{resnet}, B-\gls{densenet} and \gls{msdnet}, to evaluate early exiting capabilities. In this test a sample is exited when a threshold is passed, thus no additional prediction are tried for the sample. If a samples reaches the last exit, it is classified irregardless of threshold being passed or not.
+
+\begin{minipage}{\linewidth}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=0pt}
+		\centering
+		\includegraphics[width=.5\linewidth]{figures/inference_plots/model_bar_legend}
+	\end{figure}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=1pt}
+		\centering
+		\subfloat[$T= 0.1$\label{fig:model-threshold_comparison_t_1}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_1}}
+		\hfill
+		\subfloat[$T= 0.2$\label{fig:model-threshold_comparison_t_2}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_2}}
+		\hfill
+		\subfloat[$T= 0.3$\label{fig:model-threshold_comparison_t_3}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_3}}
+		\hfill
+		\subfloat[$T= 0.4$\label{fig:model-threshold_comparison_t_4}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_4}}
+		\hfill
+		\subfloat[$T= 0.5$\label{fig:model-threshold_comparison_t_5}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_5}}
+		\hfill
+		\subfloat[$T= 0.6$\label{fig:model-threshold_comparison_t_6}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_6}}
+		\hfill
+		\subfloat[$T= 0.7$\label{fig:model-threshold_comparison_t_7}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_7}}
+		\hfill
+		\subfloat[$T= 0.8$\label{fig:model-threshold_comparison_t_8}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_8}}
+		\hfill
+		\subfloat[$T= 0.9$\label{fig:model-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_9}}
+		
+		\caption[Model comparison of early exit capabilities]{Model comparison of early exit capabilities using score-margin}
+		\label{fig:model_threshold_comparison}
+	\end{figure}
+	
+\end{minipage}
+
+
+\begin{minipage}{\linewidth}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=0pt}
+		\centering
+		\includegraphics[width=.5\linewidth]{figures/inference_plots/model_bar_legend}
+	\end{figure}
+	\begin{figure}
+		\captionsetup[subfloat]{justification=centering, captionskip=0pt, farskip=1pt}
+		\centering
+		\subfloat[$T= 0.1$\label{fig:model-c-threshold_comparison_t_1}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_1}}
+		\hfill
+		\subfloat[$T= 0.2$\label{fig:model-c-threshold_comparison_t_2}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_2}}
+		\hfill
+		\subfloat[$T= 0.3$\label{fig:model-c-threshold_comparison_t_3}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_3}}
+		\hfill
+		\subfloat[$T= 0.4$\label{fig:model-c-threshold_comparison_t_4}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_4}}
+		\hfill
+		\subfloat[$T= 0.5$\label{fig:model-c-threshold_comparison_t_5}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_5}}
+		\hfill
+		\subfloat[$T= 0.6$\label{fig:model-c-threshold_comparison_t_6}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_6}}
+		\hfill
+		\subfloat[$T= 0.7$\label{fig:model-c-threshold_comparison_t_7}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_7}}
+		\hfill
+		\subfloat[$T= 0.8$\label{fig:model-c-threshold_comparison_t_8}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_8}}
+		\hfill
+		\subfloat[$T= 0.9$\label{fig:model-c-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_9}}
+		
+		\caption[Model comparison of early exit capabilities using confidence threshold]{Model comparison of early exit capabilities}
+		\label{fig:model_c-threshold_comparison}
+	\end{figure}
+	
+\end{minipage}
+
+Figure \ref{fig:inferencethresholdtest} the exiting capabilities for the model at different \emph{score-margin threshold}. The frequency of correct and incorrect prediction are plotted for each exit. For each model the bars sum to one, equivalent to all samples of the test. The figure shows, that less samples are incorrect classified, as we select a higher threshold and thus forcing the model to use later exits. B-\gls{densenet} and especially \gls{msdnet}  designed for early-exiting, are able to more frequently exit samples at early exits even at high thresholds values. Given this insight we use timings from the test to evaluate threshold impact on the accuracy-latency trade-off.
+
+%\subsubsection{Accuracy-Latency Trade-Off Analysis}
+
+Figure \ref{fig:threshold-acc-lat-trade-off} show the inference accuracy and time on the three different platforms. The result clearly exemplifies the accuracy-latency trade-off imposed by early exiting. As we raise our requirements for confidence, we improve the model accuracy, but more time is used, as later exits are required to reach the level of confidence. The conventional models are clearly more accurate, however also expectantly slower, than their more flexible exiting counterpart. B-\gls{densenet} benefits more from early exiting, when a threshold of 0.9 is chosen, it gives up 4 percentage point in accuracy and reducing inference latency by 29 \%. The B-\gls{resnet} have about the same compromise in terms of accuracy, however only a reduction of 18 \% inference latency. B-\gls{resnet} still perform better in terms of both accuracy and inference time on the \gls{gpu}-enabled devices. 
+
+As previously shown the models using densely connected layers are able to exit more samples early.
+
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering,farskip=0pt,captionskip=0pt}
+	\centering
+	\includegraphics[width=.5\linewidth]{figures/threshold_plots/inference_legend}
+	\subfloat[GPU Workstation\label{fig:early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/gpu_inference}}
+	\hfill
+	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference}}
+	\hfill
+	\subfloat[NUC\label{fig:nuc-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference}}
+	\caption[Threshold Accuracy-Latency Trade-off]{Threshold Accuracy-Latency Trade-off on \protect\subref{fig:early_exit_vs_conv} GPU Workstation, \protect\subref{fig:jetson-early_exit_vs_conv} Jetson TX2 and \protect\subref{fig:nuc-early_exit_vs_conv} NUC }
+	\label{fig:threshold-acc-lat-trade-off}
+\end{figure}
 
 
 
-\input{sections/Experiments.tex}
+
+%  \begin{figure}
+%	\captionsetup[subfigure]{justification=centering}
+%	\centering
+%	\subfloat[Jetson TX2 fine-grained\label{fig:jetson-fingrained}]{\includegraphics[width=\linewidth]{figures/threshold_plots/jetson_inference_finegrained}}
+%	\caption[]{}
+%\end{figure}
+
+\subsubsection{Delay Threshold Analysis}
+
+For time-budgeted applications, where a classification must be derived within a timed threshold. We wish to maximize the accuracy subject to this time constraint. Figure \ref{fig:time-threshold} show the model accuracy under different time constraints and on different platforms.
+
+How to choose threshold?
+If given a time threshold, what accuracy are we then able to achieve? 
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
+	\centering
+	\includegraphics[height=.05\textheight]{figures/delay_plots/delay_threshold_legend}
+	\hfill
+	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/gpu__delay_threshold}}
+	\hfill
+	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/jetson__delay_threshold}}
+	\hfill
+	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/delay_plots/nuc__delay_threshold}}
+	\caption[Delay Threshold]{Time Threshold}
+	\label{fig:delay-threshold}
+\end{figure}
+
+\section{Summary} \label{sec:ee-summary}
+
+%From figure \ref{fig:inference-time-dist} we know the inference time distribution for each exit on different hardwares. Given a time constraint, we can selective choose the exit with the best chance to provide a prediction within a certain time frame, similar to . The difference at first is we only focus on on-device or on-edge execution  with no collaboration, hence we do not need a. For device-only execution our only concern is the inference time on the specific hardware, a simple selection would be the exit with the largest inference time mean within the time constraint, as accuracy is monotically increasing over available time.
+%\begin{maxi*}
+%	{}{Reliabilty\sim\tau_{computation}}
+%	{}{}
+%	\addConstraint{\tau_{computation}}{\leq T}
+%\end{maxi*}
+%In an edge-offloading scenario we must consider communication latency. If the available networking conditions are good a later exit can be chosen to improve the reliability, however in scenarios, where networking conditions are poor an earlier exit must be chosen to meet latency requirements. 
+%\begin{maxi*}
+%	{}{Reliabilty\sim\tau_{computation}}
+%	{}{}
+%	\addConstraint{(\tau_{computation}+\tau_{communication})}{\leq T}
+%\end{maxi*}
+
 
 
 
