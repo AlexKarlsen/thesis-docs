@@ -1433,3 +1433,87 @@
 	langid = {english},
 	file = {Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\BB6DMTMR\\finding-the-thresholds-for-fast-inference-ff96797fda7.html:text/html}
 }
+
+@inproceedings{wang_see:_2019,
+	location = {Miami Beach, {FL}, {USA}},
+	title = {{SEE}: Scheduling Early Exit for Mobile {DNN} Inference during Service Outage},
+	isbn = {978-1-4503-6904-6},
+	url = {http://dl.acm.org/citation.cfm?doid=3345768.3355917},
+	doi = {10.1145/3345768.3355917},
+	shorttitle = {{SEE}},
+	abstract = {In recent years, the rapid development of edge computing enables us to process a wide variety of intelligent applications at the edge, such as real-time video analytics. However, edge computing could suffer from service outage caused by the fluctuated wireless connection or congested computing resource. During the service outage, the only choice is to process the deep neural network ({DNN}) inference at the local mobile devices. The obstacle is that due to the limited resource, it may not be possible to complete inference tasks on time. Inspired by the recently developed early exit of {DNNs}, where we can exit {DNN} at earlier layers to shorten the inference delay by sacrificing an acceptable level of accuracy, we propose to adopt such mechanism to process inference tasks during the service outage. The challenge is how to obtain the optimal schedule with diverse early exit choices. To this end, we formulate an optimal scheduling problem with the objective to maximize a general overall utility. However, the problem is in the form of integer programming, which cannot be solved by a standard approach. We therefore prove the Ordered Scheduling structure, indicating that a frame arrived earlier must be scheduled earlier. Such structure greatly decreases the searching space for an optimal solution. Then, we propose the Scheduling Early Exit ({SEE}) algorithm based on dynamic programming, to solve the problem optimally with polynomial computational complexity. Finally, we conduct trace-driven simulations and compare {SEE} with two benchmarks. The result shows that {SEE} can outperform the benchmarks by 50.9\%.},
+	eventtitle = {the 22nd International {ACM} Conference},
+	pages = {279--288},
+	booktitle = {Proceedings of the 22nd International {ACM} Conference on Modeling, Analysis and Simulation of Wireless and Mobile Systems  - {MSWIM} '19},
+	publisher = {{ACM} Press},
+	author = {Wang, Zizhao and Bao, Wei and Yuan, Dong and Ge, Liming and Tran, Nguyen H. and Zomaya, Albert Y.},
+	urldate = {2019-12-07},
+	date = {2019},
+	langid = {english},
+	file = {Wang et al. - 2019 - SEE Scheduling Early Exit for Mobile DNN Inferenc.pdf:C\:\\Users\\ajk\\Zotero\\storage\\8P46A3PR\\Wang et al. - 2019 - SEE Scheduling Early Exit for Mobile DNN Inferenc.pdf:application/pdf}
+}
+
+@article{berestizshevsky_sacrificing_2019,
+	title = {Sacrificing Accuracy for Reduced Computation: Cascaded Inference Based on Softmax Confidence},
+	volume = {11728},
+	url = {http://arxiv.org/abs/1805.10982},
+	doi = {10.1007/978-3-030-30484-3_26},
+	shorttitle = {Sacrificing Accuracy for Reduced Computation},
+	abstract = {We study the tradeoff between computational effort and accuracy in a cascade of deep neural networks. During inference, early termination in the cascade is controlled by confidence levels derived directly from the softmax outputs of intermediate classifiers. The advantage of early termination is that classification is performed using less computation, thus adjusting the computational effort to the complexity of the input. Moreover, dynamic modification of confidence thresholds allow one to trade accuracy for computational effort without requiring retraining. Basing of early termination on softmax classifier outputs is justified by experimentation that demonstrates an almost linear relation between confidence levels in intermediate classifiers and accuracy. Our experimentation with architectures based on {ResNet} obtained the following results. (i) A speedup of 1.5 that sacrifices 1.4\% accuracy with respect to the {CIFAR}-10 test set. (ii) A speedup of 1.19 that sacrifices 0.7\% accuracy with respect to the {CIFAR}-100 test set. (iii) A speedup of 2.16 that sacrifices 1.4\% accuracy with respect to the {SVHN} test set.},
+	pages = {306--320},
+	journaltitle = {{arXiv}:1805.10982 [cs, stat]},
+	author = {Berestizshevsky, Konstantin and Even, Guy},
+	urldate = {2019-12-07},
+	date = {2019},
+	eprinttype = {arxiv},
+	eprint = {1805.10982},
+	keywords = {Computer Science - Machine Learning, Statistics - Machine Learning},
+	file = {arXiv Fulltext PDF:C\:\\Users\\ajk\\Zotero\\storage\\VAFVHW45\\Berestizshevsky and Even - 2019 - Sacrificing Accuracy for Reduced Computation Casc.pdf:application/pdf;arXiv.org Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\GITV4MLC\\1805.html:text/html}
+}
+
+@article{figurnov_spatially_2017,
+	title = {Spatially Adaptive Computation Time for Residual Networks},
+	url = {http://arxiv.org/abs/1612.02297},
+	abstract = {This paper proposes a deep learning architecture based on Residual Network that dynamically adjusts the number of executed layers for the regions of the image. This architecture is end-to-end trainable, deterministic and problem-agnostic. It is therefore applicable without any modifications to a wide range of computer vision problems such as image classification, object detection and image segmentation. We present experimental results showing that this model improves the computational efficiency of Residual Networks on the challenging {ImageNet} classification and {COCO} object detection datasets. Additionally, we evaluate the computation time maps on the visual saliency dataset cat2000 and find that they correlate surprisingly well with human eye fixation positions.},
+	journaltitle = {{arXiv}:1612.02297 [cs]},
+	author = {Figurnov, Michael and Collins, Maxwell D. and Zhu, Yukun and Zhang, Li and Huang, Jonathan and Vetrov, Dmitry and Salakhutdinov, Ruslan},
+	urldate = {2019-12-07},
+	date = {2017-07-02},
+	eprinttype = {arxiv},
+	eprint = {1612.02297},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning},
+	file = {arXiv Fulltext PDF:C\:\\Users\\ajk\\Zotero\\storage\\NSTC9UD7\\Figurnov et al. - 2017 - Spatially Adaptive Computation Time for Residual N.pdf:application/pdf;arXiv.org Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\K6HS9WGY\\1612.html:text/html}
+}
+
+@inproceedings{panda_conditional_2016,
+	title = {Conditional Deep Learning for Energy-Efficient and Enhanced Pattern Recognition},
+	isbn = {978-3-9815370-7-9},
+	url = {http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7459357},
+	doi = {10.3850/9783981537079_0819},
+	abstract = {Deep learning neural networks have emerged as one of the most powerful classification tools for vision related applications. However, the computational and energy requirements associated with such deep nets can be quite high, and hence their energy-efficient implementation is of great interest. Although traditionally the entire network is utilized for the recognition of all inputs, we observe that the classification difficulty varies widely across inputs in real-world datasets; only a small fraction of inputs require the full computational effort of a network, while a large majority can be classified correctly with very low effort. In this paper, we propose Conditional Deep Learning ({CDL}) where the convolutional layer features are used to identify the variability in the difficulty of input instances and conditionally activate the deeper layers of the network. We achieve this by cascading a linear network of output neurons for each convolutional layer and monitoring the output of the linear network to decide whether classification can be terminated at the current stage or not. The proposed methodology thus enables the network to dynamically adjust the computational effort depending upon the difficulty of the input data while maintaining competitive classification accuracy. We evaluate our approach on the {MNIST} dataset. Our experiments demonstrate that our proposed {CDL} yields 1.91x reduction in average number of operations per input, which translates to 1.84x improvement in energy. In addition, our results show an improvement in classification accuracy from 97.5\% to 98.9\% as compared to the original network.},
+	eventtitle = {Proceedings of the 2016 Design, Automation \& Test in Europe Conference \& Exhibition ({DATE})},
+	pages = {475--480},
+	booktitle = {Proceedings of the 2016 Design, Automation \& Test in Europe Conference \& Exhibition ({DATE})},
+	publisher = {Research Publishing Services},
+	author = {Panda, Priyadarshini and Sengupta, Abhronil and Roy, Kaushik},
+	urldate = {2019-12-07},
+	date = {2016},
+	langid = {english},
+	file = {Panda et al. - 2016 - Conditional Deep Learning for Energy-Efficient and.pdf:C\:\\Users\\ajk\\Zotero\\storage\\CLBR8I4M\\Panda et al. - 2016 - Conditional Deep Learning for Energy-Efficient and.pdf:application/pdf}
+}
+
+@article{kaya_shallow-deep_nodate,
+	title = {Shallow-Deep Networks: Understanding and Mitigating Network Overthinking},
+	abstract = {We characterize a prevalent weakness of deep neural networks ({DNNs})—overthinking—which occurs when a {DNN} can reach correct predictions before its ﬁnal layer. Overthinking is computationally wasteful, and it can also be destructive when, by the ﬁnal layer, a correct prediction changes into a misclassiﬁcation. Understanding overthinking requires studying how each prediction evolves during a {DNN}’s forward pass, which conventionally is opaque. For prediction transparency, we propose the Shallow-Deep Network ({SDN}), a generic modiﬁcation to off-the-shelf {DNNs} that introduces internal classiﬁers. We apply {SDN} to four modern architectures, trained on three image classiﬁcation tasks, to characterize the overthinking problem. We show that {SDNs} can mitigate the wasteful effect of overthinking with conﬁdence-based early exits, which reduce the average inference cost by more than 50\% and preserve the accuracy. We also ﬁnd that the destructive effect occurs for 50\% of misclassiﬁcations on natural inputs and that it can be induced, adversarially, with a recent backdooring attack. To mitigate this effect, we propose a new confusion metric to quantify the internal disagreements that will likely lead to misclassiﬁcations.},
+	pages = {10},
+	author = {Kaya, Yigitcan and Hong, Sanghyun and Dumitras, Tudor},
+	langid = {english},
+	file = {Kaya et al. - Shallow-Deep Networks Understanding and Mitigatin.pdf:C\:\\Users\\ajk\\Zotero\\storage\\MCY8AMV6\\Kaya et al. - Shallow-Deep Networks Understanding and Mitigatin.pdf:application/pdf}
+}
+
+@software{noauthor_socket_nodate,
+	title = {socket — Low-level networking interface — Python 3.8.0 documentation},
+	url = {https://docs.python.org/3/library/socket.html},
+	urldate = {2019-12-09},
+	file = {socket — Low-level networking interface — Python 3.8.0 documentation:C\:\\Users\\ajk\\Zotero\\storage\\363H29DJ\\socket.html:text/html}
+}

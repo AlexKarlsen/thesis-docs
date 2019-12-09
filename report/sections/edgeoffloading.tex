@@ -1,10 +1,23 @@
 \chapter{Edge Offloading \& Early Exiting}
 
-In this chapter we implement a edge-based offloading scheme utilizing early exiting \gls{dnn}s. Our scheme a more flexible and adaptive than currently proposed in literature. In section \ref{} we present our offloading scheme and implementation details. In section \ref{label} we define the system model used to evaluate our result. In section \ref{} we describe our experimental setup. In section \ref{} we present our results and in section \ref{} we discuss our results.
+In this chapter we implement a edge-based offloading scheme utilizing early exiting \gls{dnn}s. Our scheme a more flexible and adaptive than currently proposed in literature. In section \ref{sec:edge-aee} we present our offloading scheme In section \ref{sec:edge-system-model} we define the system model used to evaluate our result. We describe our implementation in section \ref{sec:edge-implementation} In section \ref{sec:edge-exp-setup} we describe our experimental setup. In section \ref{sec:edge-results} we present our results and in section \ref{sec:edge-summary} we discuss our results.
 
-\section{Do we have a catchy name for offloading scheme?}
+\section{\acrfull{aee} for Time-Critical Applications} \label{sec:edge-aee}
 
-We propose a more flexible edge offloading scheme compared to Edgent \cite{li_edge_2018}. Edgent is to our knowledge the only proposal in current literature, that uses early exiting models in an offloading scenario. Edgent combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. The downside of edgent is an upfront selection of exit i.e gls{dnn} right-sizing, which can be troublesome with unpredictable communication delays. 
+We propose a more flexible edge offloading scheme compared to Edgent \cite{li_edge_2018}. Edgent is to our knowledge the only proposal in current literature, that uses early exiting models in an offloading scenario.\todo{hmm} Edgent combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. The downside of edgent is an upfront selection of exit i.e gls{dnn} right-sizing, which can be troublesome with unpredictable communication delays. 
+
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[Continuois predictions\label{fig:offloading-scheme-successful}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_all}}
+\end{figure}
+\begin{figure}
+		\captionsetup[subfigure]{justification=centering}
+	\centering
+	\subfloat[Timeout of Continuois predictions\label{fig:offloading-scheme-timeout}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_timeout}}
+	\caption[Offloading scheme]{offloading scheme}
+	\label{fig:offloading-scheme}
+\end{figure} 
 
 We argue, that allowing the edge server to reach as far as possible, within the time budget and continuously sending back increasingly confident predictions, will in any case achieve at least the same accuracy. Even though a sub-model exit have been chosen with care e.g. using \gls{dnn} right-sizing, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
 
@@ -12,65 +25,7 @@ Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not was
 
 We send back the top-5 predictions to allow info-combination and reduce the data size of the reply. We use top-5, since the correct class is within these 5 predictions close to 90 \% of the time having just two predictions available for any of the models, see figure \ref{fig:top-5-cumulative}. The end device then decides the prediction based upon the information received from the edge server. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available.
 
-\begin{figure}
-	\captionsetup[subfigure]{justification=centering}
-	\centering
-	\subfloat[Continuois predictions\label{fig:offloading-scheme-successful}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_all}}
-	\hfill
-	\subfloat[Timeout of Continuois predictions\label{fig:offloading-scheme-timeout}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_timeout}}
-	\caption[Offloading scheme]{offloading scheme}
-	\label{fig:offloading-scheme}
-\end{figure} 
-
-To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
-
-Each exit outputs two 5-dimensional vectors. $\mathbf{l}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
-
-\begin{align}
-\begin{split}
-\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
-l_{i,n}^{1st} & \phantom{.}l_{i,n}^{2nd} & \phantom{.}l_{i,n}^{3rd} & \phantom{.}l_{i,n}^{4th} & \phantom{.}l_{i,n}^{5th}
-\end{bmatrix}, \\
-\mathbf{\hat{y}}^{top5}_{i,n} &= \begin{bmatrix}
-\hat{y}_{i,n}^{1st} & \hat{y}_{i,n}^{2nd} & \hat{y}_{i,n}^{3rd} & \hat{y}_{i,n}^{4th} & \hat{y}_{i,n}^{5th}
-\end{bmatrix}
-\end{split}
-\end{align}
-
-The vectors are sorted from highest to lowest, hence the score $ \hat{y}_{i,k}^{1st} $ is associated the label $ l_{i,k}^{1st} $ etc. 
-
-We define an expansion function, which takes the top-5 score vector $ \mathbf{\hat{y}}_{i,n}^{top5}$ and top-5 label vector  $\mathbf{l}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
-\begin{align}
-f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) = 
-\begin{bmatrix}
-\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,c} & \dots & \hat{y}_{i,n,C}
-\end{bmatrix}_{1 \times C}
-\end{align}
-\todo{is this implementation?}
-
-\paragraph{Example: Expansion of a 10 class problem} 
-\blockquote[]{	 	
-	For this classification example, the number of classes $C=10$. From a prediction we get the two output vectors $\mathbf{l}_{i,n}^{top5}$ and $ \mathbf{\hat{y}}_{i,n}^{top5}$.
-	\begin{align*}
-	\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
-	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
-	\end{bmatrix},\\
-	\mathbf{\hat{y}}_{i,n}^{top5} &= \begin{bmatrix}
-	0.80 & 0.10 & 0.05 & 0.03 & 0.01
-	\end{bmatrix}
-	\end{align*}
-	We use our expansion function $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $, which return the score vector $ \mathbf{\hat{y}}_{i,n}$.
-	\begin{align*}
-	\mathbf{l}_{i,n} &= \begin{bmatrix}
-	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
-	\end{bmatrix}_{1 \times 10},\\
-	\mathbf{\hat{y}}_{i,n}  &= \begin{bmatrix}
-	0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
-	\end{bmatrix}_{1 \times 10}
-	\end{align*}
-}      
-
-\section{System Model}
+\section{System Model} \label{sec:edge-system-model}
 
 	
 	Assume that $ C $ denotes the number of the image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
@@ -243,15 +198,75 @@ We define several proposals for using the additional predictions provided from t
 
 
 
-\section{Implementation}
+\section{Implementation} \label{sec:edge-implementation}
 
-The offloading scheme is implemented as a client/server application using the \gls{python} Socket API. The client and server establishes a TCP socket. The client then loads a samples from the \gls{min100} validation set and sends it over the streaming protocol. The server preprocess the sample and runs the model inference. As prediction are obtained a thread is spawned to stream the results back to the end device. 
+The offloading scheme is implemented as a client/server application, illustrated by the sequence diagram in figure \ref{fig:sequence-diagram}.
 
-\section{Experimental Setup}
+\begin{figure}
+	\captionsetup[subfigure]{justification=centering}
+	\centering
+	\includegraphics[width=.7\linewidth]{figures/models/sequence_diagram}
+	\caption[Application Sequence Diagram]{Application Sequence Diagram}
+	\label{fig:sequence-diagram}
+\end{figure}
+
+The implementation is written in \gls{python} using the \gls{python} Socket API \cite{noauthor_socket_nodate}. The client and server establishes a TCP socket connection. The client loads a samples from the \gls{min100} validation set, and streams the sample to the server. The server preprocess the sample and runs the model inference. As soon as, prediction are obtained, a thread is spawned, to stream the results back to the end device. 
+
+\paragraph{Information Combination}
+
+To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
+
+Each exit outputs two 5-dimensional vectors. $\mathbf{l}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
+
+\begin{align}
+\begin{split}
+\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
+l_{i,n}^{1st} & \phantom{.}l_{i,n}^{2nd} & \phantom{.}l_{i,n}^{3rd} & \phantom{.}l_{i,n}^{4th} & \phantom{.}l_{i,n}^{5th}
+\end{bmatrix}, \\
+\mathbf{\hat{y}}^{top5}_{i,n} &= \begin{bmatrix}
+\hat{y}_{i,n}^{1st} & \hat{y}_{i,n}^{2nd} & \hat{y}_{i,n}^{3rd} & \hat{y}_{i,n}^{4th} & \hat{y}_{i,n}^{5th}
+\end{bmatrix}
+\end{split}
+\end{align}
+
+The vectors are sorted from highest to lowest, hence the score $ \hat{y}_{i,k}^{1st} $ is associated the label $ l_{i,k}^{1st} $ etc. 
+
+We define an expansion function, which takes the top-5 score vector $ \mathbf{\hat{y}}_{i,n}^{top5}$ and top-5 label vector  $\mathbf{l}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
+\begin{align}
+f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) = 
+\begin{bmatrix}
+\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,c} & \dots & \hat{y}_{i,n,C}
+\end{bmatrix}_{1 \times C}
+\end{align}
+\todo{is this implementation?}
+
+\subparagraph{Example: Expansion of a 10 class problem} 
+\blockquote[]{	 	
+	For this classification example, the number of classes $C=10$. From a prediction we get the two output vectors $\mathbf{l}_{i,n}^{top5}$ and $ \mathbf{\hat{y}}_{i,n}^{top5}$.
+	\begin{align*}
+	\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
+	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
+	\end{bmatrix},\\
+	\mathbf{\hat{y}}_{i,n}^{top5} &= \begin{bmatrix}
+	0.80 & 0.10 & 0.05 & 0.03 & 0.01
+	\end{bmatrix}
+	\end{align*}
+	We use our expansion function $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $, which return the score vector $ \mathbf{\hat{y}}_{i,n}$.
+	\begin{align*}
+	\mathbf{l}_{i,n} &= \begin{bmatrix}
+	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
+	\end{bmatrix}_{1 \times 10},\\
+	\mathbf{\hat{y}}_{i,n}  &= \begin{bmatrix}
+	0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
+	\end{bmatrix}_{1 \times 10}
+	\end{align*}
+}      
+
+\section{Experimental Setup} \label{sec:edge-exp-setup}
 
 The client code is deployed on the NUC and server code on the Jetson TX2. The samples and intermediate predictions are timed an logged. 
 
-\section{Results}
+\section{Results} \label{sec:edge-results}
 
 We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of predictions results from all exits, revealed that in some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is sample 6 from the B-\gls{resnet}, $ y_6 $ is the ground truth, $ s^*_6 $ is the maximum score vector at each exit. $ k $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
 \begin{align*}
@@ -289,7 +304,7 @@ Based on the scores the models is more confident about the last exit prediction,
 	\subfloat[B-DenseNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-densenet_correctness}}
 	\hfill
 	\subfloat[MSDNet]{\includegraphics[width=.33\linewidth]{figures/edge/msdnet_correctness}}
-	\caption[short text]{text}
+	\caption[Model Highest Scoring Exit]{Model Highest Scoring Exit}
 	\label{fig:exit-highscore}
 \end{figure}
 
@@ -325,22 +340,26 @@ Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit g
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/edge/top5cumulative}
+	\includegraphics[width=.8\linewidth]{figures/edge/top5cumulative}
 	\caption[Top-5 Cumulative]{Model Cumulative Top-5 Accuracy}
 	\label{fig:top-5-cumulative}
 \end{figure}
 
-From the figure we can tell, that having multiple predictions does indeed improve the cumulative top-5. Using the defined methods to combine the prediction information from multiple exits, as efforts to improve the overall model accuracy, is shown in figure \ref{fig:theoretical-info-combi}. The figure shows the obtainable accuracy given the number of exit predictions received. The blue line \textit{optimum-top5} show the maximum achievable accuracy, if we were always able to pick the right class among the cumulative top-5. The orange line, \textit{optimum-top1}, show the optimal line if, we were always able to pick the correct class among the cumulative top-1 predictions. None of the propose combination methods are able to improve the accuracy, when predictions from all exits is not available. Only the MSDNet shows a small improvement when adding predictions score, when all predictions are available.
+From the figure we can tell, that having multiple predictions does indeed improve the cumulative top-5. In the next section we apply the information combination functions to data obtain from running the early exit model and collecting the output scores. 
+
+\subsection{Theoretical Information Combination Analysis}
+
+Using the defined methods to combine the prediction information from multiple exits, as efforts to improve the overall model accuracy, is shown in figure \ref{fig:theoretical-info-combi}. The figure shows the obtainable accuracy given the number of exit predictions received. The blue line \textit{optimum-top5} show the maximum achievable accuracy, if we were always able to pick the right class among the cumulative top-5. The orange line, \textit{optimum-top1}, show the optimal line if, we were always able to pick the correct class among the cumulative top-1 predictions. None of the propose combination methods are able to improve the accuracy, when predictions from all exits is not available. Only the MSDNet shows a small improvement when adding predictions score, when all predictions are available.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.7\linewidth, keepaspectratio]{figures/edge/theoretical_score_combination_legend}
-	\subfloat[B-ResNet]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\subfloat[B-ResNet]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\subfloat[B-DenseNet]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[MSDNet]{\includegraphics[height=.27\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
+	\subfloat[MSDNet]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
 	\caption[Combination Function with $ n $ Available Exits]{Combination Function with $ n $ Available Exits}
 	\label{fig:theoretical-info-combi}
 \end{figure}
@@ -355,7 +374,7 @@ We run test where the images are offloaded from NUC to Jetson. We set different 
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.7\linewidth]{figures/edge/offloading_legend}
-	\subfloat[]{\includegraphics[width=\linewidth]{figures/edge/jetson_offloading}}
+	\subfloat[]{\includegraphics[height=.22\textheight]{figures/edge/jetson_offloading}}
 	\hfill
 %	\subfloat[Local Jetson TX2]{\includegraphics[width=\linewidth]{figures/delay_plots/jetson__delay_threshold}}
 	\caption[Offloading NUC to Jetson]{Offloading NUC to Jetson}
@@ -388,38 +407,29 @@ In table \ref{tbl:time-offloading} we present the measured communication time st
 	\bottomrule
 \end{longtabu}
 
-We compare running the various model locally on the NUC with offloading to the Jetson, see figure \ref{fig:offloading-vs-local}. Evidently, especially under stringent delay thresholds, i.e. the lower region of the plots, we are able to improve the accuracy significantly. However, as the delay threshold are relaxed running locally becomes preferable. One may notice the small drop in reliability, these are cause by extreme delays in the \gls{tcp} protocol, that does not occur locally. 
+\begin{figure}
+	\centering
+	\includegraphics[width=.75\linewidth]{figures/tcp/tcpoverhead}
+	\caption[TCP retransmission overhead]{TCP retransmission overhead}
+\end{figure}
+
+We compare running the various model locally on the NUC with offloading to the Jetson, see figure \ref{fig:offloading-vs-local}. Especially under stringent delay thresholds, i.e. the lower region of the plots, we are able to improve the accuracy significantly. However, as the delay threshold are relaxed running locally becomes preferable. One may notice the small drop in reliability, these are cause by extreme delays in the \gls{tcp} protocol, that does not occur locally. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
 	\centering
 	\includegraphics[height=.05\textheight]{figures/edge/offloading_vs_local_legend}
 	\hfill
-	\subfloat[B-ResNet]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/edge/b-resnet_offloading_vs_local}}
+	\subfloat[B-ResNet]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/b-resnet_offloading_vs_local}}
 	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/edge/b-densenet_offloading_vs_local}}
+	\subfloat[B-DenseNet]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/b-densenet_offloading_vs_local}}
 	\hfill
-	\subfloat[MSDNet]{\includegraphics[width=\textwidth,height=.29\textheight,keepaspectratio]{figures/edge/msdnet_offloading_vs_local}}
+	\subfloat[MSDNet]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/msdnet_offloading_vs_local}}
 	\caption[Offloading Jetson vs. Local NUC]{Offloading inference to Jetson vs. Local inference on NUC}
 	\label{fig:offloading-vs-local}
 \end{figure}
 
-
-\subsection{Transport Protocol} 
-
-Offloading tasks over the network, irregardless fully or partially requires a transport protocol. The selection is typically a choice of either \gls{tcp} or \gls{udp}. \gls{tcp} is a reliable protocol, that guarantee no losses by retransmission of lost packets. \gls{udp} on the other hand is a best-effort protocol, that accept packets loss, thus not introducing retransmission communication overhead. 
-
-Fully offloading \gls{jpeg} compressed images for classification require no losses for human-readability. Sending intermediate features of a \gls{dnn} may not be as intolerant to losses and might be able to function with the far more lightweight \gls{udp}. In current research literature the choice of \gls{tcp} seems given in advance.  
-
-In this experiment the \gls{tcp} transmission time and retransmission rate is investigated under different communication environments. 
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{figures/tcp/tcpoverhead}
-	\caption[TCP retransmission overhead]{TCP retransmission overhead}
-\end{figure}
-
-\section{Summary}
+\section{Summary} \label{sec:edge-summary}
 
 The NUC is a very powerful end device equipped with a \gls{cpu}. The end device are more likely to be equipped with ARM processors or even smaller processing unit. Some end devices may even not be able to run any of the models locally. However, given the results the servers may not need to be equipped with powerful \gls{gpu}s, as the NUC is able to achieve such high performance running especially the \gls{msdnet}. 
 
