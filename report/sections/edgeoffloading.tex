@@ -21,9 +21,9 @@ We propose a more flexible edge offloading scheme compared to Edgent \cite{li_ed
 
 We argue, that allowing the edge server to reach as far as possible, within the time budget and continuously sending back increasingly confident predictions, will in any case achieve at least the same accuracy. Even though a sub-model exit have been chosen with care e.g. using \gls{dnn} right-sizing, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
 
-Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is immediately offloaded from the end device, to edge server. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. Multiple early exits allows for successively receiving, what is expectedly, increasingly reliable predictions. The most recent received prediction i.e. from the latest exits are accepted as the prediction.
+Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is immediately offloaded from the end device, to edge server. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. Multiple early exits allows for successively receiving, what is expectedly, increasingly reliable predictions. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available 
 
-We send back the top-5 predictions to allow info-combination and reduce the data size of the reply. We use top-5, since the correct class is within these 5 predictions close to 90 \% of the time having just two predictions available for any of the models, see figure \ref{fig:top-5-cumulative}. The end device then decides the prediction based upon the information received from the edge server. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available.
+The most recent received prediction i.e. from the latest exits are accepted as the prediction. Or alternatively, we also look at using multiple predictions received from the edge, and let the end device use the information to select the prediction using a combination function, defined in section \ref{sec:edge-system-model}.
 
 \section{System Model} \label{sec:edge-system-model}
 
@@ -64,55 +64,53 @@ We send back the top-5 predictions to allow info-combination and reduce the data
 		\end{maxi}
 		where the accuracy $ \bar{A}_f $ is now using a combination function $ f $ to determine the prediction.
 		\begin{align*}
-		\bar{A}_f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c_{i,k}}\right)-y_i\right|\right)
+		\bar{A}_f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{\hat{y}}_{i,1} \dots, \mathbf{\hat{y}}_{i,n}\right)-y_i\right|\right)
 		\end{align*}
 		
 		$$\hat{T}_{i,n}^{loc}=\sum_{j=1}^{n} T^{ee}_{i,n}, $$ \\
 		$$\hat{T}_{i,n}^{edge}=T_{i}^{tran}+\sum_{j=1}^{n} T^{ee}_{i,n}$$
 		%			\item[Image Processing
 		
-			\item[Combination function] There are several ways to define combination function $ f\left(\mathbf{c}_{i,1}, \mathbf{c}_{i,2}, \dots \mathbf{c}_{i,k}\right) $
+			\item[Combination function] There are several ways to define combination function $ f\left(\mathbf{c}_{i,1}, \dots,S \mathbf{c}_{i,k}\right) $
 		\begin{enumdescript}
 		
 			
 				\item[Latest] We define the method \emph{lastest}, where we constrain ourselves to only use the most recent prediction $n$.
 				\begin{align}
-					f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = p_{i,k}^{*}
+					f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \hat{y}_{i,n}^{*}
 				\end{align}
 				
-				\item[max confidence] This method is based on the naive assumption, that given a higher score, it will lead to a higher accuracy independent of the uncertainty of classifier at an earlier exits.
+				\item[max confidence] This method used in \cite{kaya_shallow-deep_nodate} proposing \gls{sdn}, same as early exit \gls{dnn}, which reports improvement on the \gls{cifar10}, \gls{cifar100} and \gls{tinyimagenet}. The measure is based on the assumption, that an exit obtaining a higher score is more confident, hence improving the accuracy.
 				\begin{align}
 				\begin{split}
-				f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{{p_{i,j}^{*}, 1 \le j 
-						\le k}}{\max} \{c_{i,1}^*, \cdots, c_{i,k}^*\},\\ \text{where\:} c_{i,j}^* = \max\bm{c}_{i,j} \text{\:for\:} \forall \ 1 \le j \le k
+				f\left(\bm{\hat{y}}_{i,1}, \cdots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{{\hat{y}_{i,j}^{*}, 1 \le j 
+						\le n}}{\max} \{\hat{y}_{i,1}^* \dots, \hat{y}_{i,n}^*\},\\ \text{where\:} \hat{y}_{i,j}^* = \max\bm{\hat{y}}_{i,j} \text{\:for\:} \forall \ 1 \le j \le n
 				\end{split}	
 				\end{align}
-				\item[sum confidence]
+				\item[sum confidence] this method sums the respective class scores for all exit predictions and chooses the highest scoring class. 
 				\begin{align}
 				\begin{split}
-				f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{n}{\max} \{s_{i,1}, \cdots, s_{i,N}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{k}c_{i,k,n} \text{\:for\:} \forall \ 1\le n \le N
+				f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}\hat{y}_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
 				\end{split}
 				\end{align}
 
-				\item[weighted sum confidence]
+				\item[weighted sum confidence] this method perform a weighted sums of the respective class scores for all exit predictions and chooses the highest scoring class. 
 
 				\begin{align}
 				\begin{split}
-					f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{n}{\max} \{s_{i,1}, \cdots, s_{i,N}\},\\ \text{where\:} s_{i,n} = \sum_{j=1}^{k}w_n c_{i,k,n} \text{\:for\:} \forall \ 1\le n \le N
+					f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{c}_{i,k} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\},\\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}w_n c_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
 				\end{split}	
 				\end{align}
 				
-				\item[max score margin] 
+				\item[max score margin] this method determines the score-margin for all exit predictions and chooses the class with the highest score-margin. 
 				\begin{align}
 				\begin{split}
-				f\left(\bm{c}_{i,1}, \bm{c}_{i,2}, \cdots \bm{c}_{i,k} \right) = \arg \underset{{p_{i,j}^{*}, 1 \le j 
-						\le k}}{\max} \{s^{*}_{i,1}, \cdots, s^{*}_{i,k}\},\\ \text{where\:} s^{*}_{i,j} = s^{mar}(\bm{c}_{i,j}) \text{\:for\:} \forall \ 1 \le j \le k
+				f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{\hat{y}_{i,j}^{*}, 1 \le j 
+						\le n}{\max} \{s^{*}_{i,1}, \cdots, s^{*}_{i,n}\},\\ \text{where\:} s^{*}_{i,j} = f_{margin}(\bm{c}_{i,j}) \text{\:for\:} \forall \ 1 \le j \le n
 				\end{split}	
 				\end{align}
 		\end{enumdescript}
-	\end{enumdescript}
-
-We define several proposals for using the additional predictions provided from the early exiting framework, with the purpose to improve the accuracy under time constraints.  
+	\end{enumdescript}  
 
 
 
@@ -214,6 +212,8 @@ The implementation is written in \gls{python} using the \gls{python} Socket API 
 
 \paragraph{Information Combination}
 
+We send back the top-5 predictions to allow info-combination and reduce the data size of the reply. We use top-5, since the correct class is within these 5 predictions close to 90 \% of the time having just two predictions available for any of the models, see figure \ref{fig:top-5-cumulative}.
+
 To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
 
 Each exit outputs two 5-dimensional vectors. $\mathbf{l}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
@@ -293,7 +293,7 @@ y_6=0,
 0
 \end{bmatrix}
 \end{align*}
-Based on the scores the models is more confident about the last exit prediction, even though the prediction from the first exit is correct. Having all predictions available using the combination functions Latest, max and add will all give the label 62, hence cherry-picking the correct prediction from this set of predictions, is not trivial. Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits, see figure \ref{fig:exit-highscore}.
+Based on the scores the models is more confident about the last exit prediction, even though the prediction from the first exit is correct. Having all predictions available using the combination functions Latest, max and add will all give the label 62, hence cherry-picking the correct prediction from this set of predictions, is not trivial. Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits, see figure \ref{fig:exit-highscore}. This phenomenon is named \emph{overthinking} in \cite{kaya_shallow-deep_nodate}.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -381,7 +381,7 @@ We run test where the images are offloaded from NUC to Jetson. We set different 
 	\label{fig:practical-offloading}
 \end{figure}
 
-In table \ref{tbl:time-offloading} we present the measured communication time stats, mean, standard deviation, minimum- and maximum value. From the table we see the largest deviation, which support our assertion of the softer steps. 
+In table \ref{tbl:time-offloading} we present the measured communication time stats, mean, standard deviation, minimum- and maximum value. From the table we see the largest deviation, which support our assertion of the softer steps.  
 
 \begin{longtabu}{>{\bfseries}X|X|X|X|X}
 	\caption[]{} \label{tbl:time-offloading} \\
@@ -407,10 +407,13 @@ In table \ref{tbl:time-offloading} we present the measured communication time st
 	\bottomrule
 \end{longtabu}
 
+Additionally, we made a measurement of the delay using the reliable transport protocol, \gls{tcp}. In figure \ref{fig:tcp-overhead}, one can see the impact of using \gls{tcp}. In the three different settings (meetingroom, kitchen, and kitchen) the end-device is moved further apart, which reduced the quality of the communication link. In poor communication environment \gls{tcp} can be expected to have a high overhead introduced by required retransmission, thus have a negative impact on the overall delay.  
+
 \begin{figure}
 	\centering
 	\includegraphics[width=.75\linewidth]{figures/tcp/tcpoverhead}
 	\caption[TCP retransmission overhead]{TCP retransmission overhead}
+	\label{fig:tcp-overhead}
 \end{figure}
 
 We compare running the various model locally on the NUC with offloading to the Jetson, see figure \ref{fig:offloading-vs-local}. Especially under stringent delay thresholds, i.e. the lower region of the plots, we are able to improve the accuracy significantly. However, as the delay threshold are relaxed running locally becomes preferable. One may notice the small drop in reliability, these are cause by extreme delays in the \gls{tcp} protocol, that does not occur locally. 
@@ -431,16 +434,18 @@ We compare running the various model locally on the NUC with offloading to the J
 
 \section{Summary} \label{sec:edge-summary}
 
-The NUC is a very powerful end device equipped with a \gls{cpu}. The end device are more likely to be equipped with ARM processors or even smaller processing unit. Some end devices may even not be able to run any of the models locally. However, given the results the servers may not need to be equipped with powerful \gls{gpu}s, as the NUC is able to achieve such high performance running especially the \gls{msdnet}. 
+In this section we summarize and discuss the results from previous section. We did not manage to come up with a combination function, that was able to improve the accuracy when only a few predictions were available, because the early exit prediction comes with a lot of uncertainty. Only for the \gls{msdnet} when predictions from all exit were present, we were able to improve the accuracy. The reason being, that all exits of this model produces decent prediction accuracy in general, hence less uncertainty from early exit. We have found, that using the latest received predictions, is the best overall for these early exit models.
 
-Edgent: The selection of exit is based on distributions of inference time, this introduces some uncertainty, as not all samples might be able to meet the latency requirement, this can be caused be derivation in compute time, congestions in the network latency or server workload. One key feature of early exiting is the ability to obtain intermediate predictions, this allow for parallel execution while offloading. The end-device might only be able to reach an early exit within the time frame, where edge server reaches a later one. However, unexpectedly no reply is received by the end-device within the time frame, then the application can use the local obtained prediction from an earlier exit. 
+We used this finding to set up a practical test of \gls{aee}, were images was sent from the NUC to the Jetson, thus introducing communication latency. We found, that we were able to improve the reliability for both B-\gls{resnet} and B-\gls{densenet} under stringent delay budget. However, for the \gls{msdnet} our offloading solution was uncompetitive with local execution. 
 
-Or a collaborative scheme might be used, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then it offload the rest of the execution in a cascaded manner for remote execution, still if no reply is received by the end-device within the time frame a locally obtained prediction is available albeit less reliable than if the remote prediction would have arrived in time. 
+The NUC is a very powerful end device equipped with a \gls{cpu}. The end device are more likely to be equipped with ARM processors or even smaller processing unit. Some end devices may even not be able to run any of the models locally. However, given these results, the edge servers may not need to be equipped with powerful \gls{gpu}s, as the NUC is able to achieve such high performance running the \gls{msdnet}.
 
-All offloading can lead to lost predictions under time stringent time constraints. If local processing is possible, then;
+Comparing \gls{aee} with Edgent, where a selection of exit is based on regression models of inference time and a current state of bandwidth. Edgent will too suffer from unexpected communication delays, that simply is more uncertain than computation delays. Hence some predictions will be lost, as they will not be able to meet the latency requirement. Our solutions have higher probability of receiving just a single prediction, when a timeout occurs, where none is available for Edgent, if the prediction unexpectedly violates the deadline. 
 
-\begin{enumdescript}
-	\item[Collaborative Edge] where local inference of an early exit \gls{dnn} up to the first exit and then offload to the edge for remaining inference. The upside is, that running locally up to an exit, that should always be achievable guarantee a single prediction is available and mitigates lost prediction. The downsides are wasted idle time on edge server, as the slower end-device must do the most demanding early layers of the \gls{dnn}. Additionally offloading intermediate features that are typically larger than the original compressed images, hence the overall time becomes worse as communication is the bottleneck. This collaborative scheme require sophisticated compression of intermediate feature as in \cite{choi_near-lossless_2018} or a using \gls{bottlenet} layers.
-	\item[Big/Little] A modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it as more accurate prediction arrives or combine information local and incoming predictions.
-\end{enumdescript}
+Our solution is also applicable in collaborative edge, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then offloads the rest of the execution in a cascaded manner for remote execution, still if no reply is received from the edge within the time frame, a locally obtained prediction is available. Thus, the reliability of the solution is improved. However, this approach leads to idle time on server, when the first exit is processed locally on a less powerful device. The early layers of the \gls{dnn} is typically also the most demanding leading to worsened inference time. Additionally, communication of features from the earliest exits is also heavier than later layer and also heavier compared to sending the compressed image, if no network partition feature compression technique is used. This can indeed worsen the reliability, as less exit predictions are actually able to meet the deadline, when more latency is introduced to the solution.
 
+Instead we have propose a solutions to handle the lost prediction dilemma. However, still only possible if local processing is an option. In a modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it, as more accurate prediction arrives from edge or if a good combination function is found use the information to choose the best prediction. If offloading is not an possible, then the \gls{aee} at the edge is the better option.
+
+Edge/cloud offloading using current communication technologies, can potentially experience service outage. If an access point is no longer accessible, reconnection delays to a new or the same access point e.g. using WiFi can be expected to take at least 1s \cite{pei_why_2017}. Which will inevitably lead to lost predictions, if no local inference is feasible. In \cite{wang_see:_2019} a scheduling scheme is proposed to handle on device inference of early exit \gls{dnn}s, if experiencing service outages to offloading services. The scheduling could be used in combination with our solution..
+
+In conclusion of this chapter, we were able to improve the reliability, when using \gls{aee} to run early exit models (B-\gls{resnet} and B-\gls{densenet}) on the edge compared to on-device inference. We were not able to come up with a combination function to compete with the just using the prediction from the latest exit. 
