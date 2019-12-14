@@ -99,11 +99,59 @@ Moving model inference away from data centers with high-end specialized hardware
 
 \section{Fast Inference} \label{sec:ei-fast-inference}
 
-In this section enabling technologies for fast inference will be describes. The main focus is \gls{ei}, however, several technologies are universal to \gls{di} and \gls{ci} as well. Our main concern is model inference for real-time applications. Thus we have chosen to present the technologies, that operate on a model level e.g., model architectures, -compression, -partitioning-, -selection, -early exit and layer skipping. We have chosen to omit technologies that operates on a infrastructural level e.g., edge caching, input filtering and support for multi-tenancy \cite{zhou_edge_2019}.
+In this section enabling technologies for fast inference will be describes. Despite research in parallelism for \gls{cpu} and \gls{gpu}, efforts have been made in developing \gls{asic} or \gls{fpga}, i.e. specialized hardware such as Google's \gls{tpu} to further accelerete \gls{dnn}s, our main concern is model inference for real-time applications. We have chosen to present the technologies, that operate on a model level e.g., model architectures, -compression, -partitioning-, -selection, -early exit and layer skipping. We have chosen to omit technologies that operates on a infrastructural level e.g., edge caching, input filtering and support for multi-tenancy \cite{zhou_edge_2019}.
+
+\small{
+\begin{longtabu}{>{\bfseries}X|X[c]|X[c]|X[c]|X[c]|X[c]}
+	\caption[]{} \label{tbl:fast-inference} \\
+	\toprule
+	\rowfont{\bfseries}
+	Architecture & Category & Speed-Up method & Advantages & Disadvantages & Works \tabularnewline
+	\hline
+	\endfirsthead
+	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{tbl:fast-inference}:}} continued}\\
+	\toprule
+	\rowfont{\bfseries}
+	Architecture & Category & Speed-Up method & Advantages & Disadvantages & Works \tabularnewline
+	\hline
+	\endhead % all the lines above this will be repeated on every page
+	\hline
+	\multicolumn{3}{@{}l}{continued \ldots}\\
+	\endfoot
+	\hline
+	\endlastfoot
+
+	\multirow{5}{*}{Standalone} & Model Design & Innovative layer and operation design & Combineable, Memory footprint  & Accuracy cost & \cite{iandola_squeezenet:_2016,howard_mobilenets:_2017,sandler_mobilenetv2:_2018, zhang_shufflenet:_2017, ma_shufflenet_2018} \tabularnewline
+	\tabucline{2-6}
+	
+	& Model Compression & Reduce model size & Adaptive, Combineable, Memory footprint & Accuracy cost &  \cite{hinton_distilling_2015,courbariaux_binaryconnect:_2015,courbariaux_binarized_2016,romero_fitnets:_2014} \tabularnewline	
+	& & & & & \tabularnewline
+	\tabucline{2-6}
+	
+	& Model Selection & Reduce depth overhead by selecting smaller model & Adaptive, Early exit & Accuracy cost, may require multiple \gls{dnn} inferences & \cite{bolukbasi_adaptive_2017, park_big/little_2015} \tabularnewline
+	\tabucline{2-6}
+	
+	& Model Early Exit & Reduce depth overhead using less layers & Adaptive, Early exit, No additional inference, Multiple predictions & Accuracy cost, Possible lack of coarse level features & \cite{leroux_resource-constrained_2015,teerapittayanon_branchynet:_2016, berestizshevsky_sacrificing_2019, kaya_shallow-deep_nodate, huang_multi-scale_2017} \tabularnewline
+	\tabucline{2-6}
+	& Model Layer Skipping & Reduce depth overhead using less layers & Adaptive, Coarse level features & Accuracy cost, require additional reinforcement learning of skipping policies & \cite{wang_skipnet:_2017,wu_blockdrop:_2017} \tabularnewline
+	\hline
+	\multirow{3}{*}{Collaborative} & Model Partitioning & Reduce size of intermediate feature size to reduce communication latency & Utilize a more powerful device for heavy processing  & Accuracy cost, Compression aware training & \cite{kang_neurosurgeon:_2017,choi_near-lossless_2018, choi_deep_2018, eshratifar_bottlenet:_2019} \tabularnewline
+	\tabucline{2-6}
+	
+	& Big/Little & Reduced depth and communication overhead of offlaoding using a small local model & Reduce unnecessary communication efforts & Accuracy cost, may require multiple \gls{dnn} inferences & \cite{park_big/little_2015} \tabularnewline \tabucline{2-6}
+	
+	& Distributed Exits & Reduced depth and communication overhead of offloading using local exits  &  Reduce unnecessary communication efforts, same inference task & Accuracy cost & \cite{leroux_cascading_2017,teerapittayanon_distributed_2017, li_edge_2018} \tabularnewline \tabucline{2-6}
+	
+	& & & & & \tabularnewline \tabucline{2-6}
+	
+	& & & & & \tabularnewline 
+
+	\bottomrule
+\end{longtabu}}
 
 \subsection{Standalone Inference}
 
-In this subsection efforts to reduce standalone inference time for \gls{dnn}s are explained. These effort are not particularly aimed at \gls{di}, \gls{ei} or \gls{ci}, but usable for either one standalone.
+In this subsection efforts to reduce standalone inference time for \gls{dnn}s are explained. These effort are not particularly aimed at \gls{di}, \gls{ei} or \gls{ci}, but usable for either one standalone. 
 
 \begin{enumdescript}
 	\item[Model Design] To improve inference latency efforts have been made in designing \gls{dnn}s, that reduces the size of the model to more efficiently run on mobile and \gls{iot} devices. Most effort addresses  ways to reduce the number of parameters of the \gls{dnn}s, such as \gls{squeezenet} \cite{iandola_squeezenet:_2016}, that down samples the data size using convolutions to reduce the model size. Or by creating more efficient models, that reduces the amount of \gls{flop} required for the model. \gls{mobilenet}s \cite{howard_mobilenets:_2017,sandler_mobilenetv2:_2018} decomposes the convolution filters into simpler operations, thus reduces the amount of computations for the model- \gls{shufflenet}s \cite{zhang_shufflenet:_2017, ma_shufflenet_2018}, that uses a point-wise convolution operation and channel shuffling to reduce the amount of computations. Other efforts have been made to reduce the number of parameters for existing \gls{dnn} architectures using model compression.
@@ -128,7 +176,7 @@ In this subsection efforts to reduce standalone inference time for \gls{dnn}s ar
 		\captionof{figure}[Adaptive Neural Network]{Adaptive Neural Network using model selection}
 	\end{minipage}
 	
-	The input is inferred to \gls{alexnet}, if the confidence scores is satisfactory the prediction is accepted, if not the framework decides to use either \gls{googlenet} or \gls{resnet}50 depending on a confidence threshold, however if the sample is inferred to \gls{googlenet} and the confidence is still unsatisfactory the sample is inferred to \gls{resnet}50 for final prediction. The work shows improvement of the average prediction time with only a small reduction in accuracy depending on the confidence threshold. However, for hard samples, since multiple model are introduced, the inference time is increased, as well as the computational cost and memory consumption, thus such model selection approach seems overwhelming to introduce on a constraint end device. Yet it may be feasible to offload to the edge or use collaborative edge using a Big/Little setup.
+	The input is inferred to \gls{alexnet}, if the confidence scores is satisfactory the prediction is accepted, if not the framework decides to use either \gls{googlenet} or \gls{resnet}50 depending on a confidence threshold, however if the sample is inferred to \gls{googlenet} and the confidence is still unsatisfactory the sample is inferred to \gls{resnet}50 for final prediction. The work shows improvement of the average prediction time with only a small reduction in accuracy depending on the confidence threshold. However, for hard samples, since multiple model are introduced, the inference time is increased, as well as the computational cost and memory consumption, thus such model selection approach seems overwhelming to introduce on a constraint end device. Yet it may be feasible to offload to the edge using a Big/Little setup.
 	
 	To obtain faster inference Big/Little \gls{dnn} \cite{park_big/little_2015} implements a hybrid edge architecture of device-only and selective offloading for edge-only processing. It runs a shallower, albeit less accurate model on device, and a deep and more accurate model on the edge server, as illustrated by figure \ref{fig:big/little-dnn}. 
 	
@@ -197,7 +245,7 @@ In this subsection we present efforts at reducing inference time for collaborati
 	Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning scheduler, that uses knowledge of the individual layers of the \gls{dnn} to effectively reduce inference latency. Communication delay is the bottleneck in such an offloading application, hence a smaller representation of the input data is needed, however the layers producing a smaller output than the original input, typically lies deep within the network. Neurosurgeon construct regression models for per layer execution time and output data size of the \gls{dnn}. The regression model are used to decide the best partition of the \gls{dnn} based on available communication data rate. The work is based on cloud intelligence setup and shows, that the conventional cloud-only approach is actually insufficient due to different low data rate connections to cloud data center and the trend that more mobile device is being equipped with \gls{gpu}s. 
 	% Evidently moving computation to the edge reduces the communication latency. 
 	
-	Efforts have been made to reduce communication overhead, when splitting \gls{dnn}s to run in a collaborative scheme. One of which is compression of intermediate features before offloading to cloud or edge \cite{choi_deep_2018}. The paper shows, that lossless compression has, as expected, no impact on accuracy. However, bit saving is also rather limited. Lossy compression, on the other hand, results in 70\% bit savings, but also have negative impact of model accuracy. To compensate a compression aware training have been proposed. The follow up paper \cite{choi_near-lossless_2018} propose a novel compression technique, especially designed for deep features i.e. the output of an intermediate \gls{dnn} layer and with bit saving significantly higher bit savings compared to conventional image compression algorithms such as JPEG. Alternatively, methods such as \gls{bottlenet} proposes novel \gls{dnn} module, that creates a low dimensional representation of the output features, able to be restored to original dimensionality. 
+	Efforts have been made to reduce communication overhead, when splitting \gls{dnn}s to run in a collaborative scheme. One of which is compression of intermediate features before offloading to cloud or edge \cite{choi_deep_2018}. The paper shows, that lossless compression has, as expected, no impact on accuracy. However, bit saving is also rather limited. Lossy compression, on the other hand, results in 70\% bit savings, but also have negative impact of model accuracy. To compensate a compression aware training have been proposed. The follow up paper \cite{choi_near-lossless_2018} propose a novel compression technique, especially designed for deep features i.e. the output of an intermediate \gls{dnn} layers, and with significantly higher bit savings compared to conventional image compression algorithms such as JPEG. Alternatively, methods such as \gls{bottlenet} proposes novel \gls{dnn} module, that creates a low dimensional representation of the output features, able to be restored to original dimensionality. 
 	
 	
 	\begin{minipage}[t]{\linewidth}    
@@ -231,10 +279,12 @@ In this subsection we present efforts at reducing inference time for collaborati
 
 	The model is distributed in a manner, where one or more exits are processed by the end device, and one or more exits on the edge server. However, model partitioning introduces communication delay to the inference task, that most be accounted for e.g. using one of the method for model partitioning.
 	
-	\gls{ddnn} \cite{teerapittayanon_distributed_2017} extends the idea to formulate a framework, that allows for geographically distributed end devices to collaborative solve a \gls{dnn} inference task. The intermediate output from the geographically distributed end-devices are aggregated for a local prediction. Based on the score the inference is exited locally or sensor fusion of the intermediate features are performed by a \gls{dnn} at the edge and/or cloud. Using early exit model in this fashion, does not only show improvement for early exits but also the final prediction. Additionally \gls{ddnn} shows benefits from distributed computing to provide fault tolerance, when some local \gls{dnn} comes with a bad or missing prediction. 
+	\gls{ddnn} \cite{teerapittayanon_distributed_2017} extends the idea to formulate a framework, that allows for geographically distributed end devices to collaborative solve a \gls{dnn} inference task. The intermediate output from the geographically distributed end-devices are aggregated for a local prediction. Based on the score the inference is exited locally or sensor fusion of the intermediate features are performed by a \gls{dnn} at the edge and/or cloud. Using early exit model in this fashion, does not only show improvement for early exits but also the final prediction. Additionally \gls{ddnn} shows benefits from distributed computing to provide fault tolerance, when some local \gls{dnn} comes with a bad or missing prediction. \gls{ddnn} have been proposed for Industry 4.0 to solve autonomous defect detection in \cite{li_deep_2018}. 
 \end{enumdescript}
 
 \subsection{Distributed Inference}
+
+Distributed inference is similar to collaborative edge. However, instead of partitioning the model in the depth axis i.e. between two layers, as for collaborative inference. Distributed inference seeks to partition the task in the input axis i.e. let multiple peers solve a single layers. \gls{modnn} \cite{mao_modnn:_2017} is a framework to distribute the computing of the input to multiple worker nodes. Distributing computation input-wise can result in a higher degree of data dependence, and lead to more a higher degree of communication between workers. \gls{modnn} show improvement of computing a \gls{dnn} inference on multiple mobile devices connected on a WLAN, compared to standalone inference on a single mobile device. DeepThings \cite{zhao_deepthings:_2018} is a framework intended for constraint \gls{iot} devices to distribute computation. In DeepThings, they take advantage of local region dependency in layers, that can be split into multiple tasks and that the dependency across layers into large tasks. In this manner, they actually split the network layers horizontally but stack the work vertically i.e. just as regularly \gls{dnn}s.
 
 
 

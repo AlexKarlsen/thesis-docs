@@ -1,3 +1,12 @@
 \hypertarget{discussion}{%
-\chapter{Discussion}\label{sec:discussion}}
+\chapter{Discussion}\label{ch:discussion}}
 \thispagestyle{fancy}
+
+
+EE
+The placement of early exits was placed after down-sampling layers or block, with the primarily reason to reduce the offloading data size of intermediate features for collaborative edge. Even though we ended up not pursuing collaborative architectures, reasons why will be discussed later, we got satisfying early exit accuracy. However, in other work \cite{huang_multi-scale_2017}, the placement of early exit is placed within the blocks and several more exits are added. We did not want to add too much overhead from introducing ealry exits to the model, hence we limited ourselves to only 4 on the model we implemented. In \cite{berestizshevsky_sacrificing_2019} the same placement of classifiers, as in ours, are used.
+
+AEE
+Collaborative was in fact tried out, however increased the transmission delay. The idea was dropped, as also implmenting feature compression or \gls{bottlenet} modules, would require retraining to minimize accuracy drop from compression.
+
+\gls{tcp} was used for reliable transport. However as shown \gls{tcp} introduces a large overhead of retransmissions, when networking conditions are bad. As we are mainly concerned with image classification in real-time and not video-streaming 
