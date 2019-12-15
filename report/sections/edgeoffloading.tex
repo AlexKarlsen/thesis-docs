@@ -6,7 +6,7 @@ In this chapter we implement a edge-based offloading scheme utilizing early exit
 
 \section{\acrfull{aee} for Time-Critical Applications} \label{sec:edge-aee}
 
-We propose \acrfull{aee} an optimistic standalone inference model based on early exit \gls{dnn}. It is optimistic in the sense, that it allows the edge server to reach as far as possible in the inference process before time is out. The early exits or in this case intermediate classifiers, as we do not exi, but continuously send back increasingly confident predictions. We argue, that \gls{aee} will in any case achieve at least the same accuracy as upfront exit selection, even if an exit have been chosen with care.   e.g. using \gls{dnn} right-sizing, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
+We propose \acrfull{aee} an optimistic standalone inference model based on early exit \gls{dnn}. It is optimistic in the sense, that it allows the edge server to reach as far as possible in the inference process before time is out. The early exits or in this case intermediate classifiers, as we do not exi, but continuously send back increasingly confident predictions. We argue, that \gls{aee} will in any case achieve at least the same accuracy as upfront exit selection in \cite{li_edge_2018}, even though the exit have been chosen with care, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -21,114 +21,131 @@ We propose \acrfull{aee} an optimistic standalone inference model based on early
 	\label{fig:offloading-scheme}
 \end{figure} 
 
-We argue, that 
-
-edge offloading scheme compared to Edgent \cite{li_edge_2018}. Edgent is to our knowledge the only proposal in current literature, that uses early exiting models in an offloading scenario.\todo{hmm} Edgent combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. The downside of edgent is an upfront selection of exit i.e gls{dnn} right-sizing, which can be troublesome with unpredictable communication delays. 
-
 Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is immediately offloaded from the end device, to edge server. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. Multiple early exits allows for successively receiving, what is expectedly, increasingly reliable predictions. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available 
 
 The most recent received prediction i.e. from the latest exits are accepted as the prediction. Or alternatively, we also look at using multiple predictions received from the edge, and let the end device use the information to select the prediction using a combination function, defined in section \ref{sec:edge-system-model}.
 
 \section{System Model} \label{sec:edge-system-model}
 
-In this section we define the system model for \gls{aee}. 
+In this section we define the system model for \gls{aee}. Note the metrics defined in chapter \ref{ch:earlyexit} is reused. To remind the reader:  $ C $ denotes the number of the image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images. 
 
-	
-	Assume that $ C $ denotes the number of the image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
+We still do not differentiate between early exit and conventional model,  as we still use $ T_{i,n}^{cmp} $ to denote computation time irregardless of conventional inference model with a single exit, or early exit models with multiple. We do extend our view on latency, as we introduce two execution schemes.
 	
 	\begin{enumdescript}
-		\item[Latency]  We have two options $ \left.1 \right) $ local processing and $ \left.2\right) $ edge offloading. Hence we denote the computation time for local processing $ T_{i,n}^{loc,cmp} $ and $ T_{i,n}^{edge,cmp} $ to denote computation time at the edge. 
-		
-		Note the latency defined in chapter \ref{ch:earlyexit} for early exit and conventional inference is still valid. However, now we treat the models equally. The conventional model only have a single exit to provide prediction, whereas the early exit model have multiple.
+		\item[Latency]  We have two options $ \left.A \right) $ local processing and $ \left.B\right) $ edge offloading. Hence we denote the computation time for local processing $ T_{i,n}^{loc,cmp} $ and $ T_{i,n}^{edge,cmp} $ to denote computation time at the edge. 
+	
 		
 		We define the time for local and remote execution
 
 		\begin{enumdescript}
 			\item[Local Execution] If the classification exits from exit point $ n $, the processing delay of image $ i $ at local is presented as
 			\begin{align}
-			T_{i,n}^{loc}= T_{i,n}^{pred}
+			T_{i,n}^{loc}= T_{i,n}^{cmp,loc}
 			\end{align}
 			\item[Remote Execution] If the classification exits from exit point $ n $, the processing delay of image $ i $ at edge is presented as
 			\begin{align}
-			T_{i,n}^{edge}=T_{i}^{com}+ T_{i,n}^{pred}
+			T_{i,n}^{edge}=T_{i}^{com}+ T_{i,n}^{cmp,edge}
 			\end{align}
 			where $ T^{com}_i $ denotes the communication time, for both uplink time to transmit image $ i $ from local to edge, and downlink time of prediction reply from edge to local.
 			
 			Offloading for remote execution is only sensible whenever we save time compared to local execution
-			\begin{align}
+			\begin{align*}
 					T_{i,n}^{loc} > T_{i,n}^{edge}
-			\end{align}
+			\end{align*}
 			Due to the difference in computing resources, we expect the computation time at edge to be significantly lower than local computation time, i.e. $ T_{i,n}^{loc,cmp} > T_{i,n}^{edge,cmp} $. Thus, the communication time $ T^{com}_i $ becomes an important factor for offloading decision.
 
 		\end{enumdescript}
 	
-		\item[Problem formulation] 
-		This scheme opens up for the opportunities to receive multiple predictions within the time frame. The accuracy may be improved by using the output results of the first $ k $ exit points to classify image $ i $, of which problem can be reformulated as
+		\item[Accuracy] The scheme opens the opportunities to receive multiple predictions within the time frame. We may be able to improve the accuracy and reduce undesired overthinking using the output results of the first $ n $ exit points to combine the information.
+		
+		\begin{align}
+		\bar{A}_f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{\hat{c}}_{i,1} \dots, \mathbf{\hat{y}}_{i,n}\right)-y_i\right|\right)
+		\end{align}
+		
+		remember the ground truth class label of image $ i $ and $ c_i \in \left[1, C \right] $ and $ \mathbb{I(\cdot)}  $ is a indicating function defined by
+		\begin{align}
+		\mathbb{I}(a)= \begin{cases}
+		0, & \mathrm{if\:} a \leq 0, \\
+		1, & \mathrm{otherwise}
+		\end{cases}
+		\end{align}
+		
+		There are several ways to define combination function $ f\left(\mathbf{\hat{y}}_{i,1}, \dots, \mathbf{\hat{y}}_{i,n}\right) $
+		\begin{enumdescript}
+			
+			
+			\item[Latest] We define the method \emph{lastest}, where we constrain ourselves to only use the most recent prediction $n$.
+			\begin{align}
+			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \hat{c}_{i,n}^{*}
+			\end{align}
+			
+			\item[max confidence] This method used in \cite{kaya_shallow-deep_nodate}, reports improvement on the \gls{cifar10}, \gls{cifar100} and \gls{tinyimagenet}. The measure is based on the assumption, that an exit obtaining a higher score is more confident, hence improving the accuracy.
+			\begin{align}
+			\begin{split}
+			f\left(\bm{\hat{y}}_{i,1}, \cdots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{{\hat{y}_{i,j}^{*}, 1 \le j 
+					\le n}}{\max} \{\hat{y}_{i,1}^* \dots, \hat{y}_{i,n}^*\},\\ \text{where\:} \hat{y}_{i,j}^* = \max\bm{\hat{y}}_{i,j} \text{\:for\:} \forall \ 1 \le j \le n
+			\end{split}	
+			\end{align}
+			\item[sum confidence] this method sums the respective class scores for all exit predictions and chooses the highest scoring class. 
+			\begin{align}
+			\begin{split}
+			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}\hat{y}_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
+			\end{split}
+			\end{align}
+			
+			%				\item[weighted sum confidence] this method perform a weighted sums of the respective class scores for all exit predictions and chooses the highest scoring class. 
+			%
+			%				\begin{align}
+			%				\begin{split}
+			%					f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\},\\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}w_n \hat{y}_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
+			%				\end{split}	
+			%				\end{align}
+			
+			\item[max score margin] this method determines the score-margin for all exit predictions and chooses the class with the highest score-margin. 
+			\begin{align}
+			\begin{split}
+			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{\hat{y}_{i,j}^{*}, 1 \le j 
+				\le n}{\max} \{s^{*}_{i,1}, \cdots, s^{*}_{i,n}\},\\ \text{where\:} s^{*}_{i,j} = f_{margin}(\bm{\hat{y}}_{i,j}) \text{\:for\:} \forall \ 1 \le j \le n
+			\end{split}	
+			\end{align}
+		\end{enumdescript}
+	
+		\item[Reliability]  We still define the reliability as in chapter \ref{ch:earlyexit}, as the fraction of samples, that can be correctly classified given a latency threshold $ \delta $.
+		
+		\begin{align}
+		R= \bar{A} \cdot (1-\overline{F}^{to})
+		\end{align}
+		
+		The timeout probability $ \overline{F}^{to} $ is also still defined as the number of samples not able to meet the delay requirement out of all samples in the set. However our latency is now not only dependent on local computation time.
+		\begin{align}
+		\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i,n}-\delta\right)
+		\end{align}
+		Where
+		\begin{align}
+			T_{i,n} = \begin{cases}
+				T_{i,n}^{loc} \\
+				T_{i,n}^{edge}
+			\end{cases}
+		\end{align}
+		We have a delay violation, if no prediction is provide and the execution time, no matter local or offloading is overrun, i.e. $ T_{i,n} > \delta $  
+	
+		\item[Problem formulation]   As in chapter \ref{ch:earlyexit}, we select exit point for each image and optimize its accuracy with a latency constraint. The inference time of image $ i $ at exit $ n $, cannot be greater than or equal to our latency threshold $ \delta $. However now we optimize our new accuracy, defined by the combination function
+		
+		
 		\begin{maxi}
 			{n}{\bar{A}^f_n}
 			{}{}
 			\addConstraint{T_{i,n}}{\leq \delta}
 		\end{maxi}
-		where the accuracy $ \bar{A}_f $ is now using a combination function $ f $ to determine the prediction.
-		\begin{align*}
-		\bar{A}_f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{\hat{y}}_{i,1} \dots, \mathbf{\hat{y}}_{i,n}\right)-y_i\right|\right)
-		\end{align*}
 		
-		\item[Problem formulation] we select exit point for each image and optimize its accuracy with a latency constraint. The inference time of image $ i $, cannot be greater than or equal to our latency threshold $ \delta $. 
-		
-		\begin{maxi}
-			{\vec{n}}{\bar{A}_{n,i}}
-			{}{}
-			\addConstraint{T_i,n}{\leq \delta}
-		\end{maxi}
-		where $\vec{n} = \left[n_1,,n_2, \dots, n_I\right]$. 
-		
-		To solve this problem, instead of making decision before processing the image, we simply use the best effort way, i.e., feed each exit results back and let user decide the prediction. For three reasons:
+		Exactly as in chapter \ref{ch:earlyexit}, we solve this problem,  using the best effort way, i.e., feed each exit results back and let user decide the prediction. For the same three reasons:
 		\begin{enumerate}
-			\item Computation and not least communication latency uncertainty make it hard to make decision in advance
+			\item Computation latency uncertainty and now especially, that we offload, communication latency with a even higher degree of uncertainty, makes it hard to make decision in advance
 			\item Upfront exit decision algorithm may take time
 			\item Going through classifier of each exit point does not take too long time
 		\end{enumerate}
 		
-			\item[Combination function] There are several ways to define combination function $ f\left(\mathbf{\hat{y}}_{i,1}, \dots, \mathbf{\hat{y}}_{i,n}\right) $
-		\begin{enumdescript}
-		
 			
-				\item[Latest] We define the method \emph{lastest}, where we constrain ourselves to only use the most recent prediction $n$.
-				\begin{align}
-					f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \hat{c}_{i,n}^{*}
-				\end{align}
-				
-				\item[max confidence] This method used in \cite{kaya_shallow-deep_nodate} proposing \gls{sdn}, same as early exit \gls{dnn}, which reports improvement on the \gls{cifar10}, \gls{cifar100} and \gls{tinyimagenet}. The measure is based on the assumption, that an exit obtaining a higher score is more confident, hence improving the accuracy.
-				\begin{align}
-				\begin{split}
-				f\left(\bm{\hat{y}}_{i,1}, \cdots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{{\hat{y}_{i,j}^{*}, 1 \le j 
-						\le n}}{\max} \{\hat{y}_{i,1}^* \dots, \hat{y}_{i,n}^*\},\\ \text{where\:} \hat{y}_{i,j}^* = \max\bm{\hat{y}}_{i,j} \text{\:for\:} \forall \ 1 \le j \le n
-				\end{split}	
-				\end{align}
-				\item[sum confidence] this method sums the respective class scores for all exit predictions and chooses the highest scoring class. 
-				\begin{align}
-				\begin{split}
-				f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}\hat{y}_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
-				\end{split}
-				\end{align}
-
-%				\item[weighted sum confidence] this method perform a weighted sums of the respective class scores for all exit predictions and chooses the highest scoring class. 
-%
-%				\begin{align}
-%				\begin{split}
-%					f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\},\\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}w_n \hat{y}_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
-%				\end{split}	
-%				\end{align}
-				
-				\item[max score margin] this method determines the score-margin for all exit predictions and chooses the class with the highest score-margin. 
-				\begin{align}
-				\begin{split}
-				f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{\hat{y}_{i,j}^{*}, 1 \le j 
-						\le n}{\max} \{s^{*}_{i,1}, \cdots, s^{*}_{i,n}\},\\ \text{where\:} s^{*}_{i,j} = f_{margin}(\bm{\hat{y}}_{i,j}) \text{\:for\:} \forall \ 1 \le j \le n
-				\end{split}	
-				\end{align}
-		\end{enumdescript}
 	\end{enumdescript}  
 
 
@@ -217,7 +234,7 @@ In this section we define the system model for \gls{aee}.
 
 \section{Implementation} \label{sec:edge-implementation}
 
-The offloading scheme is implemented as a client/server application, illustrated by the sequence diagram in figure \ref{fig:sequence-diagram}. The client is deployed on the NUC and server on the Jetson TX2.
+The offloading scheme is implemented as a client/server application, illustrated by the sequence diagram in figure \ref{fig:sequence-diagram}. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -229,18 +246,20 @@ The offloading scheme is implemented as a client/server application, illustrated
 
 The implementation is written in \gls{python} using the \gls{python} Socket API \cite{noauthor_socket_nodate}. The client and server establishes a TCP socket connection. The client loads a samples from the \gls{min100} validation set, and streams the sample to the server. The server preprocess the sample and runs the model inference. As soon as, prediction are obtained, a thread is spawned, to stream the results back to the end device. 
 
+The client is deployed on the \gls{nuc} and server on \gls{jetson} and \gls{gpu-ws}. The servers are LAN connected to the router and the client is connected over the WLAN.
+
 \paragraph{Information Combination}
 
 We send back the top-5 predictions to allow info-combination and reduce the data size of the reply. We use top-5, since the correct class is within these 5 predictions close to 90 \% of the time having just two predictions available for any of the models, see figure \ref{fig:top-5-cumulative}.
 
 To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
 
-Each exit outputs two 5-dimensional vectors. $\mathbf{l}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
+Each exit outputs two 5-dimensional vectors. $\mathbf{c}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
 
 \begin{align}
 \begin{split}
-\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
-l_{i,n}^{1st} & \phantom{.}l_{i,n}^{2nd} & \phantom{.}l_{i,n}^{3rd} & \phantom{.}l_{i,n}^{4th} & \phantom{.}l_{i,n}^{5th}
+\mathbf{c}_{i,n}^{top5} &= \begin{bmatrix}
+c_{i,n}^{1st} & \phantom{.}c_{i,n}^{2nd} & \phantom{.}c_{i,n}^{3rd} & \phantom{.}c_{i,n}^{4th} & \phantom{.}c_{i,n}^{5th}
 \end{bmatrix}, \\
 \mathbf{\hat{y}}^{top5}_{i,n} &= \begin{bmatrix}
 \hat{y}_{i,n}^{1st} & \hat{y}_{i,n}^{2nd} & \hat{y}_{i,n}^{3rd} & \hat{y}_{i,n}^{4th} & \hat{y}_{i,n}^{5th}
@@ -248,11 +267,11 @@ l_{i,n}^{1st} & \phantom{.}l_{i,n}^{2nd} & \phantom{.}l_{i,n}^{3rd} & \phantom{.
 \end{split}
 \end{align}
 
-The vectors are sorted from highest to lowest, hence the score $ \hat{y}_{i,k}^{1st} $ is associated the label $ l_{i,k}^{1st} $ etc. 
+The vectors are sorted from highest to lowest, hence the score $ \hat{y}_{i,k}^{1st} $ is associated the class label $ c_{i,k}^{1st} $ etc. 
 
-We define an expansion function, which takes the top-5 score vector $ \mathbf{\hat{y}}_{i,n}^{top5}$ and top-5 label vector  $\mathbf{l}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
+We define an expansion function, which takes the top-5 score vector $ \mathbf{\hat{y}}_{i,n}^{top5}$ and top-5 class label vector  $\mathbf{c}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
 \begin{align}
-f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) = 
+f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) = 
 \begin{bmatrix}
 \hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,c} & \dots & \hat{y}_{i,n,C}
 \end{bmatrix}_{1 \times C}
@@ -263,16 +282,16 @@ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) =
 \blockquote[]{	 	
 	For this classification example, the number of classes $C=10$. From a prediction we get the two output vectors $\mathbf{l}_{i,n}^{top5}$ and $ \mathbf{\hat{y}}_{i,n}^{top5}$.
 	\begin{align*}
-	\mathbf{l}_{i,n}^{top5} &= \begin{bmatrix}
+	\mathbf{c}_{i,n}^{top5} &= \begin{bmatrix}
 	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
 	\end{bmatrix},\\
 	\mathbf{\hat{y}}_{i,n}^{top5} &= \begin{bmatrix}
 	0.80 & 0.10 & 0.05 & 0.03 & 0.01
 	\end{bmatrix}
 	\end{align*}
-	We use our expansion function $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{l}_{i,n}^{top5}\right) $, which return the score vector $ \mathbf{\hat{y}}_{i,n}$.
+	We use our expansion function $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) $, which return the score vector $ \mathbf{\hat{y}}_{i,n}$.
 	\begin{align*}
-	\mathbf{l}_{i,n} &= \begin{bmatrix}
+	\mathbf{c}_{i,n} &= \begin{bmatrix}
 	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
 	\end{bmatrix}_{1 \times 10},\\
 	\mathbf{\hat{y}}_{i,n}  &= \begin{bmatrix}
@@ -381,7 +400,7 @@ Using the defined methods to combine the prediction information from multiple ex
 
 
 
-\subsection{Practical Experiment}
+\subsection{Edge Offloading: \gls{aee} vs Conventional Offloading}
 
 We run test where the images are offloaded from NUC to Jetson. We set different delay threshold and plot the achievable reliability using the prediction from the latest exit, see figure \ref{fig:practical-offloading}. If we compare with figure \ref{fig:delay-threshold}, we obtain less sharp steps, in the areas where a new exit begin to be obtainable, due to the added deviation from the communication. Given this figure, we can select the proper model under different delay threshold, be always selecting the model achieving the highest reliability.  
 
@@ -389,8 +408,9 @@ We run test where the images are offloaded from NUC to Jetson. We set different 
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.5\linewidth]{figures/edge/offloading_legend}
-	\subfloat[]{\includegraphics[height=.22\textheight]{figures/edge/jetson_offloading}}
+	\subfloat[\gls{jetson}]{\includegraphics[width=.8\linewidth]{figures/edge/jetson_offloading}}
 	\hfill
+	\subfloat[\gls{gpu-ws}]{\includegraphics[width=.8\linewidth]{figures/edge/gpu_offloading}}
 %	\subfloat[Local Jetson TX2]{\includegraphics[width=\linewidth]{figures/delay_plots/jetson__delay_threshold}}
 	\caption[Offloading NUC to Jetson]{Offloading NUC to Jetson}
 	\label{fig:practical-offloading}
@@ -433,28 +453,36 @@ Additionally, we made a measurement of the delay using the reliable transport pr
 
 We compare running the various model locally on the NUC with offloading to the Jetson, see figure \ref{fig:offloading-vs-local}. Especially under stringent delay thresholds, i.e. the lower region of the plots, we are able to improve the accuracy significantly. However, as the delay threshold are relaxed running locally becomes preferable. One may notice the small drop in reliability, these are cause by extreme delays in the \gls{tcp} protocol, that does not occur locally.
 
+We have conducted experiment with using both \gls{jetson} and \gls{gpu-ws} as edge servers and \gls{nuc} as end device. We compare edge offloading the different models across the two edge platforms and with local inference on the \gls{nuc}. In figure \ref{fig:resnet-offloading-vs-local} we compare the \gls{resnet} based models. In figure \ref{fig:densenet-offloading-vs-local} the \gls{densenet} based models and lastly in figure \ref{fig:msdnet-offloading-vs-local} the \gls{msdnet} model.
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
 	\centering
 	\includegraphics[width=.3\linewidth]{figures/edge/gpu_b-resnet_offloading_vs_local_legend}
 	\hfill
-	\subfloat[GPU Workstation as Edge]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_b-resnet_offloading_vs_local}}
+	\subfloat[GPU Workstation as Edge\label{fig:resnet-offloading-vs-local-jetson}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_b-resnet_offloading_vs_local}}
 	\hfill
-	\subfloat[GPU Workstation as Edge]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_b-resnet_offloading_vs_local}}
+	\subfloat[GPU Workstation as Edge\label{fig:resnet-offloading-vs-local-gpu}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_b-resnet_offloading_vs_local}}
 	\caption[Offloading comparison of residual networks]{Offloading comparison of residual networks}
 	\label{fig:resnet-offloading-vs-local}
 \end{figure}
+
+From figure \ref{fig:resnet-offloading-vs-local} we see, how we are able to improve the reliability under stringent delay requirement using either platform as edge server instead of local inference. We can also see, that we improve the reliability compared to using a conventional model again under stringent requirements. When offloading the conventional model, it starts to outperform the early exit model, if we have above 80ms available using the \gls{jetson} or 50ms available using the \gls{gpu-ws}. Local inference is the best option when having 250 ms available, which is we rarely have. The reason why local execution can obtain a higher reliability, is due to some samples are missed as they do not meet the deadline, this is mostly caused by variations in communication time. 
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
 	\centering
 	\includegraphics[width=.3\linewidth]{figures/edge/gpu_b-densenet_offloading_vs_local_legend}
 	\hfill
-	\subfloat[GPU Workstation as Edge]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_b-densenet_offloading_vs_local}}
+	\subfloat[\gls{jetson} as Edge\label{fig:densenet-offloading-vs-local-jetson}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_b-densenet_offloading_vs_local}}
 	\hfill
-	\subfloat[GPU Workstation as Edge]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_b-densenet_offloading_vs_local}}
+	\subfloat[GPU Workstation as Edge\label{fig:densenet-offloading-vs-local-gpu}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_b-densenet_offloading_vs_local}}
 	\caption[Offloading comparison of densely connected networks]{Offloading comparison of densely connected networks}
 	\label{fig:densenet-offloading-vs-local}
 \end{figure}
+
+The \gls{densenet} tells a somewhat different story. We are still able to improve reliability remarkably under stringent delay requirements using \gls{aee}, compared to offloading a conventional model or locally inference. However, when reaching 70-80 ms on \gls{jetson} all other schemes, local inference B-\gls{densenet} or \gls{densenet} and also offloading \gls{densenet}, starts to outperform \gls{aee}. Local inference of the conventional model is even faster than offloading. The performance difference between the \gls{jetson} and \gls{nuc} is not big enough for the \gls{densenet} based model, this we can tell from looking at \gls{gpu-ws}, where offloading is performing better under 75 ms. 
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
 	\centering
@@ -466,6 +494,8 @@ We compare running the various model locally on the NUC with offloading to the J
 	\caption[Offloading comparison of multi-scale dense networks]{Offloading comparison of multi-scale dense networks}
 	\label{fig:msdnet-offloading-vs-local}
 \end{figure}
+
+\gls{msdnet} tells a completely different story. Local inference is always able to achieve higher reliability irregardless of offloading to \gls{jetson} or \gls{gpu-ws}. We do not elaborate on this tedency, as we saw the same tedency in chapter \ref{ch:earlyexit} and have already discussed it in section \ref{sec:ee-summary}.
 
 \section{Summary} \label{sec:edge-summary}
 
@@ -486,3 +516,18 @@ Edge/cloud offloading using current communication technologies, can potentially 
 The down-side of our approach is scheduling, if we encounter time-out in between to exits the computation is wasted, which could have been used to process the next frame. We introduce some pessimism, by letting the server known the deadline and measured bandwidth, the server measures the time it uses and can decide to terminate the inference process and continue with next frame, if the server already knowns, it cannot meet reach next exit, and deliver prediction results to the client before the deadline.
 
 In conclusion of this chapter, we were able to improve the reliability, when using \gls{aee} to run early exit models (B-\gls{resnet} and B-\gls{densenet}) on the edge compared to on-device inference. We were not able to come up with a combination function to compete with the just using the prediction from the latest exit. 
+
+
+In the next section we present work related to inference architecture. 
+
+Edgent \cite{li_edge_2018} combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. We argue, that Edgent's upfront selection of exit i.e gls{dnn} right-sizing, does not account for unpredictable communication delays, that we try to address. 
+
+Early exiting is proposed in . Early exit model is used in Edgent \cite{li_edge_2018} to investigate classification of real-time video streaming. They propose a partial offloading scheme for device/edge co-inference, using an optimizer to maximize the service accuracy while complying with latency requirements. Edgent uses model partitioning to find an optimal splitting point of the \gls{dnn} and model right-sizing to select an early exit point as final exit.
+
+Their solution may suffer from sporadic unexpected communication delays or service outages under the inference process. We account for this by not selecting an exit point upfront, but uses all predictions we received prior to the deadline. In worst case the first exit is never reachable, hence neither \gls{aee}, nor Edgent will receive a prediction within the deadline. If the first exit is reachable \gls{aee} will always receive at least on prediction, whereas if Edgent selected a later exit, that turned out to not be reachable, no prediction is received in time. \todo{is this too much discussion and critique? Should i use it in justification of our design instead? as I sort of already do...}
+
+In \cite{wang_see:_2019} \gls{see} is proposed. As the name implies, \gls{see} is a scheduling of early exit model for on-device inference.  \gls{see} also uses real-time video streaming as use case, by scheduling frames able to meet the deadline and  ignoring frames that cannot, to maximize the utility. We deem our solution could benefit from the scheduling of video frames, if is was to be extended to real-time video streaming. 
+
+However, as the overhead of our early exit model's additional exits is negligible, we argue that using our optimistic scheme for edge inference, that always tries to deliver the best possible prediction before the deadline, would outperform upfront exit selection. Our scheme could easily be used in combination with \gls{see}, by switching to \gls{see} for on-device inference, when poor networking connection or service outage is detected. \todo{same}
+
+In the next section the structure of the rest of the thesis presented
