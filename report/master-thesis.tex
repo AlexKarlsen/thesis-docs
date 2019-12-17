@@ -5,9 +5,47 @@
 	% Empty page after title page
 	\begingroup
 	\pagestyle{empty}
-	\null
+	\begin{center}
+		\begin{LARGE}
+			\thetitle \\
+			\vskip 1em
+			by\\
+			\vskip 1em
+			\theauthor
+		\end{LARGE}
+	\end{center}
+
+	\vspace*{\fill}
+	\begin{center}
+		\begin{minipage}[t]{.5\linewidth}
+			\includegraphics[width=\linewidth]{figures/logos/au}
+			\includegraphics[width=.9\linewidth]{figures/logos/netx}
+		\end{minipage}
+		\vskip 3em
+		\begin{minipage}[t][][b]{.3\linewidth}
+			\textbf{\textsf{\theauthor}} \\
+			Borggade 6k, 2., 8 \\
+			8000 Aarhus C, Denmark \\
+			Phone +45 2336 3745 \\
+			alexkarlsen7@gmail.com \\
+		\end{minipage}
+		\hskip 10em
+		\begin{minipage}[t][][b]{.3\linewidth}
+			\textbf{Aarhus University} \\
+			\textbf{Department of Engineering} \\
+			Finlandsgade 22 \\
+			5125 Edison \\
+			8200 Aarhus N, Denmark \\
+			Phone +45 8715 0000 \\
+			eng@au.dk \\
+			eng.au.dk \\
+		\end{minipage}
+
+	\end{center}
 	\newpage
+	\restoregeometry
 	\setcounter{page}{1}
+	
 	\input{sections/preface.tex}
 	\endgroup
 	%\pagenumbering{Roman}

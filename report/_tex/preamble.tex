@@ -123,7 +123,7 @@
 % variables for title and author
 %
 \usepackage{titling}
-\title{Design and Implementation of Computational Offloading in Mobile Edge Computing for Augmented Reality Applications}
+\title{Edge Offloading for Adaptive Early Exit Deep Neural Networks}
 \providecommand{\subtitle}[1]{}
 \subtitle{Master thesis}
 \author{Alex Justesen Karlsen}
@@ -143,6 +143,7 @@
 \usepackage{longtable,tabu}
 \usepackage{multirow}
 
+
 \usepackage{cleveref}
 \usepackage{tocbasic}
 %\addtotoclist[master-thesis.cls]{toc}
@@ -150,6 +151,8 @@
 \AfterTOCHead[toc]{\addcontentsline{toc}{chapter}{Contents}\thispagestyle{fancy}\pagestyle{fancy}}
 \AfterStartingTOC[toc]{\clearpage}
 
+\usepackage{etoolbox}
+\patchcmd{\chapter}{\thispagestyle{plain}}{\thispagestyle{fancy}}{}{}
 
 \usepackage{ifplatform}
 
@@ -493,9 +496,9 @@
 \pagestyle{fancy}
 \fancyhead{}
 \fancyfoot{}
-\lhead[\today]{}
+\lhead[\today]{\thetitle}
 \chead[]{}
-\rhead[\thesubtitle{}]{\today}
+\rhead[\thetitle]{\today}
 \lfoot[\thepage]{\theauthor}
 \cfoot[]{}
 \rfoot[\theauthor]{\thepage}

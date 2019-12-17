@@ -1,28 +1,28 @@
     %\addchap{Appendix}
+	
     \appendix
 
-    \clearpage % or \cleardoublepage
+
     \appendixpage
+    \appendixheaderon
     \addappheadtotoc
     % code to show appendices at section level in TOC
     \chapassect
     
-            \begingroup
-    \pagestyle{fancy}
 
     \begin{appendices}
+    		    	    \thispagestyle{fancy}
     	    \printnoidxglossary[type=main, numberedsection=autolabel]
-    	    \pagestyle{fancy}
+    	    \thispagestyle{fancy}
     		\listoffigures
-    		\pagestyle{fancy}
+    		\thispagestyle{fancy}
     		\listoftables
-    		\pagestyle{fancy}
+    		\thispagestyle{fancy}
     		\setglossarystyle{listgroup}
-
-    	\pagestyle{fancy}
+				
     	\chapter{MiniImageNet100}
-    	\pagestyle{fancy}
-    	\begin{scriptsize}
+    		{    	    \thispagestyle{fancy}
+    	\begin{footnotesize}
 
     	\begin{longtabu}{X|X[4]}
     		\caption[\gls{min100} description]{\gls{min100} description.} \label{tbl:min100} \tabularnewline
@@ -144,11 +144,10 @@
     		n13133613 &                                                                                                      ear, spike, capitulum \tabularnewline
     		\bottomrule
     	\end{longtabu}
-        \end{scriptsize}
-    	
+        \end{footnotesize}
+    }
     \end{appendices}
 
-    \endgroup
     
     
     

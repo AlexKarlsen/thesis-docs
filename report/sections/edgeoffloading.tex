@@ -29,7 +29,7 @@ The most recent received prediction i.e. from the latest exits are accepted as t
 
 In this section we define the system model for \gls{aee}. Note the metrics defined in chapter \ref{ch:earlyexit} is reused. To remind the reader:  $ C $ denotes the number of the image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images. 
 
-We still do not differentiate between early exit and conventional model,  as we still use $ T_{i,n}^{cmp} $ to denote computation time irregardless of conventional inference model with a single exit, or early exit models with multiple. We do extend our view on latency, as we introduce two execution schemes.
+We still do not differentiate between early exit and conventional model,  as we use $ T_{i,n}^{cmp} $ to denote computation time irregardless of conventional inference model with a single exit, or early exit models with multiple. We do extend our view on latency, as we introduce two execution schemes.
 	
 	\begin{enumdescript}
 		\item[Latency]  We have two options $ \left.A \right) $ local processing and $ \left.B\right) $ edge offloading. Hence we denote the computation time for local processing $ T_{i,n}^{loc,cmp} $ and $ T_{i,n}^{edge,cmp} $ to denote computation time at the edge. 
@@ -116,7 +116,7 @@ We still do not differentiate between early exit and conventional model,  as we 
 		R= \bar{A} \cdot (1-\overline{F}^{to})
 		\end{align}
 		
-		The timeout probability $ \overline{F}^{to} $ is also still defined as the number of samples not able to meet the delay requirement out of all samples in the set. However our latency is now not only dependent on local computation time.
+		The timeout probability $ \overline{F}^{to} $ is also still defined as the number of samples not able to meet the delay requirement out of all samples in the set. However our latency is now not only dependent on computation time both also communication and computation time when offloading.
 		\begin{align}
 		\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i,n}-\delta\right)
 		\end{align}
@@ -148,90 +148,6 @@ We still do not differentiate between early exit and conventional model,  as we 
 			
 	\end{enumdescript}  
 
-
-
-
-%\begin{description}
-%	
-%	\item[Lastest prediction] We define the method \emph{lastest prediction}, where we constraint ourselves to only use the most recent prediction $n$. We do not need to do any class expansion nor to formulate the matrix $\mathbf{S}$. We only need to consider the first index of the vector $\mathbf{c}_{exit_n}$. The class label becomes our prediction $p$.
-%	\begin{align*}
-%	p = \mathbf{c}_{exit_n,0}
-%	\end{align*}
-%	Equivalently we could expand our score vector to $\mathbf{s^*}$ and find the argument of the maxima.
-%	\begin{align*}
-%	p = \arg \max \mathbf{s^*}_{exit_n}	
-%	\end{align*}
-%	Choosing the most confident prediction from the most recent result available, gives us the highest accuracy on average. However, we only use information form a single prediction, we might be able to formulate a mathematical function able to use information form multiple predictions to further improve the accuracy, as we have seen, that the later exit might make a correct prediction from an earlier exit incorrect. 
-%	
-%	\item[Confidence (max)] This method is based on the naive assumption, that given a higher score, it will lead to a higher accuracy independent of the uncertainty of classifier at an earlier exits. We use class expansion and  formulation our score matrix $\mathbf{S}$. From $\mathbf{S}$ we find the prediction $p$ as the argument of the maxima.
-%	\begin{align*}
-%	p = \arg \max  \mathbf{S}
-%	\end{align*}
-%	
-%	\todo{How do I take first the row containing the max value, and then find the column/index of the maxium value?}
-%	Here we neglect the fact, that the later exits are in general more accurate and assume, that a higher confidence despite the exit leads to a correct prediction and we do not account for the uncertainty introduces be less accurate exits.
-%	
-%	\item[Confidence (add)] We define a method, that additive combines information from all available predictions and selects the highest scoring class. The score vector are be expanded to the class space and represented as a matrix. We sum all columns of $\mathbf{S}$ to a 1-dimensional vector $s_{sum}$ of length $k$. 
-%	
-%	\todo{how to sum column of matrix?}
-%	\begin{align*}
-%	\mathbf{s}_{sum} &= \sum_{i=0}^{k} \mathbf{S}_{n,i}, \text{for\:} n=0, 2, \dots, j\\ 
-%	&=	\begin{bmatrix}
-%	s^*_0 & s^*_1 \dots & s^*_{k-1}
-%	\end{bmatrix}_{1 \times k,\: k=100} 
-%	\end{align*}
-%	Our prediction becomes the argument of the maxima of $\mathbf{s}_{sum}$
-%	\begin{align*}
-%	p = \arg \max \mathbf{s}_{sum}
-%	\end{align*}
-%	
-%	
-%	\item[Confidence (add,weight)] Almost identical to \emph{confidence (add)}, but uses a weighted sum of all available exits to combine the information. Each exit are weighted to acknowledge the increasing accuracy as the predictions comes from a deeper exit in the model.  The weights can be represented by a column vector $\mathbf{w}$.
-%	\begin{align*}
-%	\mathbf{w}_{n} =
-%	\begin{bmatrix}
-%	w_0 &
-%	w_1 &
-%	\dots &
-%	w_n
-%	\end{bmatrix}^T
-%	\end{align*}
-%	The weights of row $n$ are multiplied all entries at row $n$ of $S$. Then we sum all columns of $\mathbf{S}$ to a 1-dimensional vector $s_{sum}$ of length $k$.  
-%	\begin{align*}
-%	\mathbf{s}_{ws} &= \sum_{i=0}^{k} w_n \cdot \mathbf{S}_{n,i}\\
-%	&= 		
-%	\begin{bmatrix}
-%	s_0 & s_1 \dots & s_{k-1}
-%	\end{bmatrix}_{1 \times k,\: k=100} 
-%	\end{align*}
-%	Our prediction becomes the argument of the maxima of $\mathbf{s}_{ws}$
-%	\begin{align*}
-%	p = \arg \max \mathbf{s}_{ws}
-%	\end{align*}
-%	
-%	\item[Score-margin (max)] We use the score-margin, defined in \ref{}, to find the best prediction among the available predictions. We do not need to expand our score vector nor to formulate the score matrix. Instead we define a $n$-dimensional column vector, where row $n$ represent the score-margin at the corresponding exit-$n$.  
-%	\begin{align*}
-%	\mathbf{s}_{sm} = \begin{bmatrix}
-%	\mathrm{ScoreMargin}(s_{0,0}, s_{0,1}) \\
-%	\mathrm{ScoreMargin}(s_{1,0}, s_{1,1}) \\
-%	\vdots \\
-%	\mathrm{ScoreMargin}(s_{n,0}, s_{n,1})
-%	\end{bmatrix}
-%	\end{align*}
-%	Our prediction becomes the argument of the maxima of the score-margin vector.
-%	\begin{align*}
-%	p = \arg \max \mathbf{s}_{sm}
-%	\end{align*}
-%	determines the score-margin between the two top-scoring predictions. We select the prediction from the exit with the highest score-margin. From the previous chapter, we know that the score-margin threshold gave a smaller proportion of incorrrectly exited samples at the small cost of samples, that could have been correctly classified using only highest scoring confidence.	
-%	\item[Score-margin (add)] Similarly we define a method, that determines the score-margin using the two highest scoring classes from each prediction and additive combines the informations.
-%	
-%	\item[Score-margin (add,weight)] Similarly we define a weighted sum version of the score-margin. 
-%\end{description}
-
-
-
-
-
 \section{Implementation} \label{sec:edge-implementation}
 
 The offloading scheme is implemented as a client/server application, illustrated by the sequence diagram in figure \ref{fig:sequence-diagram}. 
@@ -240,13 +156,11 @@ The offloading scheme is implemented as a client/server application, illustrated
 	\captionsetup[subfigure]{justification=centering}
 	\centering
 	\includegraphics[width=.7\linewidth]{figures/models/sequence_diagram}
-	\caption[Application Sequence Diagram]{Application Sequence Diagram}
+	\caption[Sequence Diagram \acrshort{aee}]{Sequence Diagram \acrshort{aee}: The client and server establishes a TCP socket connection. The client loads a samples from the \gls{min100} validation set, and streams the sample to the server. The server preprocess the sample and runs the model inference. As soon as, prediction are obtained, a thread is spawned, to stream the results back to the end device. }
 	\label{fig:sequence-diagram}
 \end{figure}
 
-The implementation is written in \gls{python} using the \gls{python} Socket API \cite{noauthor_socket_nodate}. The client and server establishes a TCP socket connection. The client loads a samples from the \gls{min100} validation set, and streams the sample to the server. The server preprocess the sample and runs the model inference. As soon as, prediction are obtained, a thread is spawned, to stream the results back to the end device. 
-
-The client is deployed on the \gls{nuc} and server on \gls{jetson} and \gls{gpu-ws}. The servers are LAN connected to the router and the client is connected over the WLAN.
+The implementation is written in \gls{python} using the \gls{python} Socket API \cite{noauthor_socket_nodate}, \gls{pytorch} \cite{paszke_automatic_2017} and \gls{torchvision} \cite{marcel_torchvision_2010}. The client is deployed on the \gls{nuc} and server on \gls{jetson} and \gls{gpu-ws}. The servers are LAN connected to the router and the client is connected over the WLAN.
 
 \paragraph{Information Combination}
 
@@ -276,7 +190,7 @@ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) =
 \hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,c} & \dots & \hat{y}_{i,n,C}
 \end{bmatrix}_{1 \times C}
 \end{align}
-\todo{is this implementation?}
+
 
 \subparagraph{Example: Expansion of a 10 class problem} 
 \blockquote[]{	 	
@@ -300,26 +214,85 @@ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) =
 	\end{align*}
 }      
 
+Having multiple score vectors $ \bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} $ in the original class space, allow us to formulate a $ n \times C $ score matrix $ \bm{\hat{Y}}_{i}^{n \times C} $.
+\begin{align}
+	\bm{\hat{Y}}_{i}^{n \times C} =
+	\begin{bmatrix}
+		\hat{y}_{i,1,1} & \hat{y}_{i,1,2} & \dots & \hat{y}_{i,1,C} \\
+		\hat{y}_{i,2,1} & \hat{y}_{i,,2} & \dots & \hat{y}_{i,2,C} \\
+		\vdots & \vdots & \ddots & \vdots \\
+		\hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \dots & \hat{y}_{i,n,C}
+	\end{bmatrix}
+\end{align}
+
+Formulating as matrix ease the implementation of combination functions to use methods from linear algebra, e.g. finding the maximum entry and summing the columns.
+
+\subparagraph{Example: Prediction matrix and information combination} 
+\blockquote[]{	 	
+	For this classification example, the number of classes $C=10$. Within a time frame we receive predictions from 3 exits. We assume the predictions have been expanded.
+	\begin{align*}
+	\mathbf{c}_{i} &= \begin{bmatrix}
+	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
+	\end{bmatrix}_{1 \times 10},\\
+	\mathbf{\hat{y}}_{i,1}  &= \begin{bmatrix}
+		0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
+	\end{bmatrix}_{1 \times 10}
+	\\
+	\mathbf{\hat{y}}_{i,2}  &= \begin{bmatrix}
+		0.10 & 0.00 & 0.00 & 0.01 & 0.00 & 0.85 & 0.00 & 0.02 & 0.00 & 0.02
+	\end{bmatrix}_{1 \times 10}
+		\\
+	\mathbf{\hat{y}}_{i,3}  &= \begin{bmatrix}
+		0.15 & 0.00 & 0.00 & 0.02 & 0.01 & 0.00 & 0.00 & 0.80 & 0.00 & 0.02
+	\end{bmatrix}_{1 \times 10}
+	\end{align*}
+	We construct the matrix $ \bm{\hat{Y}}_{i}^{n \times C} $
+	\begin{align*}
+			\bm{\hat{Y}}_{i}^{n \times C} =
+		\begin{bmatrix}
+		0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01 \\
+		0.10 & 0.00 & 0.00 & 0.01 & 0.00 & 0.85 & 0.00 & 0.02 & 0.00 & 0.02 \\
+		0.15 & 0.00 & 0.00 & 0.02 & 0.01 & 0.00 & 0.00 & 0.80 & 0.00 & 0.02 
+		\end{bmatrix}_{3 \times 10}
+	\end{align*}
+	We give examples of using the defined combination functions:
+	\begin{enumerate}
+		\item Using the latest exit prediction the resulting prediction $  \hat{c}^{**}_{i} = \hat{c}^*_{i,3} = 7$.
+		\item 	Using the maximum confidence the resulting prediction becomes $ \hat{c}^{**}_{i} =  5$ from exit 2.
+		\item 	Using sum confidence we sum all columns to create a new score vector
+		\begin{align*}
+		\bm{\hat{y}^{**}_{i}} = 
+		\begin{bmatrix}
+		1.05 & 0.00 & 0.00 & 0.13 & 0.01 & 0.85 & 0.05 & 0.82 & 0.03 & 0.05
+		\end{bmatrix}_{1 \times 10}
+		\end{align*}
+		Thus the resulting prediction becomes $ \hat{c}^{**}_{i} = 0$
+		\item Using the score-margin we find the largest difference between the two highest scores in the 2nd row i.e. the second exit. $ f_{margin}\left(\bm{\hat{y}_{i,2}}\right) = \hat{y}_{i,2,5} - \hat{y}_{i,2,0} = 0.85 - 0.10 =0.75 $ Thus the resulting prediction becomes $ \hat{c}^{**}_i = 5$
+	\end{enumerate}
+	Evidently, combining the scores gives different outcomes in this thought out yet realistic example.
+	
+}
+
 \section{Results} \label{sec:edge-results}
 
-We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of predictions results from all exits, revealed that in some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is sample 6 from the B-\gls{resnet}, $ y_6 $ is the ground truth, $ s^*_6 $ is the maximum score vector at each exit. $ k $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
+We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of top-1 predictions results from all exits, revealed that, we too encounter overthinking \cite{kaya_shallow-deep_nodate}, i.e. in some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is the 6th sample from the \gls{bresnet}, $ c_6 $ is the ground truth class label, $ \hat{c} $ is the predicted class labels, $ \hat{y}^*_6 $ is the corresponding prediction score for the class label at all exits. $ b $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
 \begin{align*}
-y_6=0,
-\mathbf{l}_{6}=
+c_6=0,
+\mathbf{\hat{c}}_{6}=
 \begin{bmatrix}
 0 \\
 54 \\
 62 \\
 62
 \end{bmatrix},
-\mathbf{s}^{*}_{6}=
+\mathbf{\hat{y}}^{*}_{6}=
 \begin{bmatrix}
 0.56 \\
 0.32 \\
 0.52 \\
 0.62
-\end{bmatrix},
-\mathbf{k}_{6}=
+\end{bmatrix} \text{\:and\:}
+\mathbf{b}_{6}=
 \begin{bmatrix}
 1 \\
 0 \\
@@ -327,7 +300,7 @@ y_6=0,
 0
 \end{bmatrix}
 \end{align*}
-Based on the scores the models is more confident about the last exit prediction, even though the prediction from the first exit is correct. Having all predictions available using the combination functions Latest, max and add will all give the label 62, hence cherry-picking the correct prediction from this set of predictions, is not trivial. Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits, see figure \ref{fig:exit-highscore}. This phenomenon is named \emph{overthinking} in \cite{kaya_shallow-deep_nodate}.
+Based on the scores the models is more confident about the last exit prediction, even though the prediction from the first exit is correct. Having all predictions available using the combination functions Latest, max and add will all give the label 62, hence cherry-picking the correct prediction from this set of predictions, is not trivial. Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits, see figure \ref{fig:exit-highscore}.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -342,7 +315,7 @@ Based on the scores the models is more confident about the last exit prediction,
 	\label{fig:exit-highscore}
 \end{figure}
 
-In fact, using the maximum score reduces the accuracy of the model, see table \ref{tbl:latest-vs-max}. It seems, that although the early exits achieve a higher score, they also introduces more uncertainty.  
+In fact, using the maximum score, as proposed in\cite{kaya_shallow-deep_nodate}, actually reduces the accuracy of the model, see table \ref{tbl:latest-vs-max}. It seems, that although the early exits achieve a higher score, they also introduces more uncertainty.  
 
 \begin{longtabu}{>{\bfseries}X|X|X}
 	\caption[]{} \label{tbl:latest-vs-max} \\
@@ -499,35 +472,10 @@ The \gls{densenet} tells a somewhat different story. We are still able to improv
 
 \section{Summary} \label{sec:edge-summary}
 
-In this section we summarize and discuss the results from previous section. We did not manage to come up with a combination function, that was able to improve the accuracy when only a few predictions were available, because the early exit prediction comes with a lot of uncertainty. Only for the \gls{msdnet} when predictions from all exit were present, we were able to improve the accuracy. The reason being, that all exits of this model produces decent prediction accuracy in general, hence less uncertainty from early exit. We have found, that using the latest received predictions, is the best overall for these early exit models.
+In this section we summarize and discuss the results from previous section. In conclusion of this chapter, we were able to improve the reliability, when using \gls{aee} to run early exit models (B-\gls{resnet} and B-\gls{densenet}) on the edge compared to on-device inference. We were not able to come up with a combination function to compete with the just using the prediction from the latest exit. 
 
-We used this finding to set up a practical test of \gls{aee}, were images was sent from the NUC to the Jetson, thus introducing communication latency. We found, that we were able to improve the reliability for both B-\gls{resnet} and B-\gls{densenet} under stringent delay budget. However, for the \gls{msdnet} our offloading solution was uncompetitive with local execution. 
+We did not manage to come up with a combination function, that was able to improve the accuracy, when only a few predictions were available, because the early exit prediction comes with a lot of uncertainty. Only for the \gls{msdnet} when predictions from all exit were present, we were able to improve the accuracy. The reason being, that all exits of this model produces decent prediction accuracy in general, hence less uncertainty from early exit. We have found, that simply using the latest received predictions, is the best overall for these early exit models.
 
-The NUC is a very powerful end device equipped with a \gls{cpu}. The end device are more likely to be equipped with ARM processors or even smaller processing unit. Some end devices may even not be able to run any of the models locally. However, given these results, the edge servers may not need to be equipped with powerful \gls{gpu}s, as the NUC is able to achieve such high performance running the \gls{msdnet}.
+We used this finding to set up a practical test of \gls{aee}, were images was sent from the NUC to the Jetson, thus introducing communication latency. We found, that we were able to improve the reliability for both B-\gls{resnet} and B-\gls{densenet} under stringent delay budget. However, for the \gls{msdnet} our offloading solution was uncompetitive with local execution. The local device i.e. NUC is a very powerful end device equipped with a \gls{cpu}. In reality the end device are more likely to be equipped with ARM processors or even smaller processing unit. Some end devices may even not be able to run any of the models locally. However, given these results, the edge servers may not necessarily need to be equipped with powerful \gls{gpu}s, as the NUC is able to achieve such high performance running the \gls{msdnet}.
 
-Comparing \gls{aee} with Edgent, where a selection of exit is based on regression models of inference time and a current state of bandwidth. Edgent will too suffer from unexpected communication delays, that simply is more uncertain than computation delays. Hence some predictions will be lost, as they will not be able to meet the latency requirement. Our solutions have higher probability of receiving just a single prediction, when a timeout occurs, where none is available for Edgent, if the prediction unexpectedly violates the deadline. 
-
-Our solution is also applicable in collaborative edge, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then offloads the rest of the execution in a cascaded manner for remote execution, still if no reply is received from the edge within the time frame, a locally obtained prediction is available. Thus, the reliability of the solution is improved. However, this approach leads to idle time on server, when the first exit is processed locally on a less powerful device. The early layers of the \gls{dnn} is typically also the most demanding leading to worsened inference time. Additionally, communication of features from the earliest exits is also heavier than later layer and also heavier compared to sending the compressed image, if no network partition feature compression technique is used. This can indeed worsen the reliability, as less exit predictions are actually able to meet the deadline, when more latency is introduced to the solution.
-
-Instead we have propose a solutions to handle the lost prediction dilemma. However, still only possible if local processing is an option. In a modified version of the Big/Little \gls{dnn}, where the end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can then always use the locally obtained prediction and choose to discard it, as more accurate prediction arrives from edge or if a good combination function is found use the information to choose the best prediction. If offloading is not an possible, then the \gls{aee} at the edge is the better option.
-
-Edge/cloud offloading using current communication technologies, can potentially experience service outage. If an access point is no longer accessible, reconnection delays to a new or the same access point e.g. using WiFi can be expected to take at least 1s \cite{pei_why_2017}. Which will inevitably lead to lost predictions, if no local inference is feasible. In \cite{wang_see:_2019} a scheduling scheme is proposed to handle on device inference of early exit \gls{dnn}s, if experiencing service outages to offloading services.
-
-The down-side of our approach is scheduling, if we encounter time-out in between to exits the computation is wasted, which could have been used to process the next frame. We introduce some pessimism, by letting the server known the deadline and measured bandwidth, the server measures the time it uses and can decide to terminate the inference process and continue with next frame, if the server already knowns, it cannot meet reach next exit, and deliver prediction results to the client before the deadline.
-
-In conclusion of this chapter, we were able to improve the reliability, when using \gls{aee} to run early exit models (B-\gls{resnet} and B-\gls{densenet}) on the edge compared to on-device inference. We were not able to come up with a combination function to compete with the just using the prediction from the latest exit. 
-
-
-In the next section we present work related to inference architecture. 
-
-Edgent \cite{li_edge_2018} combines early exiting and network splitting to handle the accuracy-latency trade-off, by an optimization framework of \gls{dnn} right-sizing and splitting for device-edge collaboration. The optimization done based on regression models of the per layer execution time of the \gls{dnn}. We argue, that Edgent's upfront selection of exit i.e gls{dnn} right-sizing, does not account for unpredictable communication delays, that we try to address. 
-
-Early exiting is proposed in . Early exit model is used in Edgent \cite{li_edge_2018} to investigate classification of real-time video streaming. They propose a partial offloading scheme for device/edge co-inference, using an optimizer to maximize the service accuracy while complying with latency requirements. Edgent uses model partitioning to find an optimal splitting point of the \gls{dnn} and model right-sizing to select an early exit point as final exit.
-
-Their solution may suffer from sporadic unexpected communication delays or service outages under the inference process. We account for this by not selecting an exit point upfront, but uses all predictions we received prior to the deadline. In worst case the first exit is never reachable, hence neither \gls{aee}, nor Edgent will receive a prediction within the deadline. If the first exit is reachable \gls{aee} will always receive at least on prediction, whereas if Edgent selected a later exit, that turned out to not be reachable, no prediction is received in time. \todo{is this too much discussion and critique? Should i use it in justification of our design instead? as I sort of already do...}
-
-In \cite{wang_see:_2019} \gls{see} is proposed. As the name implies, \gls{see} is a scheduling of early exit model for on-device inference.  \gls{see} also uses real-time video streaming as use case, by scheduling frames able to meet the deadline and  ignoring frames that cannot, to maximize the utility. We deem our solution could benefit from the scheduling of video frames, if is was to be extended to real-time video streaming. 
-
-However, as the overhead of our early exit model's additional exits is negligible, we argue that using our optimistic scheme for edge inference, that always tries to deliver the best possible prediction before the deadline, would outperform upfront exit selection. Our scheme could easily be used in combination with \gls{see}, by switching to \gls{see} for on-device inference, when poor networking connection or service outage is detected. \todo{same}
-
-In the next section the structure of the rest of the thesis presented
+We did not find a single best setup, which clearly illustrates the complexity of offloading \gls{ai}.
