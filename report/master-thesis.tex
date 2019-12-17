@@ -48,7 +48,7 @@
 	
 	\input{sections/preface.tex}
 	\endgroup
-	%\pagenumbering{Roman}
+	\pagenumbering{Roman}
 	\justify
 	
 	
@@ -58,9 +58,11 @@
     \printnoidxglossary[type=\acronymtype]%,numberedsection=autolabel]
     \addcontentsline{toc}{chapter}{Acronyms}
     
-    %\pagenumbering{arabic}
     
     \tableofcontents
+    
+    \pagenumbering{arabic}
+    \setcounter{page}{1}
     
     
     \pagebreak

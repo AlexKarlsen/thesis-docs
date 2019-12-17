@@ -42,7 +42,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames*,table}{xcolor}
 %
-\documentclass[a4paper, listof=nochaptergap, listof=numbered]{scrreprt}
+\documentclass[a4paper, listof=nochaptergap, listof=numbered, headsepline]{scrreprt}
 \usepackage{lmodern}
 \usepackage{setspace}
 
@@ -148,11 +148,24 @@
 \usepackage{tocbasic}
 %\addtotoclist[master-thesis.cls]{toc}
 \renewcommand*{\tableofcontents}{\listoftoc[{\contentsname}]{toc}}% ToC under control of tocbasic
-\AfterTOCHead[toc]{\addcontentsline{toc}{chapter}{Contents}\thispagestyle{fancy}\pagestyle{fancy}}
+%\AfterTOCHead[toc]{\addcontentsline{toc}{chapter}{Contents}\thispagestyle{fancy}\pagestyle{fancy}}
 \AfterStartingTOC[toc]{\clearpage}
 
-\usepackage{etoolbox}
-\patchcmd{\chapter}{\thispagestyle{plain}}{\thispagestyle{fancy}}{}{}
+\usepackage{scrlayer-scrpage}
+\setkomafont{pagehead}{\sffamily\upshape}
+
+\automark[chapter]{chapter}
+\automark*{section}
+\ohead{}
+\chead{}
+\ihead{\headmark}
+\cfoot{}
+\ofoot{\thepage}
+\ifoot{}
+\setlength{\headheight}{14pt}
+
+\renewcommand*{\chapterpagestyle}{headings}
+
 
 \usepackage{ifplatform}
 
@@ -492,18 +505,18 @@
 %
 % header and footer
 %
-\usepackage{fancyhdr}
-\pagestyle{fancy}
-\fancyhead{}
-\fancyfoot{}
-\lhead[\today]{\thetitle}
-\chead[]{}
-\rhead[\thetitle]{\today}
-\lfoot[\thepage]{\theauthor}
-\cfoot[]{}
-\rfoot[\theauthor]{\thepage}
-\renewcommand{\headrulewidth}{0.4pt}
-\renewcommand{\footrulewidth}{0.4pt}
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\fancyhead{}
+%\fancyfoot{}
+%\lhead[\today]{\thetitle}
+%\chead[]{}
+%\rhead[\thetitle]{\today}
+%\lfoot[\thepage]{\theauthor}
+%\cfoot[]{}
+%\rfoot[\theauthor]{\thepage}
+%\renewcommand{\headrulewidth}{0.4pt}
+%\renewcommand{\footrulewidth}{0.4pt}
 
 %%
 %% end added
