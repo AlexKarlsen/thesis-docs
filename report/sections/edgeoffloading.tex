@@ -139,7 +139,7 @@ We still do not differentiate between early exit and conventional model,  as we 
 		
 		
 		\begin{maxi}
-			{\vec{n}}{\bar{R}^f_n}
+			{\vec{n}}{\bar{R}^f}
 			{}{}
 			%\addConstraint{T_{i,n}}{\leq \delta}
 		\end{maxi}
@@ -176,14 +176,14 @@ We send back the top-5 predictions to allow information combination and reduce t
 
 To combine top-5 prediction information from $ n $ exits, we must expand the vectors back to the original class space of $ C $ dimensions.
 
-Each exit outputs two 5-dimensional vectors. $\mathbf{c}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \mathbf{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
+Each exit outputs two 5-dimensional vectors. $\bm{c}_{i,k}^{top5}$ contains the labels of the top-5 predictions and $ \bm{\hat{y}}_{i,k}^{top5}$ contain the class scores of the top-5 predictions. 
 
 \begin{align}
 \begin{split}
 \mathbf{c}_{i,n}^{top5} &= \begin{bmatrix}
 c_{i,n}^{1st} & \phantom{.}c_{i,n}^{2nd} & \phantom{.}c_{i,n}^{3rd} & \phantom{.}c_{i,n}^{4th} & \phantom{.}c_{i,n}^{5th}
 \end{bmatrix}, \\
-\mathbf{\hat{y}}^{top5}_{i,n} &= \begin{bmatrix}
+\bm{\hat{y}}^{top5}_{i,n} &= \begin{bmatrix}
 \hat{y}_{i,n}^{1st} & \hat{y}_{i,n}^{2nd} & \hat{y}_{i,n}^{3rd} & \hat{y}_{i,n}^{4th} & \hat{y}_{i,n}^{5th}
 \end{bmatrix}
 \end{split}
@@ -191,9 +191,9 @@ c_{i,n}^{1st} & \phantom{.}c_{i,n}^{2nd} & \phantom{.}c_{i,n}^{3rd} & \phantom{.
 
 The vectors are sorted from highest to lowest, hence the score $ \hat{y}_{i,k}^{1st} $ is associated the class label $ c_{i,k}^{1st} $ etc. 
 
-We define an expansion function, which takes the top-5 score vector $ \mathbf{\hat{y}}_{i,n}^{top5}$ and top-5 class label vector  $\mathbf{c}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
+We define an expansion function, which takes the top-5 score vector $ \bm{\hat{y}}_{i,n}^{top5}$ and top-5 class label vector  $\bm{c}_{i,n}^{top5}$ as input  $ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\bm{c}_{i,n}^{top5}\right) $ and outputs a $ C $-dimensional score vector, with the scores value at corresponding class index of the label vector, with the remaining indices are zero.
 \begin{align}
-f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) = 
+f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\bm{c}_{i,n}^{top5}\right) = 
 \begin{bmatrix}
 \hat{y}_{i,n,1} & \hat{y}_{i,n,2} & \hat{y}_{i,n,c} & \dots & \hat{y}_{i,n,C}
 \end{bmatrix}_{1 \times C}
@@ -202,12 +202,12 @@ f_{expand}\left(\bm{\hat{y}}_{i,n}^{top5},\mathbf{c}_{i,n}^{top5}\right) =
 
 \subparagraph{Example: Expansion of a 10 class problem} 
 \blockquote[]{	 	
-	For this classification example, the number of classes $C=10$. From a prediction we get the two output vectors $\mathbf{l}_{i,n}^{top5}$ and $ \mathbf{\hat{y}}_{i,n}^{top5}$.
+	For this classification example, the number of classes $C=10$. From a prediction we get the two output vectors $\bm{c}_{i,n}^{top5}$ and $ \bm{\hat{y}}_{i,n}^{top5}$.
 	\begin{align*}
 	\mathbf{c}_{i,n}^{top5} &= \begin{bmatrix}
 	\phantom{0}0\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
 	\end{bmatrix},\\
-	\mathbf{\hat{y}}_{i,n}^{top5} &= \begin{bmatrix}
+	\bm{\hat{y}}_{i,n}^{top5} &= \begin{bmatrix}
 	0.80 & 0.10 & 0.05 & 0.03 & 0.01
 	\end{bmatrix}
 	\end{align*}
@@ -240,18 +240,18 @@ Formulating as matrix ease the implementation of combination functions using \gl
 \blockquote[]{	 	
 	For this classification example, the number of classes $C=10$. Within a time frame we receive predictions from 3 exits. We assume the predictions have been expanded.
 	\begin{align*}
-	\mathbf{c}_{i} &= \begin{bmatrix}
+	\bm{c}_{i} &= \begin{bmatrix}
 	\phantom{0}0\phantom{.0} & \phantom{0}1\phantom{.0} & \phantom{0}2\phantom{.0} & \phantom{0}3\phantom{.0} & \phantom{0}4\phantom{.0} & \phantom{0}5\phantom{.0} & \phantom{0}6\phantom{.0} & \phantom{0}7\phantom{.0} & \phantom{0}8\phantom{.0} & \phantom{0}9\phantom{.0}
 	\end{bmatrix}_{1 \times 10},\\
-	\mathbf{\hat{y}}_{i,1}  &= \begin{bmatrix}
+	\bm{\hat{y}}_{i,1}  &= \begin{bmatrix}
 		0.80 & 0.00 & 0.00 & 0.10 & 0.00 & 0.00 & 0.05 & 0.00 & 0.03 & 0.01
 	\end{bmatrix}_{1 \times 10}
 	\\
-	\mathbf{\hat{y}}_{i,2}  &= \begin{bmatrix}
+	\bm{\hat{y}}_{i,2}  &= \begin{bmatrix}
 		0.10 & 0.00 & 0.00 & 0.01 & 0.00 & 0.85 & 0.00 & 0.02 & 0.00 & 0.02
 	\end{bmatrix}_{1 \times 10}
 		\\
-	\mathbf{\hat{y}}_{i,3}  &= \begin{bmatrix}
+	\bm{\hat{y}}_{i,3}  &= \begin{bmatrix}
 		0.15 & 0.00 & 0.00 & 0.02 & 0.01 & 0.00 & 0.00 & 0.80 & 0.00 & 0.02
 	\end{bmatrix}_{1 \times 10}
 	\end{align*}
@@ -293,21 +293,21 @@ In this section...
 We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of top-1 predictions results from all exits, revealed that, we too encounter overthinking as in \cite{kaya_shallow-deep_nodate}. In some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is the 6th sample from the \gls{bresnet}, $ c_6 $ is the ground truth class label, $ \bm{\hat{c}}_6 $ is the predicted class labels, $ \hat{y}^*_6 $ is the corresponding prediction score for the class label at all exits. $ b $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
 \begin{align*}
 c_6=0,
-\mathbf{\hat{c}}_{6}=
+\bm{\hat{c}}_{6}=
 \begin{bmatrix}
 0 \\
 54 \\
 62 \\
 62
 \end{bmatrix},
-\mathbf{\hat{y}}^{*}_{6}=
+\bm{\hat{y}}^{*}_{6}=
 \begin{bmatrix}
 0.56 \\
 0.32 \\
 0.52 \\
 0.62
 \end{bmatrix} \text{\:and\:}
-\mathbf{b}_{6}=
+\bm{b}_{6}=
 \begin{bmatrix}
 1 \\
 0 \\
