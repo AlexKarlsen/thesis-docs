@@ -1786,3 +1786,66 @@
 	author = {Liu, Jianhui and Zhang, Qi},
 	date = {2019-12-17}
 }
+
+@article{krogh_simple_nodate,
+	title = {A Simple Weight Decay Can Improve Generalization},
+	abstract = {It has been observed in numerical simulations that a weight decay can improve generalization in a feed-forward neural network. This paper explains why. It is proven that a weight decay has two effects in a linear network. First, it suppresses any irrelevant components of the weight vector by choosing the smallest vector that solves the learning problem. Second, if the size is chosen right, a weight decay can suppress some of the effects of static noise on the targets, which improves generalization quite a lot. It is then shown how to extend these results to networks with hidden layers and non-linear units. Finally the theory is confirmed by some numerical simulations using the data from {NetTalk}.},
+	pages = {8},
+	author = {Krogh, Anders and Hertz, John A},
+	langid = {english},
+	file = {Krogh and Hertz - A Simple Weight Decay Can Improve Generalization.pdf:C\:\\Users\\ajk\\Zotero\\storage\\BDHETK8J\\Krogh and Hertz - A Simple Weight Decay Can Improve Generalization.pdf:application/pdf}
+}
+
+@article{srivastava_dropout:_nodate,
+	title = {Dropout: A Simple Way to Prevent Neural Networks from Overﬁtting},
+	abstract = {Deep neural nets with a large number of parameters are very powerful machine learning systems. However, overﬁtting is a serious problem in such networks. Large networks are also slow to use, making it diﬃcult to deal with overﬁtting by combining the predictions of many diﬀerent large neural nets at test time. Dropout is a technique for addressing this problem. The key idea is to randomly drop units (along with their connections) from the neural network during training. This prevents units from co-adapting too much. During training, dropout samples from an exponential number of diﬀerent “thinned” networks. At test time, it is easy to approximate the eﬀect of averaging the predictions of all these thinned networks by simply using a single unthinned network that has smaller weights. This signiﬁcantly reduces overﬁtting and gives major improvements over other regularization methods. We show that dropout improves the performance of neural networks on supervised learning tasks in vision, speech recognition, document classiﬁcation and computational biology, obtaining state-of-the-art results on many benchmark data sets.},
+	pages = {30},
+	author = {Srivastava, Nitish and Hinton, Geoﬀrey and Krizhevsky, Alex and Sutskever, Ilya and Salakhutdinov, Ruslan},
+	langid = {english},
+	file = {Srivastava et al. - Dropout A Simple Way to Prevent Neural Networks f.pdf:C\:\\Users\\ajk\\Zotero\\storage\\XUM2TY7E\\Srivastava et al. - Dropout A Simple Way to Prevent Neural Networks f.pdf:application/pdf}
+}
+
+@article{ioffe_batch_2015,
+	title = {Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift},
+	url = {http://arxiv.org/abs/1502.03167},
+	shorttitle = {Batch Normalization},
+	abstract = {Training Deep Neural Networks is complicated by the fact that the distribution of each layer’s inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities. We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs. Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch. Batch Normalization allows us to use much higher learning rates and be less careful about initialization. It also acts as a regularizer, in some cases eliminating the need for Dropout. Applied to a state-of-the-art image classiﬁcation model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a signiﬁcant margin. Using an ensemble of batchnormalized networks, we improve upon the best published result on {ImageNet} classiﬁcation: reaching 4.9\% top-5 validation error (and 4.8\% test error), exceeding the accuracy of human raters.},
+	journaltitle = {{arXiv}:1502.03167 [cs]},
+	author = {Ioffe, Sergey and Szegedy, Christian},
+	urldate = {2019-12-20},
+	date = {2015-03-02},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1502.03167},
+	keywords = {Computer Science - Machine Learning},
+	file = {Ioffe and Szegedy - 2015 - Batch Normalization Accelerating Deep Network Tra.pdf:C\:\\Users\\ajk\\Zotero\\storage\\JGUI2E3S\\Ioffe and Szegedy - 2015 - Batch Normalization Accelerating Deep Network Tra.pdf:application/pdf}
+}
+
+@article{lee_energy_2019,
+	title = {An Energy and {GPU}-Computation Efficient Backbone Network for Real-Time Object Detection},
+	url = {http://arxiv.org/abs/1904.09730},
+	abstract = {As {DenseNet} conserves intermediate features with diverse receptive ﬁelds by aggregating them with dense connection, it shows good performance on the object detection task. Although feature reuse enables {DenseNet} to produce strong features with a small number of model parameters and {FLOPs}, the detector with {DenseNet} backbone shows rather slow speed and low energy efﬁciency. We ﬁnd the linearly increasing input channel by dense connection leads to heavy memory access cost, which causes computation overhead and more energy consumption. To solve the inefﬁciency of {DenseNet}, we propose an energy and computation efﬁcient architecture called {VoVNet} comprised of One-Shot Aggregation ({OSA}). The {OSA} not only adopts the strength of {DenseNet} that represents diversiﬁed features with multi receptive ﬁelds but also overcomes the inefﬁciency of dense connection by aggregating all features only once in the last feature maps. To validate the effectiveness of {VoVNet} as a backbone network, we design both lightweight and largescale {VoVNet} and apply them to one-stage and two-stage object detectors. Our {VoVNet} based detectors outperform {DenseNet} based ones with 2× faster speed and the energy consumptions are reduced by 1.6× - 4.1×. In addition to {DenseNet}, {VoVNet} also outperforms widely used {ResNet} backbone with faster speed and better energy efﬁciency. In particular, the small object detection performance has been signiﬁcantly improved over {DenseNet} and {ResNet}.},
+	journaltitle = {{arXiv}:1904.09730 [cs]},
+	author = {Lee, Youngwan and Hwang, Joong-won and Lee, Sangrok and Bae, Yuseok and Park, Jongyoul},
+	urldate = {2019-12-20},
+	date = {2019-04-22},
+	langid = {english},
+	eprinttype = {arxiv},
+	eprint = {1904.09730},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition},
+	file = {Lee et al. - 2019 - An Energy and GPU-Computation Efficient Backbone N.pdf:C\:\\Users\\ajk\\Zotero\\storage\\7I58SU7R\\Lee et al. - 2019 - An Energy and GPU-Computation Efficient Backbone N.pdf:application/pdf}
+}
+
+@article{zagoruyko_wide_2017,
+	title = {Wide Residual Networks},
+	url = {http://arxiv.org/abs/1605.07146},
+	abstract = {Deep residual networks were shown to be able to scale up to thousands of layers and still have improving performance. However, each fraction of a percent of improved accuracy costs nearly doubling the number of layers, and so training very deep residual networks has a problem of diminishing feature reuse, which makes these networks very slow to train. To tackle these problems, in this paper we conduct a detailed experimental study on the architecture of {ResNet} blocks, based on which we propose a novel architecture where we decrease depth and increase width of residual networks. We call the resulting network structures wide residual networks ({WRNs}) and show that these are far superior over their commonly used thin and very deep counterparts. For example, we demonstrate that even a simple 16-layer-deep wide residual network outperforms in accuracy and efficiency all previous deep residual networks, including thousand-layer-deep networks, achieving new state-of-the-art results on {CIFAR}, {SVHN}, {COCO}, and significant improvements on {ImageNet}. Our code and models are available at https://github.com/szagoruyko/wide-residual-networks},
+	journaltitle = {{arXiv}:1605.07146 [cs]},
+	author = {Zagoruyko, Sergey and Komodakis, Nikos},
+	urldate = {2019-12-20},
+	date = {2017-06-14},
+	eprinttype = {arxiv},
+	eprint = {1605.07146},
+	keywords = {Computer Science - Computer Vision and Pattern Recognition, Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing},
+	file = {arXiv Fulltext PDF:C\:\\Users\\ajk\\Zotero\\storage\\NGXEWN6F\\Zagoruyko and Komodakis - 2017 - Wide Residual Networks.pdf:application/pdf;arXiv.org Snapshot:C\:\\Users\\ajk\\Zotero\\storage\\QXCIRJAH\\1605.html:text/html}
+}

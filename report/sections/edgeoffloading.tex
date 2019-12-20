@@ -2,11 +2,11 @@
 	\chapter{Edge Offloading with Early Exiting}\label{ch:edgeoffloading}}
 \thispagestyle{fancy}
 
-In this chapter we implement a edge-based offloading scheme utilizing early exiting \gls{dnn}s. Our scheme a more flexible and adaptive than currently proposed in literature. In section \ref{sec:edge-aee} we present our offloading scheme In section \ref{sec:edge-system-model} we define the system model used to evaluate our result. We describe our implementation in section \ref{sec:edge-implementation} In section \ref{sec:edge-exp-setup} we describe our experimental setup. In section \ref{sec:edge-results} we present our results and in section \ref{sec:edge-summary} we discuss our results.
+In this chapter we implement an inference scheme utilizing early exiting \gls{dnn}s. Our scheme is flexible in the sense it can be used in different edge-centric architectures and it is adaptive to enable service at more stringent latency requirements than currently proposed in literature using a best effort approach. In section \ref{sec:edge-aee} we present our offloading scheme In section \ref{sec:edge-system-model} we define the system model used to evaluate our result. We describe our implementation in section \ref{sec:edge-implementation} In section \ref{sec:edge-exp-setup} we describe our experimental setup. In section \ref{sec:edge-results} we present our results and in section \ref{sec:edge-summary} we discuss our results.
 
 \section{\acrfull{aee} for Time-Critical Applications} \label{sec:edge-aee}
 
-We propose \acrfull{aee} an optimistic standalone inference model based on early exit \gls{dnn}. It is optimistic in the sense, that it allows the edge server to reach as far as possible in the inference process before time is out. The early exits or in this case intermediate classifiers, as we do not exi, but continuously send back increasingly confident predictions. We argue, that \gls{aee} will in any case achieve at least the same accuracy as upfront exit selection in \cite{li_edge_2018}, even though the exit have been chosen with care, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
+We propose \acrfull{aee} an optimistic inference scheme based on early exit \gls{dnn}. It is optimistic, as it maximizes the reliability using a best effort apporach. The scheme does not terminate at early exits, but when a deadline has passed. Thus, the inference is run until time is out. The scheme  allow to use increasingly confident predictions from the continuous inference process. Our scheme is flexible at it can function for on-device, edge offloading or collaborative inference architectures. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -21,9 +21,9 @@ We propose \acrfull{aee} an optimistic standalone inference model based on early
 	\label{fig:offloading-scheme}
 \end{figure} 
 
-Figure \ref{fig:offloading-scheme} illustrates the offloading scheme. To not waste idle time on edge server the data is immediately offloaded from the end device, to edge server. The edge server preprocesses the data, runs the \gls{dnn} inference process, and whenever a prediction is obtained from the early ecit \gls{dnn}, a thread is spawned to send back the result to the end device. Multiple early exits allows for successively receiving, what is expectedly, increasingly reliable predictions. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available 
+We present the scheme in the context of edge offloading llustrated in figure \ref{fig:offloading-scheme}. The data is immediately offloaded upon acquisition from the end device to edge server, to not waste idle time on edge server. The edge server runs the inference process, and whenever a prediction is obtained from the early exit \gls{dnn} classifers, it is sent back to the end device. Successively receiving prediction allow the user to select the most recent prediction from the deepest exit. Or alternatively, use information from all received predictions to select the most confident or use a combination function to select the best one. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Figure \ref{fig:offloading-scheme-timeout} illustrates a case, where a timeout occurs and only two predictions are available 
 
-The most recent received prediction i.e. from the latest exits are accepted as the prediction. Or alternatively, we also look at using multiple predictions received from the edge, and let the end device use the information to select the prediction using a combination function, defined in section \ref{sec:edge-system-model}.
+In the next section we define the system model.
 
 \section{System Model} \label{sec:edge-system-model}
 
@@ -32,9 +32,8 @@ In this section we define the system model for \gls{aee}. Note the metrics defin
 We still do not differentiate between early exit and conventional model,  as we use $ T_{i,n}^{cmp} $ to denote computation time irregardless of conventional inference model with a single exit, or early exit models with multiple. We do extend our view on latency, as we introduce two execution schemes.
 	
 	\begin{enumdescript}
-		\item[Latency]  We have two options $ \left.A \right) $ local processing and $ \left.B\right) $ edge offloading. Hence we denote the computation time for local processing $ T_{i,n}^{loc,cmp} $ and $ T_{i,n}^{edge,cmp} $ to denote computation time at the edge. 
+		\item[Latency]  We have two options \textbf{A)} local processing and \textbf{B)} edge offloading. Hence we denote the computation time for local processing $ T_{i,n}^{loc,cmp} $ and $ T_{i,n}^{edge,cmp} $ to denote computation time at the edge. 
 	
-		
 		We define the time for local and remote execution
 
 		\begin{enumdescript}
@@ -48,29 +47,30 @@ We still do not differentiate between early exit and conventional model,  as we 
 			\end{align}
 			where $ T^{com}_i $ denotes the communication time, for both uplink time to transmit image $ i $ from local to edge, and downlink time of prediction reply from edge to local.
 			
-			Offloading for remote execution is only sensible whenever we save time compared to local execution
+			Offloading for remote execution is only sensible whenever we save time compared to local execution, i.e.
 			\begin{align*}
 					T_{i,n}^{loc} > T_{i,n}^{edge}
 			\end{align*}
+			\todo{should I denote this a sub T^{cmp}_n? as there are downlink communication every time a prediction is acquired. Or split it in downlink and uplink?}
 			Due to the difference in computing resources, we expect the computation time at edge to be significantly lower than local computation time, i.e. $ T_{i,n}^{loc,cmp} > T_{i,n}^{edge,cmp} $. Thus, the communication time $ T^{com}_i $ becomes an important factor for offloading decision.
 
 		\end{enumdescript}
 	
-		\item[Accuracy] The scheme opens the opportunities to receive multiple predictions within the time frame. We may be able to improve the accuracy and reduce undesired overthinking using the output results of the first $ n $ exit points to combine the information.
+		\item[Accuracy] The scheme allow for the opportunities to receive multiple predictions within the time frame. We may be able to improve the accuracy and reduce undesired overthinking, using the output results of the first $ n $ exit points to combine the information.
 		
 		\begin{align}
-		\bar{A}_f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\mathbf{\hat{c}}_{i,1} \dots, \mathbf{\hat{y}}_{i,n}\right)-y_i\right|\right)
+		\bar{A}^f &= 1 - \frac{1}{I} \sum_{i=1}^{I}\mathbb{I}\left(\left|f\left(\bm{\hat{y}}_{i,1} \dots, \bm{\hat{y}}_{i,n}\right)-c_i\right|\right)
 		\end{align}
 		
-		remember the ground truth class label of image $ i $ and $ c_i \in \left[1, C \right] $ and $ \mathbb{I(\cdot)}  $ is a indicating function defined by
-		\begin{align}
+		remember the ground truth class label of image $ i $ is $ c_i \in \left\{1, 2, C \right\} $ and $ \mathbb{I(\cdot)}  $ is a indicating function defined by in eq. \ref{eq:indicator}.
+		\begin{align*}
 		\mathbb{I}(a)= \begin{cases}
 		0, & \mathrm{if\:} a \leq 0, \\
 		1, & \mathrm{otherwise}
 		\end{cases}
-		\end{align}
+		\end{align*}
 		
-		There are several ways to define combination function $ f\left(\mathbf{\hat{y}}_{i,1}, \dots, \mathbf{\hat{y}}_{i,n}\right) $
+		There are several ways to define combination function $ f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n}\right) $
 		\begin{enumdescript}
 			
 			
@@ -79,17 +79,17 @@ We still do not differentiate between early exit and conventional model,  as we 
 			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \hat{c}_{i,n}^{*}
 			\end{align}
 			
-			\item[max confidence] This method used in \cite{kaya_shallow-deep_nodate}, reports improvement on the \gls{cifar10}, \gls{cifar100} and \gls{tinyimagenet}. The measure is based on the assumption, that an exit obtaining a higher score is more confident, hence improving the accuracy.
+			\item[max confidence] This method uses the most confident prediction among all received exit predictions. It is used in \cite{kaya_shallow-deep_nodate}, which reports improvement on the \gls{cifar10}, \gls{cifar100} and \gls{tinyimagenet}. The measure is based on the assumption, that an exit obtaining a higher score is more confident, hence improving the accuracy.
 			\begin{align}
 			\begin{split}
-			f\left(\bm{\hat{y}}_{i,1}, \cdots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{{\hat{y}_{i,j}^{*}, 1 \le j 
-					\le n}}{\max} \{\hat{y}_{i,1}^* \dots, \hat{y}_{i,n}^*\},\\ \text{where\:} \hat{y}_{i,j}^* = \max\bm{\hat{y}}_{i,j} \text{\:for\:} \forall \ 1 \le j \le n
+			f\left(\bm{\hat{y}}_{i,1}, \cdots, \bm{\hat{y}}_{i,n} \right) =  \arg \underset{c}{\max} \{\hat{y}^*_{i,1}, ..., \hat{y}^*_{i,C} \},
+			\\ \text{where\:} \hat{y}^*_{i,c} = \max \{\hat{y}_{i,1,c}, ..., \hat{y}_{i,n,c}\}
 			\end{split}	
 			\end{align}
 			\item[sum confidence] this method sums the respective class scores for all exit predictions and chooses the highest scoring class. 
 			\begin{align}
 			\begin{split}
-			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{n}{\max} \{s_{i,1}, \dots, s_{i,C}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}\hat{y}_{i,n,c} \text{\:for\:} \forall \ 1\le c \le C
+			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{c}{\max} \{s_{i,1}, \dots, s_{i,C}\}, \\ \text{where\:} s_{i,n} = \sum_{j=1}^{n}\hat{y}_{i,n,c} \forall \ 1\le c \le C
 			\end{split}
 			\end{align}
 			
@@ -104,16 +104,21 @@ We still do not differentiate between early exit and conventional model,  as we 
 			\item[max score margin] this method determines the score-margin for all exit predictions and chooses the class with the highest score-margin. 
 			\begin{align}
 			\begin{split}
-			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{\hat{y}_{i,j}^{*}, 1 \le j 
-				\le n}{\max} \{s^{*}_{i,1}, \cdots, s^{*}_{i,n}\},\\ \text{where\:} s^{*}_{i,j} = f_{margin}(\bm{\hat{y}}_{i,j}) \text{\:for\:} \forall \ 1 \le j \le n
+			f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) =c^*_{1,\hat{n}},
 			\end{split}	
 			\end{align}
+			where $ \hat{n} \in \{1, 2, ..., n\} $, 
+			
+			and $ \hat{n} = \arg \underset{j}{\max} {f_{margin}(\bm{y}_{i,1}), ..., f_{margin}(\bm{y}_{i,n}) } $, 
+			and $ j $ is an integer and $ 1 \le j \le n $
+			
+			$ f_{margin} $ is defined in eq. \ref{eq:f_margin}.
 		\end{enumdescript}
 	
 		\item[Reliability]  We still define the reliability as in chapter \ref{ch:earlyexit}, as the fraction of samples, that can be correctly classified given a latency threshold $ \delta $.
 		
 		\begin{align}
-		R= \bar{A} \cdot (1-\overline{F}^{to})
+		R^f= \bar{A^f} \cdot (1-\overline{F}^{to})
 		\end{align}
 		
 		The timeout probability $ \overline{F}^{to} $ is also still defined as the number of samples not able to meet the delay requirement out of all samples in the set. However our latency is now not only dependent on computation time both also communication and computation time when offloading.
@@ -133,7 +138,7 @@ We still do not differentiate between early exit and conventional model,  as we 
 		
 		
 		\begin{maxi}
-			{n}{\bar{A}^f_n}
+			{\bm{n}}{\bar{R}^f_n}
 			{}{}
 			\addConstraint{T_{i,n}}{\leq \delta}
 		\end{maxi}
@@ -478,10 +483,35 @@ Compared to local execution, we see softer breaking point, when time allows to r
 
 Unfortunately, we did not find a combination function, that was able to improve the accuracy, when only a few predictions were available. In contrast our goal was to improve the accuracy, when all predictions was not available. Only for the \gls{msdnet}, when predictions from all exit were available, were we able to improve the accuracy, but by summing the predictions, using the confidence add function. All exits of this model produces decent prediction accuracy in general, hence less uncertainty from the early exit, whereas the gap between the exit's accuracy of our two other model, \gls{bresnet} and \gls{bdensenet} is larger, thus comes with a lot of uncertainty. We have found, that simply using the latest received predictions, is the best overall choice for these early exit models.
 
+Compared to \gls{ddnn} \cite{teerapittayanon_distributed_2017}, our investigation of \gls{aee} is not used with model partitioning for collaborative edge based. Instead it is based on either local execution or remote offloading, to make full use of computing resource of the more powerful edge server. Still our solution is applicable for collaborative edge, where the end-device locally processes the algorithm up to an early exit and obtains a prediction, then offloads the rest of the execution in a cascaded manner for remote execution. A locally obtained prediction could possibly reduce the amount of missed predictions, if no reply is received from the edge within the time frame. However, we did try partitioning after the first exit, but encountered increased transmission delays and computation time. Further experimenting with this idea was dropped, as it would require implmenting feature compression or \gls{bottlenet} modules to reduce transmission time. Introducing feature compression would additionally require compression-aware retraining, as stated in \cite{choi_near-lossless_2018,choi_near-lossless_2018,eshratifar_bottlenet:_2019}  to avoid experiencing a high cost in accuracy.
+
+It can be justified from looking at figure \ref{fig:resnet-offloading-vs-local} and \ref{fig:densenet-offloading-vs-local}, that show the local inference time of the first exit of \gls{bresnet} and \gls{bdensenet}, is always outperformed by the edge servers. Thus, our choice to not waste idle time on server, by offloading the entire task is the better one for very stringent deadlines. The early layers of the \gls{dnn} is typically also the most demanding, which will lead to worsened inference time exits, and communication of features from the earliest exits, is also heavier than both  features obtained at later exits and sending the compressed image upfront, at least, if no feature compression technique is used.
+
+Instead an alternative solutions to handle the lost prediction dilemma, is a parallel execution of a shallower local \gls{dnn} and a deep remote \gls{dnn} i.e. a parallel Big/Little setup. The end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can always use the locally obtained prediction and choose to discard it, as more accurate prediction arrives from edge or if a good combination function is found, use the information to choose the best prediction. If offloading is not an possible, then the \gls{aee} offloading is the better option.
+
+We have not considered real-time processing a stream of video frames, but only single image classfication. Comparing our inference scheme \gls{aee} with Edgent, where an upfront selection of exit is to handle the accuracy-latency trade-off. Edgent tries to utilize available time for the frame without postponing the next one. The selection of exit is based on regression models of inference time and a current state of bandwidth. The upfront exit selection is prone to loose predictions caused by unexpected communication delays. Our solutions have higher probability of having received a single prediction, when a timeout occurs. For instance, if the first exit is reachable for \gls{aee}, and if the prediction unexpectedly violates the deadline for a later exit, at least one prediction is available. Whereas for Edgent the same later selected exit, that turned out to not be reachable, then no prediction is received in time. In other words, an early prediction is better than no prediction and only in worst-case where the first exit is unreachable neither \gls{aee} nor Edgent will suffice. We argue, that the potential of early exiting is not fully utilizes by this submodel selection, as the latency overhead of our additional exits classifier is negligible. Additionally such upfront selection also takes some time away from offloading and inference.
+
+Our approach does not address video streaming initially, if we encounter time-out in between to exits the computation is wasted, which optimally could have been used to process the next frame, if received. However, our solution fully utilize the available time, if a next frame is not we received. A future extension to our scheme is to let the server known the deadline and measured bandwidth, and have the server implement a decision based on elapsed time, if the server becomes aware, it cannot reach the next exit, it decides to terminate the inference process, and continue with the next received frame.
+
+Edge/cloud offloading can potentially experience service outage. If an access point is no longer accessible, reconnection delays to a new or the same access point e.g. using WiFi can be expected to take at least 1s \cite{pei_why_2017}. Which will inevitably lead to lost predictions, if no local inference is feasible. If local is feasible we should switch to local execution, when experiences service outages, as in \gls{see} \cite{wang_see:_2019}. \gls{see} is a scheduling scheme to handle on device inference of early exit \gls{dnn}s, if experiencing service outages to offloading services.
+
+\subsection*{Reduce communication time}
+
+The communication latency could possibly be reduced, if the WiFi communication did not go through an access point. Instead the connection could be establish ad-hoc using WiFi Direct. Or we could change the \gls{tcp} transport layer to \gls{udp}.
+
+\gls{tcp} was used for reliable transport to send a single jpeg image for processing, as jpeg is a lossless compression technique, then loosing packets could cause reconstructed images on server-side to be incorrectly classified and reduce the reliability. \gls{tcp} is not designed for video streaming applications, as retransmission of unacknowledged packet increase the communication delay. As shown in figure \ref{fig:tcp-overhead}, \gls{tcp} introduces a large overhead of retransmission, when networking conditions are poor. For video streaming \gls{udp} is more widely used. \gls{udp} is an unreliable protocol, which is applicable in scenarios where some packet loss can be tolerated. For future research streaming either jpeg compressed images over \gls{udp}, as in \cite{liu_maximizing_2019} would be interesting to reduce the communication latency. We did not pursue reducing the communication time, as our focus is not to obtain the best possible results on the development platform, but rather to showcase and tell the story offloading \gls{aee}.
+
+\subsection*{Information Combination} 
+
+
+Unfortunately, we did not find a combination function, despite they in \cite{kaya_shallow-deep_nodate} show marginal improvements using the highest scoring prediction from all exits. however, in contrast our goal was to improve the accuracy, when all predictions was not available. 
+In \gls{ddnn} \cite{teerapittayanon_distributed_2017}, they use a \gls{dnn} to fuse the output from early exits to combine the information. In \gls{ddnn} fused features come from a number of upstream devices, with exits at the same level, where as the sensor fusion in our scenario requires intermediate features of different sizes to be fused, which we do not know is possible or able to improve, hence will require som future research. Additionally it will requires the edge or device to runs this \gls{dnn}, which will cause additional delay  for an operation with possibly limited improvements.\todo{maybe unnecessary}
 
 
 
 
+
+We argue, that \gls{aee} will in any case achieve at least the same accuracy as upfront exit selection in \cite{li_edge_2018}, even though the exit have been chosen with care, the risk of timeout is still present as both computation and communication delays are not constant. If unexpected delays do occur, it may cause timeouts and lead to lost predictions. However, our scheme reduces the risk of losing prediction by timeout, if an earlier, albeit less accurate predictions is available. 
 
 
    
