@@ -3,8 +3,7 @@
 	\input{sections/titlepage.tex}
 	%\clearpage
 	% Empty page after title page
-	\begingroup
-	\pagestyle{empty}
+	\begingroup	\pagestyle{empty}
 	\begin{center}
 		\begin{LARGE}
 			\thetitle \\
@@ -20,19 +19,23 @@
 		\begin{minipage}[t]{.5\linewidth}
 			\centering
 			\includegraphics[width=\linewidth]{figures/logos/au}
-			\hskip 1em
-			\includegraphics[width=.8\linewidth]{figures/logos/netx}
+			\vskip 5em
+			\includegraphics[width=\linewidth]{figures/logos/netx}
+			\vskip 5em
+			\includegraphics[width=\linewidth]{figures/logos/stibo}
 		\end{minipage}
 		\vskip 3em
-		\begin{minipage}[t][][b]{.3\linewidth}
+		\begin{minipage}[t]{.3\linewidth}
+			\centering
 			\textbf{\textsf{\theauthor}} \\
 			Borggade 6k, 2., 8 \\
 			8000 Aarhus C, Denmark \\
 			Phone +45 2336 3745 \\
 			alexkarlsen7@gmail.com \\
 		\end{minipage}
-		\hskip 10em
-		\begin{minipage}[t][][b]{.3\linewidth}
+\hfill
+		\begin{minipage}[t]{.3\linewidth}
+			    \centering
 			\textbf{Aarhus University} \\
 			\textbf{Department of Engineering} \\
 			Finlandsgade 22 \\
@@ -42,34 +45,50 @@
 			eng@au.dk \\
 			eng.au.dk \\
 		\end{minipage}
+	\hfill
+		\begin{minipage}[t]{.3\linewidth}
+			    \centering
+			\textbf{Stibo Accelerator} \\
+			Axel Kiers vej 11 \\
+			8270 Højbjerg, Denmark \\
+			
+		\end{minipage}
 
 	\end{center}
 	\newpage
-	\restoregeometry
 	\setcounter{page}{1}
-	
-	\input{sections/preface.tex}
-	\endgroup
 	\pagenumbering{Roman}
-	\justify
-	
+	\restoregeometry
+
 	
 	\input{sections/abstract.tex}
 	\addcontentsline{toc}{chapter}{Abstract}
+	
+	\input{sections/preface.tex}
+	\addcontentsline{toc}{chapter}{Preface}
+	\endgroup
+	
+
+	\justify
+	
+
     \setglossarystyle{mcolindex}
     \printnoidxglossary[type=\acronymtype]%,numberedsection=autolabel]
     \addcontentsline{toc}{chapter}{Acronyms}
     
-    
+    \pagebreak
+    \phantomsection
+    \addcontentsline{toc}{chapter}{Contents}
     \tableofcontents
+
     
-    \pagenumbering{arabic}
-    \setcounter{page}{1}
+
     
     
     \pagebreak
 
-    
+        \pagenumbering{arabic}
+    \setcounter{page}{1}
     \input{sections/introduction.tex}
     \input{sections/relatedwork.tex}
     \input{sections/theory.tex}
