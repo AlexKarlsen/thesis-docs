@@ -33,7 +33,7 @@ Early exiting relies on the assumption, that the majority of samples are easy to
 
 \section{BranchyNet vs. Cascaded DNN} \label{sec:ee-branchy-vs-cascaded}
 
-We describe the two very similar proposals and how they differ. Both \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} and cascaded \gls{dnn} \cite{leroux_resource-constrained_2015} was published around the same time. The cascaded \gls{dnn} adds intermediate classifiers after a layer, or a block of layers in a \gls{dnn}, whereas \gls{branchynet} constructs early exit branches with additional convolution layers, see figure \ref{fig:cascaded-vs-branchy}.
+We describe the two very similar proposals and how they differ. Both \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} and cascaded \gls{dnn} \cite{leroux_resource-constrained_2015} were published around the same time. The cascaded \gls{dnn} adds intermediate classifiers after a layer, or a block of layers in a \gls{dnn}, whereas \gls{branchynet} constructs early exit branches with additional convolution layers, see figure \ref{fig:cascaded-vs-branchy}.
 
 \begin{figure}
 	\centering
@@ -70,7 +70,11 @@ Where $ i $ is the input image, $ \bm{z} $ is the output vector from the last li
 \bm{\hat{y}} = \frac{e^{z}}{\sum_{j=1}^{C}e^{z_c}}
 \end{align}
 
-The only difference between the two proposals are the choice of exit criteria. Cascaded \gls{dnn} uses the softmax score of the prediction, and evaluates if the score higher than a selected threshold, it is exited. \gls{branchynet} determines the entropy of the softmax output, and evaluates if the entropy is less than a selected threshold. Note listing \ref{lst:inference} uses the softmax output to evaluate against the threshold.
+The only difference between the two proposals are the choice of exit criteria. Cascaded \gls{dnn} uses the softmax score of the prediction, and evaluates if the score higher than a selected threshold, it is exited. \gls{branchynet} determines the entropy $ e $ defined by
+\begin{align}
+	e = -\sum_{j=1}^{C} y_c \log \hat{y}_c
+\end{align}
+and evaluates if the entropy is less than a selected threshold. Note listing \ref{lst:inference} uses the softmax output to evaluate against the threshold.
 
 \subsection{Training Framework} 
 
@@ -88,7 +92,7 @@ The \gls{branchynet} loss function is defined as the weighted sum of the softmax
 \end{align}
 Where $ \bm{\hat{y}}_n $ is the output score vector of exit $ n $, $ w_n $ is the weight for exit $ n $ and $ \theta $ represents the parameters of the layers from an entry point to the exit point $ n $.
 
-They claim, that the joint-optimization of multiple exits provides a regularization effect, thus encountering over-fitting and potentially improves test accuracy. Additionally is also mitigates vanishing gradient, due to additional gradient signal from the early exits, which promotes more discriminative features in early layers. In \gls{googlenet} \cite{szegedy_going_2015} auxiliary classifiers are likewise place in the middle of the network to counter vanishing gradients. However, that is also the only purpose of the auxiliary classifiers, as they are only used when training the network. Thus, no samples can exit the inference process using the auxiliary classifiers. 
+They claim, that the joint-optimization of multiple exits provides a regularization effect, thus encountering over-fitting and potentially improves test accuracy. Additionally it also mitigates vanishing gradient, due to additional gradient signal from the early exits, which promotes more discriminative features in early layers. In \gls{googlenet} \cite{szegedy_going_2015} auxiliary classifiers are likewise place in the middle of the network to counter vanishing gradients. However, that is also the only purpose of the auxiliary classifiers, as they are only used when training the network. Thus, no samples can exit the inference process using the auxiliary classifiers. 
 
 In \gls{branchynet}, they have also found, that first training the network end-to-end or using a pre-trained model, and then attach the intermediate exits/classifiers both improves the performance and shortens the training time, as in cascaded \gls{dnn}. However, they do not suggest to freeze the features of the model base. Instead they suggest to train the entire model. We have tried both freezing and unfreezing the network base and have found, that training the entire model is the far superior approach, see figure \ref{fig:b-resnet-miniimagenet-100}. 
 
@@ -101,7 +105,7 @@ In the next section we explain the \gls{msdnet} \cite{huang_multi-scale_2017}, a
 The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely, thus harming the later and final classifiers. Their study reveals, that densely connected layers suffers much less from intermediate classifiers than residual layers, as a layer is connected to all previous layer and is therefore able to recover collapsed information. The residual and densely connected layers are elaboration upon in section \ref{sec:ee-implementation}.
 
 
-The combination multi-scale feature maps for coarse-level features and information preservation form densely connected layers are shown to be important for early exit models. Figure \ref{fig:msdnet} from the original paper shows the model design. On the vertical axis, are the multi-scale paths, that downscales the input images. On the horizontal axis, are the densely connected layers are stacked. Notice, that the concatenation of features (circled c) are done using features from higer scales and from earlier in the same scale-path. Each block of the \gls{msdnet} contains a classifiers, where the model can terminate the inference.
+The combination multi-scale feature maps for coarse-level features and information preservation form densely connected layers are shown to be important for early exit models. Figure \ref{fig:msdnet} from the original paper shows the model design. On the vertical axis, are the multi-scale paths, that downscales the input images. On the horizontal axis, are the densely connected layers stacked. Notice, that the concatenation of features (circled c) are done using features from higer scales and from earlier in the same scale-path. Each block of the \gls{msdnet} contains a classifiers, where the model can terminate the inference.
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/msdnet}
@@ -219,7 +223,7 @@ In this section we define the analytical model used for our experiments. We comp
 	\begin{align}
 	\overline{F}^{to}=\frac{1}{I}\sum_{i=1}^{I} \mathbb{I}\left(T_{i}^{cmp}-\delta\right)
 	\end{align}
-	Where $ T_{i}^{cmp} $ denotes the runtime to precess image i. We can choose a conventional model or an early exit model 
+	Where $ T_{i}^{cmp} $ denotes the runtime to process image i. We can choose a conventional model or an early exit model 
 	\begin{align}
 		T^{cmp}_i = \begin{cases}
 			T^{ci}_i \\
@@ -244,16 +248,13 @@ In this section we define the analytical model used for our experiments. We comp
 		
 	\end{enumdescript}
 
-
-In the next section we describe our implementation of early exit models.
-
 \section{Implementation} \label{sec:ee-implementation}
 
 In this section we describe our implementation of early exit models. We have implemented \gls{bresnet} and \gls{bdensenet}.  
 
 \subsection{Branchy-ResNet} 
 
-In this section is the residual layer, the building block of the residual networks, explained. Followed by a design description of \gls{bresnet}.
+In this section is the residual layer explained. The residual layer is the building block of the residual networks. Furthermore we describe the implementation of \gls{bresnet}.
 
 Residual Networks or \gls{resnet} \cite{he_deep_2015} have for long been a state-of-the-art network and won ILSVRC15 using 152 layers. The network is build of residual blocks, a \gls{dnn} layer designed for extremely deep networks. 
 
@@ -266,9 +267,9 @@ Just as plain \gls{vgg} networks \cite{simonyan_very_2015}, residual networks is
 	\label{fig:residualblock}
 \end{figure}
 
-Information from earlier layers are preserved by the skip connection, which diminishes the vanishing gradient problem. Thus this type of network have shown to be easier to train compared to it’s plain counterpart and able to obtain far superior accuracy.  
+Information from earlier layers are preserved by the skip connection, which diminishes the vanishing gradient problem. Thus this type of network have shown to be easier to train compared to it’s plain counterpart, and able to obtain far superior accuracy.  
 
-Very deep residual networks comprised of up to 152 layers have also shown to be far more efficient requiring less \gls{flop}s, than \gls{vgg}16 comprised of only 16 layers, by introducing a bottleneck unit.
+Very deep residual networks comprised of up to 152 layers have also shown to be far more efficient, requiring less \gls{flop}s, than \gls{vgg}16 comprised of only 16 layers, by introducing a bottleneck unit.
 
 The residual networks proposed in \cite{he_deep_2015} are grouped into 4 resolutions block each of which downsamples the input data. The network are proposed with different number of layers $ \left\{18, 34, 50, 101, 152\right\} $ exemplifying the ability to train extremely deep networks. Table \ref{tbl:resnet101} describes the blocks and layers of the \gls{resnet} architecture. \gls{pytorch} provide implementations of these networks. The implementations can be trained from scratch or can be initialized with downloadable pretrained weights based on ImageNet. \gls{resnet}101 have been chosen for this project, as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}-121 implementation and also have similar inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
 
@@ -474,7 +475,7 @@ framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 libra
 Table \ref{tbl:platforms} lists the hardware platforms used for the experiments, and its characteristics. Table \ref{tbl:models} lists the models used in the experiment and compares the number of layers, parameters and \gls{flop}s of the models. The number of parameters and \gls{flop}s have been found using \gls{thop} \cite{zhu_thop_nodate}, by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models.
  
  \begin{minipage}[t]{\linewidth}
-
+\todo{why those platforms?}
 \begin{longtabu}{>{\bfseries}X[0.8]|X[0.8]|X[1.5]|X[r0.3]}
 	\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC named \gls{gpu-ws}, a NVIDIA \gls{jetson} development edge computer, and an Intel \gls{nuc} mini pc} \label{tbl:platforms} \\
 	\toprule
@@ -504,7 +505,7 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments,
 %equipped with a NVIDIA GeForce 1080 GTX \gls{gpu} using CUDA 10.1 and cuDNN 7.6.3.
 
 \begin{longtabu}{>{\bfseries}X|X[r]|X[r]|X[r]}
-	\caption[Model comparison]{ Model Parametric Comparison. The \gls{bdensenet} and \gls{msdnet} drastically reduces the mount of parameters and G\gls{flop}s compared to \gls{bresnet}. The early exit models should be able to reduce inference delay, as they need less parameters and \gls{flop}s, if early exiting.}\label{tbl:models} \\
+	\caption[Model comparison]{ Model Parametric Comparison. The \gls{bdensenet} and \gls{msdnet} drastically reduces the amount of parameters and G\gls{flop}s compared to \gls{bresnet}. The early exit models should be able to reduce inference delay, as they need less parameters and \gls{flop}s, if early exiting.}\label{tbl:models} \\
 	\toprule
 	\rowfont{\bfseries}
 	Model  & Layers & Parameters (M) & G\gls{flop}s \tabularnewline
@@ -556,7 +557,7 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments,
 		
 		Training the models on the available hardware took $\sim$30-50 hours depending on the model. In total 5 models have been fully trained once the rest of training settings had been found.
 		
-		\item[Early Stopping] Early stopping is selecting the best obtained model by alternating between training and validation phases for each epoch. The best model is the one obtaining the highest accuracy on the validation data set. Early stopping is a mechanism to avoid overtraining a model, that overfits the training data and obtain poor validation accuracy. For \gls{branchynet} we use the model with the highest average accuracy, to not favour any part of the model.  
+		\item[Early Stopping] Early stopping is selecting the best obtained model by alternating between training and validation phases for each epoch. The best model is the one obtaining the highest accuracy on the validation data set. Early stopping is a mechanism to avoid overtraining a model, that overfits the training data and obtain poor validation accuracy. For \gls{branchynet} we use the model with the highest average accuracy, in order not to favour any part of the model.  
 		
 		\item[Exit Weights] The same unit weights have been selected for all exits of the model again not to favor any part of the model. In \cite{teerapittayanon_branchynet:_2016} they claim, that putting more weight on early branches have a regularizing impact on the later classifiers. However, they too have chosen the same unit weights for all branches, for comparison of multiple models, and avoid time consuming search for specific branch weights on a per model basis.
 		
@@ -603,8 +604,6 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments,
 	\end{enumdescript} 
 	
 \end{enumdescript}
-
-In the next section we present the results of our experiments with early exiting and conventional models.
 
 \section{Results} \label{sec:ee-results}
 
@@ -716,10 +715,6 @@ Figure \ref{fig:b-densenet-miniimagenet-100} show the training result of B-\gls{
 	\end{minipage}
 \end{center}
 
-
-
-In the next section we evaluate the trained models on the \gls{min100} validation set.
-
 \subsection{Inference Results} \label{sec:ee-results-inference}
 
 In this section we evaluate the accuracy of the early exit models. All validation samples are inferred to all model of table \ref{tbl:models}. Figure \ref{fig:exit-accuracy} show the top-1 and top-5 accuracy of all exits of the three models.  
@@ -764,8 +759,8 @@ The results justifies the assumption for early exiting, as close to 50 \% of the
 \subsubsection{Inference Time Analysis}
 
 We measure the inference time for each exits, of all 5 models, on the three platforms. Table \ref{tbl:inference-stats} show the mean, standard deviation, minimum and maximum for the model inference time on the platforms. The early exiting framework only adds a small delay overhead from the early exit classifiers, when comparing the last exit runtimes of the \gls{branchynet} models, with its conventional pendant. For the \gls{gpu}-enabled platforms, \gls{gpu} Workstation Jetson TX2, only additional 1.1ms and 2.4ms respectively on average. Whereas on the NUC the \gls{bresnet} is 7.5 ms slower, yet the \gls{densenet} is only slightly slower by 0.01 ms.   
-\begin{footnotesize}
 
+\begin{footnotesize}
 \begin{longtabu}{>{\bfseries}X[2.6]|[1pt]X[r]|X[0.8r]|X[r]|X[1.2r]|[1pt]X[r]|X[0.7r]|X[r]|X[1.2r]|[1pt]X[r]|X[0.7r]|X[r]|X[1.2r]}
 	\caption[Inference time statistics]{Inference time statistics (mean, standard deviation, minimum, maximum) of the five models on the three platforms }\label{tbl:inference-stats} \\
 	\toprule
@@ -998,7 +993,7 @@ Generally \emph{score-margin} has more desirable traits, as less samples are inc
 
 \subsubsection{Practical Exit Score Threshold Analysis}
 
-We want evaluate early exiting capabilities in practice. We exploit the exit mechanism to terminate inference, if a satisfying score is obtained. If a samples reaches the last exit, it is classified irregardless of threshold being passed or not. Figure \ref{fig:model_c-threshold_comparison} presents the result using the score-max and figure \ref{fig:model_threshold_comparison} using the score-margin.
+We want to evaluate early exiting capabilities in practice. We exploit the exit mechanism to terminate inference, if a satisfying score is obtained. If a samples reaches the last exit, it is classified irregardless of threshold being passed or not. Figure \ref{fig:model_c-threshold_comparison} presents the result using the score-max and figure \ref{fig:model_threshold_comparison} using the score-margin.
 
 \begin{minipage}{\linewidth}
 	\begin{figure}
@@ -1030,6 +1025,8 @@ We want evaluate early exiting capabilities in practice. We exploit the exit mec
 		\caption[Model comparison of early exit capabilities using confidence threshold]{Model comparison of early exit capabilities using score-max}
 		\label{fig:model_c-threshold_comparison}
 	\end{figure}
+
+\todo{T is now gamma...}
 	
 \end{minipage}
 
@@ -1192,23 +1189,21 @@ We measured the time for a samples to reach a prediction at all exits. We analys
 
 The result show staircase-like functions of reliability as we relax the delay constraint, which increases the reliability when more time ia available. The steps of the functions are loacted close to the mean time-to-prediction for a later exit of the model, see table \ref{tbl:inference-stats}. The dashed lines show the conventional model, clearly under very stringent delay requirement, we are able to improve the reliability using early exit models. However, if the last exit of the early exit model is always reachable, then the conventional models will achieve superior reliability. 
 
-In the next section, we summarize, discuss and conclude our findings of investigating the early exit model capabilities in this chapter.
-
 \section{Summary} \label{sec:ee-summary}
 
 In summary of this chapter; we review early exiting literature and compare inference and training proposals. We formalize an analytical model to evaluate early exiting and conventional models. 
 
-We have implemented \gls{bresnet} and \gls{bdensenet}. The placement of early exits was placed after down-sampling layers or block, with the primary reason to reduce the offloading data size of intermediate features for collaborative edge. Even though we ended up not pursuing collaborative architectures, reasons why will be discussed later. We achieved satisfying early exit accuracy. However, in other works, such as \cite{huang_multi-scale_2017}, the placement of early exit is placed within the resolution- and dense blocks for repectively \gls{bresnet} and \gls{bdensenet}. However, they construct other versions of the \gls{bresnet} and \gls{bdensenet}, which have evenly distributed number of layers within each bloc, to evenly distribute the exits. We did not want to train such deep models from scratch to reduce training effort. We also wanted to apply the \gls{branchynet} framework to existing architectures to validate the framework. Therefore we did not construct new versions of \gls{resnet} and \gls{densenet} with the number of layers. More importantly, we did not want to add a large overhead from introducing too many early exits classifiers to the model, hence we limited ourselves to only 4. In fact \cite{berestizshevsky_sacrificing_2019} uses the same placement of classifiers, as in ours. For the same reasons; to limit the overhead and reduce wasted computation, we did not add convolution layers in exit branches as in \cite{teerapittayanon_branchynet:_2016}. Our exit only consists of a pooling layer to reduce the feature size and a linear classifier, as in \cite{kaya_shallow-deep_nodate}. 
+We have implemented \gls{bresnet} and \gls{bdensenet}. The early exits were placed after down-sampling layers or block, with the primary reason to reduce the offloading data size of intermediate features for collaborative edge. Even though we ended up not pursuing collaborative architectures, reasons why will be discussed later. We achieved satisfying early exit accuracy. However, in other works, such as \cite{huang_multi-scale_2017}, the placement of early exit is placed within the resolution- and dense blocks for repectively \gls{bresnet} and \gls{bdensenet}. However, they construct other versions of the \gls{bresnet} and \gls{bdensenet}, which have evenly distributed number of layers within each block, to evenly distribute the exits. Due to time constraints, we did not train from scratch, and wanted to apply and validate the \gls{branchynet} framework on existing architectures. Therefore we did not construct new versions of \gls{resnet} and \gls{densenet} with the number of layers. More importantly, in order not to slow the interference process, we limited ourselves to only 4 early exits classifiers. In fact \cite{berestizshevsky_sacrificing_2019} uses the same placement of classifiers, as in ours. For the same reasons; to limit the overhead and reduce wasted computation, we did not add convolution layers in exit branches as in \cite{teerapittayanon_branchynet:_2016}. Our exit only consists of a pooling layer to reduce the feature size and a linear classifier, as in \cite{kaya_shallow-deep_nodate}. 
 
 We have successfully trained three early exiting models on the \gls{min100} dataset. We have shown, that freezing the model base as proposed in \cite{leroux_resource-constrained_2015}, did not allow for features to be optimized classifiers at early exits. Training the entire model, proposed in \cite{teerapittayanon_branchynet:_2016}, on the other hand did show satisfying validation accuracy. The \gls{msdnet} is able to obtain the highest accuracy of the early exit models, but \gls{bresnet} is able to obtain higher accuracy at the final exit. 
 
 We measured inference time on three hardware platforms, which gave conflicting results. The inference timings have shown to be very dependent on the hardware characteristics. The GPU Workstation are enabled with the strongest \gls{gpu}, thus have the most parallelization capabilities and able to run especially \gls{resnet} faster, as this is more suited for \gls{gpu} parallelization \cite{lee_energy_2019}. However, \gls{densenet} and \gls{msdnet} has much lower amount of parameter and require less \gls{flop}s, hence would be expected to run faster. 
 
-In \cite{lee_energy_2019} it is found, that \gls{densenet}'s linearly increasing amount of filters by continuous concatenation is inefficient on \gls{gpu}s, due to expensive memory accessing on \gls{gpu}s. They propose a new design, that still preserve information by concatenation. Instead they concatenate features from all subsequent layers once, at the end of a block, and achieve runtime superior to \gls{densenet} and even comparable to \gls{resnet} and competitive accuracy. They question, if deep and thin networks are inefficient on \gls{gpu}s and argue, that \gls{flop}s alone is not a good measure of speed, when it comes to \gls{gpu} efficiency, and propose \gls{flop}s/s. Wide-Residual Networks are proposed in \cite{zagoruyko_wide_2017} as a more computational efficient version of \gls{resnet}, by taking advantage of larger tensors allow for more parallelization. 
+In \cite{lee_energy_2019} it is found, that \gls{densenet}'s linearly increasing amount of filters by continuous concatenation is inefficient on \gls{gpu}s, due to expensive memory accessing on \gls{gpu}s. They propose a new design, that still preserve information by concatenation. Instead they only concatenate once at the end of a block, thereby achieving runtime superior to \gls{densenet} and even comparable runtime and accuracy to \gls{resnet}. They question, if deep and thin networks are inefficient on \gls{gpu}s and argue, that \gls{flop}s alone is not a good measure of speed, when it comes to \gls{gpu} efficiency, and propose \gls{flop}s/s. Wide-Residual Networks are proposed in \cite{zagoruyko_wide_2017} as a more computational efficient version of \gls{resnet}, by taking advantage of larger tensors allow for more parallelization. 
 
 The Intel NUC, shows the opposite trend, in fact the \gls{msdnet} outperform the other models, as it requires far fewer \gls{flop}s and are comprised of far fewer layers and parameters. The \gls{cpu}-only NUC cannot achieve the same level of parallelization to accelerate model inference. The \gls{msdnet} \cite{huang_multi-scale_2017} show very interestingly very good early exit accuracy. The model requires far less computation, than the \gls{bresnet} and \gls{bdensenet}. It has surprisingly good inference time on the \gls{nuc}. However, it halts on the \gls{gpu}-enabled platforms. The \gls{bresnet} achieve decent runtimes utilizing a \gls{gpu}, whereas \gls{bdensenet} achieve decent runtime in either case.Research in parallelization and operation is important to come of with even better models, that works across platforms.
 
-We investigated score threshold as a mechanism to exit samples early. We used both score-max and score-margin. The max score confidence threshold is widely used in early exiting literature \cite{leroux_resource-constrained_2015, leroux_cascading_2017, kaya_shallow-deep_nodate, berestizshevsky_sacrificing_2019}. The score-margin has not been used directly for early exiting, but used in model selection frameworks \cite{park_big/little_2015,tann_flexible_2018}. The score-margin was able to remove most incorrectly exited samples, when choosing a sufficiently high threshold value. However, it was also at the cost of some samples, that could have exited correctly, now not able to be exited. Additionally we compared the early exiting capabilities of the models. The model comprised of densely connected blocks \gls{bdensenet} and \gls{msdnet}, was able to correctly exit more sample at early exits, where the model designed for early exiting, \gls{msdnet} outperformed its competitor. We also studied the accuracy-latency trade-off, by letting samples exit the model at early exits. Early exit models can indeed save time compared with the conventional models, especially when selecting a low threshold value. We compared the models by plotting the accuracy by time, the \gls{bresnet} was found out to be the best model at making a compromise between accuracy and latency on the \gls{gpu}-enabled platforms. In sharp contrast to the \gls{cpu} of the NUC, where both the \gls{bdensenet} and \gls{msdnet} were better.
+We investigated score threshold as a mechanism to exit samples early. We used both score-max and score-margin. The max score confidence threshold is widely used in early exiting literature \cite{leroux_resource-constrained_2015, leroux_cascading_2017, kaya_shallow-deep_nodate, berestizshevsky_sacrificing_2019}. The score-margin has not been used directly for early exiting, but used in model selection frameworks \cite{park_big/little_2015,tann_flexible_2018}. The score-margin was able to remove most incorrectly exited samples, when choosing a sufficiently high threshold value. However, it was also at the cost of some samples, that could have exited correctly, now not able to be exited. Additionally we compared the early exiting capabilities of the models. The model comprised of densely connected blocks \gls{bdensenet} and \gls{msdnet}, was able to correctly exit more sample at early exits, where the model designed for early exiting, \gls{msdnet} outperformed its competitors. We also studied the accuracy-latency trade-off, by letting samples exit the model at early exits. Early exit models can indeed save time compared with the conventional models, especially when selecting a low threshold value. We compared the models by plotting the accuracy by time, the \gls{bresnet} was found out to be the best model at making a compromise between accuracy and latency on the \gls{gpu}-enabled platforms. In sharp contrast to the \gls{cpu} of the NUC, where both the \gls{bdensenet} and \gls{msdnet} were better.
 
 Finally, we evaluated the obtainable reliability by a delay threshold. The conventional models are outperformed at stringent delay threshold. \gls{bresnet} is still the better on the \gls{gpu}-enabled platforms. However, not as exclusively as figure \ref{fig:threshold-acc-lat-trade-off-by-time} shows. At certain delay threshold \gls{bdensenet} is actually better. 
 
