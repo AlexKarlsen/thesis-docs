@@ -277,11 +277,11 @@ Formulating as matrix ease the implementation of combination functions using \gl
 
 \section{Results} \label{sec:edge-results}
 
-In this section we present an analysis, that spawned the idea of combining prediction scores from multiple exits. We present the results using the different combination functions, and conclude that simply using the latest prediction is the better option. Furthermore we have made practical experiments offloading the inference task to the edge using both early exit and conventional models. We evaluate the impact of communication when offloading and compares local processing on the \gls{nuc} with offloading to either \gls{jetson} or \gls{gpu-ws}.
+In this section we present an analysis, we present the results using the different combination functions. We have made practical experiments with offloading the inference task to the edge using both early exit and conventional models. We evaluate the impact of communication when offloading and compares local processing on the \gls{nuc} with offloading to either \gls{jetson} or \gls{gpu-ws} as edge servers.
 
 \subsection{Information Combination Analysis}
 
-We want to examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of top-1 predictions results from all exits, revealed that, we too encounter overthinking as in \cite{kaya_shallow-deep_nodate}. In some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is the 6th sample from the \gls{bresnet}, $ c_6 $ is the ground truth class label, $ \bm{\hat{c}}_6 $ is the predicted class labels, $ \hat{y}^*_6 $ is the corresponding prediction score for the class label at all exits. $ b $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
+We examine the possibility to combine predictions from multiple exits to obtain a higher accuracy. A study of top-1 predictions results from all exits, revealed that, we too encounter overthinking as in \cite{kaya_shallow-deep_nodate}. In some cases an early exit correctly predicts a sample, which a later exit makes wrong. An example is the 6th sample from the \gls{bresnet}, $ c_6 $ is the ground truth class label, $ \bm{\hat{c}}_6 $ is the predicted class labels, $ \hat{y}^*_6 $ is the corresponding prediction score for the class label at all exits. $ b $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
 \begin{align*}
 c_6=0,
 \bm{\hat{c}}_{6}=
@@ -306,7 +306,38 @@ c_6=0,
 0
 \end{bmatrix}
 \end{align*}
-Based on the scores the model is more confident about the last exit prediction, even though the prediction from the first exit is correct. Given the four entries of top-1 prediction, both latest or confidence max will output label 62. Analyzing the exit score have shown, that the score of a later exit is not always higher than the earlier exits, see figure \ref{fig:exit-highscore}.
+Based on the scores the model is more confident about the last exit prediction, even though the prediction from the first exit is correct. Given the four entries of top-1 prediction, both latest and confidence max will output label 62. 
+
+In \cite{kaya_shallow-deep_nodate}, they show marginal improvements using the max score. Unfortunately, we did not achieve the same improvements. Actually our results show a reduction of accuracy, see table \ref{tbl:latest-vs-max}.
+\begin{minipage}[t]{\linewidth}
+	\begin{longtabu}{>{\bfseries}X|X|X}
+		\caption[]{} \label{tbl:latest-vs-max} \\
+		\toprule
+		\rowfont{\bfseries}
+		Model & Latest Received Prediction & Max Score   \tabularnewline
+		\bottomrule
+		\endfirsthead
+		\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
+		\toprule
+		\rowfont{\bfseries}
+		Model & $Exit_N$ & max score    \tabularnewline
+		\bottomrule
+		\endhead % all the lines above this will be repeated on every page
+		\bottomrule
+		\multicolumn{3}{@{}l}{continued \ldots}\\
+		\endfoot
+		\hline
+		\endlastfoot
+		B-Resnet	& 0.8826	& 0.8794  \tabularnewline
+		\hline
+		B-DenseNet	& 0.8660 	& 0.8602 \tabularnewline
+		\hline
+		MSDNet		& 0.8640 	& 0.8598 \tabularnewline							
+		\bottomrule
+	\end{longtabu}
+\end{minipage}
+
+In \cite{kaya_shallow-deep_nodate} they do not operate with a time constraint and always have all predictions. Our goal is to improve the accuracy, when all predictions are not available, as we cannot be sure to have received all predictions within the time frame. Our analysis of the exit scores shows, that the score of a later exit is not always higher than the earlier exits. Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit, given the amount of exit predictions received. It show whether the  highest score exit is correct or incorrect.
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
@@ -321,38 +352,7 @@ Based on the scores the model is more confident about the last exit prediction, 
 	\label{fig:exit-highscore}
 \end{figure}
 
-In fact, using the maximum score, as proposed in \cite{kaya_shallow-deep_nodate}, actually reduces the accuracy of the model, see table \ref{tbl:latest-vs-max}. It seems, that although the early exits achieve a higher score, they also introduces more uncertainty.  
-
-\begin{minipage}[t]{\linewidth}
-\begin{longtabu}{>{\bfseries}X|X|X}
-	\caption[]{} \label{tbl:latest-vs-max} \\
-	\toprule
-	\rowfont{\bfseries}
-	Model & Latest Received Prediction & Max Score   \tabularnewline
-	\bottomrule
-	\endfirsthead
-	\multicolumn{3}{@{}l}{\textbf{\textcolor{black}{Table \ref{}:}} continued}\\
-	\toprule
-	\rowfont{\bfseries}
-	Model & $Exit_N$ & max score    \tabularnewline
-	\bottomrule
-	\endhead % all the lines above this will be repeated on every page
-	\bottomrule
-	\multicolumn{3}{@{}l}{continued \ldots}\\
-	\endfoot
-	\hline
-	\endlastfoot
-	B-Resnet	& 0.8826	& 0.8794  \tabularnewline
-	\hline
-	B-DenseNet	& 0.8660 	& 0.8602 \tabularnewline
-	\hline
-	MSDNet		& 0.8640 	& 0.8598 \tabularnewline							
-	\bottomrule
-\end{longtabu}
-\end{minipage}
-
-Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit, given the amount of predictions received, and whether the highest score is correctly and incorrectly classified.The question is, whether we can combine the scores to more confidently select the correct prediction thereby obtaining
-a higher accuracy, if using top-5 scores from each exit? Figure \ref{fig:top-5-cumulative} plots the top-5 accuracy against a cumulative top-5, that contains the top-5 from all previous exits. 
+The difference between exit scores is most significant for the \gls{bresnet}. The latest exit is in most cases also the one with highest score. The difference for the other two models is not as explicit. The small reduction using max confidence is most likely caused by the larger uncertain from early exits. The early exits can produce a high score even though it is incorrect. The question is, whether we can combine the scores to more confidently select the correct prediction thereby obtaining a higher accuracy, if using top-5 scores from each exit? Figure \ref{fig:top-5-cumulative} plots the top-5 accuracy against a cumulative top-5, that contains the top-5 from all previous exits. 
 
 \begin{figure}
 	\centering
@@ -361,15 +361,13 @@ a higher accuracy, if using top-5 scores from each exit? Figure \ref{fig:top-5-c
 	\label{fig:top-5-cumulative}
 \end{figure}
 
-From the figure we can tell, that having multiple predictions does indeed improve the cumulative top-5. This means, there is a better chance of the correct label being in the set of predictions, when using all available exit outputs. In the next section we apply the information combination functions to data obtained from running the early exit model and collecting the output scores. 
+From the figure we can tell, that having multiple predictions does indeed improve the cumulative top-5. This means, there is a better chance of the correct label being in the set of predictions, when using all available exit outputs.
 
-In figure \ref{fig:theoretical-info-combi} we use the defined methods to combine the prediction information from multiple exits, to improve the overall model accuracy. 
+In figure \ref{fig:theoretical-info-combi} we use the defined methods to combine the prediction information from multiple exits, to improve the overall model accuracy. The figure shows the obtainable accuracy given the number of exit predictions received. The brown line \textit{optimum-top5} show the maximum achievable accuracy, if we were able to cherry pick the right class among the cumulative top-5 predictions. The purple line, \textit{optimum-top1}, is the achievable accuracy, if we were always able to cherry pick the correct class among the cumulative top-1 predictions. 
 
-The figure shows the obtainable accuracy given the number of exit predictions received. The brown line \textit{optimum-top5} show the maximum achievable accuracy, if we were able to cherry pick the right class among the cumulative top-5 predictions. The purple line, \textit{optimum-top1}, is the achievable accuracy, if we were always able to cherry pick the correct class among the cumulative top-1 predictions. 
+Only the \gls{msdnet} shows a small improvement when adding predictions score exclusively, when all predictions are available. When predictions from all exits is not available, none of the propose combination methods are able to improve the accuracy. \gls{bresnet}'s and \gls{bdensenet}'s early exits have a rather low accuracy compared with its later exits, therefore introduces more uncertainty when combining the scores. The \gls{msdnet} on the other hand have decent accuracy at all exits, thus we were able to improve the accuracy when having all predictions available.
 
-Only the \gls{msdnet} shows a small improvement when adding predictions score exclusively, when all predictions are available. When predictions from all exits is not available, none of the propose combination methods are able to improve the accuracy.
-
-The score margin produces the worst results. Thus, having a big difference between the two highest scoring classes is not equivalent with being correct. Using the confidence max achieves close to the same performance as using latest for \gls{bresnet} and \gls{bdensenet}. The conclusion is, combining the information using these simple methods, is not able to improve the accuracy of the model. In \cite{kaya_shallow-deep_nodate} they do not operate with a time constraint and always have all predictions. Our goal is to improve the accuracy, when all predictions are not available, as we cannot be sure to have received all predictions within the time frame.  Our results show, that simply using the latest received predictions, is the best overall choice for these early exit models. Henceforth we use the latest prediction, as this method gives the best results in general.  
+The score margin produces the worst results for all models. Thus, having a big difference between the two highest scoring classes is not equivalent with being correct. Using the confidence max achieves close to the same performance as using latest for \gls{bresnet} and \gls{bdensenet}. Our results show, that simply using the latest received predictions, is the best overall choice for these early exit models. Henceforth we use the latest prediction, as this method gives the best results in general.  
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
@@ -484,23 +482,9 @@ Offloading \gls{aee} to the edge improves system reliability in general compared
 
 \section{Summary} \label{sec:edge-summary}
 
-We investigated the overthinking phenomena and discovered some samples are correctly classified by an early exit, which a later exit wrongly classifies. In \cite{kaya_shallow-deep_nodate}, they show marginal improvements using the highest scoring prediction from all exits. Unfortunately, we did not achieve the same improvement using the confidence max. \gls{bresnet}'s and \gls{bdensenet}'s early exits have a rather low accuracy compared with its later exits, therefore introduces more uncertainty when combining the scores. The \gls{msdnet} on the other hand have decent accuracy at all exits, thus we were able to improve the accuracy when having all predictions available, when using the confidence sum function.
 
 The improvement is most signifiant  Compared to local inference of early exit models we improve the reliability with the \gls{gpu-ws} as edge, however using the \gls{jetson} the \gls{bdensenet} is in fact providing a more reliable service locally, yet offloading to a stronger server, i.e. \gls{gpu-ws} show improvements.
 
 Using \gls{aee} by offloading to the edge, service is enabled at stringent delay thresholds not possible, when offloading conventional models for edge inference. The scheme successfully improves the reliability below 75 ms for the \gls{jetson}, and below 50 ms for the \gls{gpu-ws} using \gls{bresnet} and \gls{bdensenet}. Offloading the different models show overlapping reliability of the \gls{bresnet} and \gls{bdensenet}, hence it depends on the delay threshold which model to select. 
 
-In \gls{ddnn} \cite{teerapittayanon_distributed_2017}, a \gls{dnn} is used to fuse the output from early exits to combine the information. Running an additional \gls{dnn} for sensor fusion at the edge or on-device will cause additional delay, and take time away from running \gls{aee}. In \gls{ddnn} fused features come from a number of upstream devices, with exits at the same level. In our case we have predictions from different levels in the models. It will require future research to investigate, if improvement can be found fusing predictions from exits at different levels. Furthermore it will require an investigation of fusing data with different dimensions using \gls{dnn}s. 
-
-The impact of communication uncertainties is shown in figures \ref{fig:resnet-offloading-vs-local}, \ref{fig:densenet-offloading-vs-local} and \ref{fig:msdnet-offloading-vs-local}. Compared to local execution, the steps in reliability have been smoothed out when time allows to reach a new exit, as the uncertainties of communication time, causes deadline violations and result in lost predictions. Our evaluation of \gls{tcp} at increasing distance indicates, that using \gls{tcp} leads to a large overhead in retransmission, resulting in additional delay. The communication latency could possibly be reduced, if the WiFi communication did not go through an access point. Instead the connection could be establish ad-hoc using WiFi Direct \cite{noauthor_wi-fi_nodate}. Or we could change the \gls{tcp} transport layer to \gls{udp}. \gls{tcp} was used for reliable transport to send a single jpeg image for processing, as jpeg is a lossless compression technique. Using \gls{udp} could cause loosing packets, which would impact the reconstruction of images server-side to be faulty and result in incorrectly classification, thus reducing the reliability. \gls{tcp} is not designed for video streaming applications, as retransmission of unacknowledged packet increase the communication delay. As shown in figure \ref{fig:tcp-overhead}, \gls{tcp} introduces a large overhead of retransmission, when networking conditions are poor. For video streaming \gls{udp} is more widely used. \gls{udp} is a more unreliable protocol, which is applicable in scenarios where some packet loss can be tolerated. The \gls{dnn}s may not be susceptible to small packet losses. In fact, the \gls{dnn}s have been trained with noise injection where pixels are randomly lost, see figure \ref{fig:augmentation}. For future research streaming jpeg compressed images over \gls{udp}, as in \cite{liu_maximizing_2019} would be interesting to investigate in order to reduce the communication latency. We did not pursue reducing the communication time, as our focus is not to obtain the best possible communication latency in this experimental setup, but rather show that \gls{aee} can reliably enable service at lower delays. 
-
-Our inference scheme \gls{aee} is applicable for collaborative inference on device and edge, as in \cite{leroux_cascading_2017,teerapittayanon_distributed_2017}. Collaborative inference can be used to reduce the likelihood of missed predictions when experiencing sporadic communication delays. The on-device inference is only dependent on computation time for the local exits and removes the uncertainties from communicating with the edge server. However, the computing resources of the local device is typically significantly lower than the server's, which increases the delay and thereby reduces the chance of reaching a prediction from a later exit on the server due to time constraints. We investigated partitioning after the first exit, but encountered increased transmission delays, as the size of the intermediate features is remarkably larger than the compressed image's. We also experienced longer compute times locally for the first exit, which is more time consuming on the smaller device than on edge server for most models. The early layers of the \gls{dnn}s is typically also the most demanding, which leads even worse inference time locally. Thus, using collaborative inference degrades the reliability, when no feature compression or \gls{bottlenet} modules is used to reduce transmission time is used. Introducing feature compression would additionally require compression-aware retraining, as stated in \cite{choi_near-lossless_2018,choi_near-lossless_2018,eshratifar_bottlenet:_2019}  to avoid experiencing a high cost in accuracy. Further experimenting with this idea was considered out of scope for this project. Figure \ref{fig:resnet-offloading-vs-local} and \ref{fig:densenet-offloading-vs-local}, show the local inference time of the first exit of \gls{bresnet} and \gls{bdensenet}, is always outperformed by the edge servers. Therefore, offloading the entire task to not waste idle time a faster server.
-
-An alternative solutions to handle the lost prediction dilemma, is a parallel execution of a shallower local \gls{dnn} and a deep remote \gls{dnn} i.e. a parallel Big/Little setup. The end device offloads the compressed image to edge server and in parallel process a smaller and less accurate \gls{dnn} locally. The upside is, that the application can always use the locally obtained prediction or choose to discard it, as more accurate prediction arrives from edge. Further if a good combination function is found, it can use the information to choose the best prediction. If on-device inference is not an option, then the offloading \gls{aee} is the better option.
-
-We have not considered real-time processing a stream of video frames, but only single image classification. Comparing our inference scheme with Edgent, where an upfront selection of exit is done to handle the accuracy-latency trade-off. Edgent tries to utilize available time for the frame without postponing the next one. The selection of exit is based on regression models of inference time and a current state of bandwidth.  We argue, that the potential of early exiting is not fully utilizes by upfront sub-model selection. Upfront selection of exit is prone to loosing predictions caused by unexpected communication delays. If a timeout happens when exit 3 is selected, and the deadline is passed in block 3, no prediction will be provided.  In such cases our solutions will be more reliable, as the latency overhead of our additional exits classifier is negligible. Hence, when the deadline is violated, at least two predictions are available from exit 1 and exit 2. In other words, an early prediction is better than no predictions. Only in worst-case, where the first exit is unreachable neither \gls{aee} nor Edgent will suffice. 
-
-If we encounter time-outs in between two exits the computation is wasted, which optimally could have been used to process the next frame, if the frame has been received. However, our solution fully utilizes the available time, if a next frame is not received. A future extension to our scheme is to let the server known the deadline and measured bandwidth, and have the server implement a decision based on elapsed time. If the server becomes aware, it cannot reach the next exit, it decides to terminate the inference process, and continue with the next received frame.
-
-Edge/cloud offloading can potentially experience service outage. If an access point is no longer accessible, reconnection delays to a new or the same access point e.g. using WiFi can be expected to take up to 1 s \cite{pei_why_2017}. Which will inevitably lead to lost predictions, if no local inference is feasible. If local execution is feasible, we should switch to local execution of \gls{aee}, when experiences service outages, or switch to already proposed \gls{see} \cite{wang_see:_2019}. \gls{see} is a scheduling scheme to handle on-device inference of early exit \gls{dnn}s, if experiencing service outages to offloading services. 
 

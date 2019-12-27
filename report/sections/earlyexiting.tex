@@ -2,7 +2,7 @@
 	\chapter{Early Exiting}\label{ch:earlyexit}}
 %\thispagestyle{fancy}
 
-In this chapter we study the accuracy-latency trade-off of the early exiting \gls{dnn}s. We experiment with exit thresholds and delay thresholds. We have found, that early exits is a tool to reduce the average runtime given a score threshold. Additionally the flexibility makes it better at accommodating more stringent delay thresholds than conventional single-exit \gls{dnn}s. The chapter is structured as follows; Section \ref{sec:ee-branchy-vs-cascaded} presents the early exit proposals \gls{branchynet} and Cascaded \gls{dnn} and section \ref{sec:ee-msdnet} describes the \gls{msdnet}. Section \ref{sec:ee-metrics} defines the analytical model. Section \ref{sec:ee-implementation} describes the implementation details of our early exiting models B-\gls{resnet} and B-\gls{densenet}. Section \ref{sec:ee-exp-setup} describes our experimental setup. Section \ref{sec:ee-results} presents the results of training the models and experimenting with the fast inference framework using score threshold and delay threshold. Section \ref{sec:ee-summary} the chapter is summarized.
+In this chapter we study the accuracy-latency trade-off of the early exiting \gls{dnn}s. We experiment with exit thresholds and delay thresholds. We have found, that early exits are a tool to reduce the average runtime given a score threshold. Additionally the flexibility makes it better at accommodating more stringent delay thresholds than conventional single-exit \gls{dnn}s. The chapter is structured as follows; Section \ref{sec:ee-branchy-vs-cascaded} presents the early exit proposals \gls{branchynet} and Cascaded \gls{dnn} and section \ref{sec:ee-msdnet} describes the \gls{msdnet}. Section \ref{sec:ee-metrics} defines the analytical model. Section \ref{sec:ee-implementation} describes the implementation details of our early exiting models B-\gls{resnet} and B-\gls{densenet}. Section \ref{sec:ee-exp-setup} describes our experimental setup. Section \ref{sec:ee-results} presents the results of training the models and experimenting with the fast inference framework using score threshold and delay threshold. In Section \ref{sec:ee-summary}, the chapter is summarized.
 
 Early exiting relies on the assumption, that the majority of samples are easy to classify correctly, and that \gls{dnn}s only have to become deeper to accurately classify the more difficult samples. 
 
@@ -12,11 +12,11 @@ Early exiting relies on the assumption, that the majority of samples are easy to
 	\subfloat[bluetick\label{fig:easyvsharddog}]{\includegraphics[width=0.45\linewidth]{figures/illustrations/hard_vs_easy_dog}}
 	\hfill
 	\subfloat[flamingo\label{fig:easyvshardflamingo}]{\includegraphics[width=0.45\linewidth]{figures/illustrations/hard_vs_easy_flamingo}}
-	\caption[Easy vs. Hard Samples]{Easy vs. Hard Samples: The top row show samples easily classified from the classes and the bottom row show harder samples of the two classes, \protect\subref{fig:easyvsharddog} bluetick and \protect\subref{fig:easyvshardflamingo} flamingo. }
+	\caption[Easy vs. hard samples]{Easy vs. hard samples: The top rows show samples easily classified and the bottom rows show, that are more difficult to classify. }
 	\label{fig:hardvseasy}
 \end{figure}
 
-As figures \ref{fig:hardvseasy} exemplifies, samples where the object is easily separated from the background, not occluded, and viewed from angles, that makes it easier to classify. These samples have been found by running an early exit model. The hard examples have been found from looking at samples, that the \gls{dnn}s failed to classify, or can only classify using the last exit. The easy example are found by looking at samples, that can be correctly classified with high confidence by the first exit.
+As figures \ref{fig:hardvseasy} exemplifies, samples where the object is easily separated from the background and is not occluded are more easily classified. These samples have been found by running an early exit model. The hard samples have been found by looking at samples, that the \gls{dnn}s failed to classify, or can only classify using the last exit. Samples that can be classified as easy have been identified by finding samples that could be correctly classified with high confidence by the first exit. \todo{rewrite hard samples}
 
 \section{BranchyNet vs. Cascaded DNN} \label{sec:ee-branchy-vs-cascaded}
 
@@ -27,16 +27,16 @@ We describe the two similar proposals and how they differ. Both \gls{branchynet}
 	\subfloat[Branchy AlexNet, Source \citetitle{teerapittayanon_branchynet:_2016} \cite{teerapittayanon_branchynet:_2016}\label{fig:cascaded-vs-branchy-branchy}]{\includegraphics[height=.3\textheight]{figures/articles/branchynet}}
 	\hspace{2em}
 	\subfloat[Cascaded \gls{dnn}, Source \citetitle{leroux_resource-constrained_2015}\cite{leroux_resource-constrained_2015}\label{fig:cascaded-vs-branchy-cascaded}]{\includegraphics[height=.3\textheight]{figures/articles/cascade_dnn}}
-	\caption[\gls{branchynet} vs. Cascaded \gls{dnn}]{\gls{branchynet} vs. Cascaded \gls{dnn}: \protect\subref{fig:cascaded-vs-branchy-branchy} \gls{branchynet} have additional convolution layers in each exit branch, whereas \protect\subref{fig:cascaded-vs-branchy-cascaded} Cascaded \gls{dnn} adds output layers to the layers of the \gls{dnn}.}
+	\caption[\gls{branchynet} vs. Cascaded \gls{dnn}]{\gls{branchynet} vs. Cascaded \gls{dnn}: \protect\subref{fig:cascaded-vs-branchy-branchy} \gls{branchynet} has additional convolution layers in each exit branch, whereas \protect\subref{fig:cascaded-vs-branchy-cascaded} Cascaded \gls{dnn} adds output layers to the layers of the \gls{dnn}.}
 	\label{fig:cascaded-vs-branchy}
 \end{figure}
 
-Early exiting have shown promising result in other works e.g. \cite{kaya_shallow-deep_nodate, berestizshevsky_sacrificing_2019,panda_conditional_2016}. In \cite{berestizshevsky_sacrificing_2019}, they suggest removing convolutional layers of branches in \gls{branchynet}, to reduce the amount of branch computation. They show a 2 $ \times $ speed-up at only the cost of 1 \% accuracy using two fully-connected layers in exits.
-However, in \cite{kaya_shallow-deep_nodate}  a phenomenon named \emph{overthinking} is studied. Overthinking is an early exit correctly classifying an input, but a later exit makes it wrong. To cope with overthinking, they propose not to exit, but make all the exits classify the samples, and use information from all predictions to find the best as the highest scoring prediction. We observe the same tendency for our proposed inference scheme, \gls{aee}, in chapter \ref{ch:edgeoffloading}.
+Early exiting has shown promising result in other works e.g. \cite{kaya_shallow-deep_nodate, berestizshevsky_sacrificing_2019,panda_conditional_2016}. In \cite{berestizshevsky_sacrificing_2019}, they suggest removing convolutional layers of branches in \gls{branchynet} to reduce the amount of branch computation. They show a 2 $ \times $ speed-up at only the cost of 1 \% accuracy using two fully-connected layers in exits.
+However, in \cite{kaya_shallow-deep_nodate}  a phenomenon named \emph{overthinking} is studied. Overthinking is an early exit correctly classifying an input, which a later exit would classify incorrectly. To cope with overthinking, in \cite{kaya_shallow-deep_nodate} they propose to use information from all exits and select the highest scoring prediction. We observe the same tendency for our proposed inference scheme, \gls{aee}, in chapter \ref{ch:edgeoffloading}.
 
 \subsection{Fast Inference Framework} 
 
-The inference framework for the two proposal \gls{branchynet} and Cascaded \gls{dnn} are almost identical. A sample is inferred up to an exit, and based on an exit criteria, it is decided to terminate, or to continue to the next exit. 
+The inference framework for the two proposal \gls{branchynet} and Cascaded \gls{dnn} are almost identical. A sample is inferred up to an exit, and based on an exit criteria, it is decided to terminate or to continue to the next exit. 
 
 The algorithm for fast inference using early exit is shown in listing \ref{lst:inference}. 
 
@@ -57,7 +57,7 @@ Where $ i $ is the input image, $ \bm{z} $ is the output vector from the last li
 \bm{\hat{y}} = \frac{e^{z}}{\sum_{j=1}^{C}e^{z_c}}
 \end{align}
 
-The only difference between the two proposals is the choice of exit criteria. Cascaded \gls{dnn} uses the softmax score of the prediction, and evaluates if the score is higher than a selected threshold, it is exited. \gls{branchynet} determines the entropy $ e $ defined by
+The only difference between the two proposals is the choice of exit criteria. Cascaded \gls{dnn} uses the softmax score of the prediction. If the score is is higher than a selected threshold it is exited. \gls{branchynet} determines the entropy $ e $ defined by
 \begin{align}
 	e = -\sum_{j=1}^{C} y_c \log \hat{y}_c
 \end{align}
@@ -65,13 +65,13 @@ and evaluates if the entropy is less than a selected threshold. Note listing \re
 
 \subsection{Training Framework} 
 
-In \cite{leroux_resource-constrained_2015}, when training cascaded \gls{dnn}, it is proposed to train a network using a single end-classifier. Once the model has converged, the intermediate classfiers are attached. The entire network is then further trained for one single epoch, before freezing the network weights and training only the classifiers. This is equivalent to use a pre-trained model and convert it to a cascaded model. The approach was tested and gave unsatisfactory results, see figure \ref{fig:frozen-b-resnet-miniimagenet-100}. In \cite{leroux_cascading_2017}, the follow-up paper to cascaded \gls{dnn}, they train a frozen base network on the ImageNet dataset, but does not achieve better performance, than we do using this approach.  
+In \cite{leroux_resource-constrained_2015}, when training cascaded \gls{dnn}, it is proposed to train a network using a single end-classifier. Once the model has converged, the intermediate classifiers are attached. The entire network is then further trained for one single epoch, before freezing the network weights and training only the classifiers. This is equivalent to use a pre-trained model and convert it to a cascaded model. The approach was tested and gave unsatisfactory results, see figure \ref{fig:frozen-b-resnet-miniimagenet-100}. In \cite{leroux_cascading_2017} they train a frozen base network on the ImageNet dataset, but do not achieve better performance than we do using the same approach.  
 
-The \gls{branchynet} approach is remarkably similar. In \cite{teerapittayanon_branchynet:_2016} they define the \gls{branchynet} loss function, as an extension of the widely used softmax cross-entropy loss function.
+The \gls{branchynet} approach is remarkably similar. In \cite{teerapittayanon_branchynet:_2016} they define the \gls{branchynet} loss function as an extension of the widely used softmax cross-entropy loss function.
 \begin{align}
 L\left(\bm{y},\hat{\bm{y}}\right) = - \frac{1}{C} \sum_{j =1}^{C} y_c \log \hat{y}_c
 \end{align}
- Where $ \bm{y} $ is a on-hot encoded ground truth vector, $ \bm{\hat{y}} $ is the output score vector of the softmax classfier and $ C $ is the number of classes and $ c \in \left\{1, 2,  \dots, C\right\} $ is the class labels.
+ Where $ \bm{y} $ is a one-hot encoded ground truth vector, $ \bm{\hat{y}} $ is the output score vector of the softmax classfier and $ C $ is the number of classes and $ c \in \left\{1, 2,  \dots, C\right\} $ is the class labels.
 	
 The \gls{branchynet} loss function is defined as the weighted sum of the softmax cross-entropy loss of each branch-prediction. 
 \begin{align}
@@ -79,18 +79,17 @@ The \gls{branchynet} loss function is defined as the weighted sum of the softmax
 \end{align}
 Where $ \bm{\hat{y}}_n $ is the output score vector of exit $ n $, $ w_n $ is the weight for exit $ n $ and $ \theta $ represents the parameters of the layers from an entry point to the exit point $ n $.
 
-They claim, that the joint-optimization of multiple exits provides a regularization effect, thus encountering over-fitting and potentially improves test accuracy. Additionally it also mitigates vanishing gradient, due to additional gradient signal from the early exits, which promotes more discriminative features in early layers. In \gls{googlenet} \cite{szegedy_going_2015} auxiliary classifiers are likewise place in the middle of the network to counter vanishing gradients. However, that is also the only purpose of the auxiliary classifiers, as they are only used when training the network. Thus, no samples can exit the inference process using the auxiliary classifiers. 
+They claim that the joint-optimization of multiple exits provide a regularization effect, which improves test accuracy. Additionally, it also mitigates the vanishing gradient problem due to additional gradient signal from the early exits. This promotes more discriminative features in early layers. In \gls{googlenet} \cite{szegedy_going_2015}, auxiliary classifiers are likewise placed in the middle of the network to counter vanishing gradients. That is also the only purpose of the auxiliary classifiers, as they are only used when training the network. Thus, no samples can exit the inference process. 
 
-In \gls{branchynet}, they have found, that higher accuracy can be obtained and training time can be reduces using a pre-trained conventional \gls{dnn}, and then attach the intermediate exits/classifiers. They do not suggest freezing the model base, instead they train the entire model. We have tried both freezing and unfreezing the network base and have found, that training the entire model is the far superior approach, which shows in section \ref{sec:ee-results-training}.
+In \gls{branchynet} they have found, that higher accuracy can be obtained and training time can be reduced using a pre-trained conventional \gls{dnn}, and then attach the intermediate classifiers. They do not suggest freezing the model base, instead they train the entire model. We have tried both freezing and unfreezing the network base and have found that training the entire model is by far the most superior approach, which is proved in section \ref{sec:ee-results-training}.
 
 \section{Multi-Scale Dense Network} \label{sec:ee-msdnet}
 
-\gls{msdnet} \cite{huang_densely_2016} addresses two main problems concerning early exit models. The first problem is the lack of coarse-level features in early classifiers, which results in unsatisfactory high error-rates for early exits. Traditional \gls{dnn}s stack layers of convolutions to obtain coarse level features, which the classifiers for the early exit in shallow layers lacks. Multi-scale feature maps preserves high-resolution information and allow the model to construct coarse-level features for all classifiers in the network. 
+\gls{msdnet} \cite{huang_densely_2016} addresses two main problems concerning early exit models. The first problem is the lack of coarse-level features in early classifiers, which results in unsatisfactory high error-rates for early exits. Traditional \gls{dnn}s stack layers of convolutions to obtain coarse level features, which the classifiers in shallow layers lack. Multi-scale feature maps preserve high-resolution information and allow the model to construct coarse-level features for all classifiers in the network. 
 
-The second problem is early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely, thus harming the later and final classifiers. Their study reveals, that densely connected layers suffer less from intermediate classifiers than residual layers, as a layer is connected to all previous layers and is therefore able to recover collapsed information. The residual and densely connected layers are elaborated upon in section \ref{sec:ee-implementation}.
+The second problem is that early classifiers interfere with later classifiers. The early classifiers might cause early features to be optimized for the short-term by collapsing information prematurely, thus harming the later and final classifiers. The \gls{msdnet} \cite{huang_multi-scale_2017} study reveals that densely connected layers suffer less from intermediate classifiers than residual layers, as a layer is connected to all previous layers and is therefore able to recover collapsed information. The residual and densely connected layers are elaborated upon in section \ref{sec:ee-implementation}.
 
-
-The combination multi-scale feature maps for coarse-level features and information preservation form densely connected layers are shown to be important for early exit models. Figure \ref{fig:msdnet} from the original paper shows the model design. On the vertical axis, are the multi-scale paths, that downscales the input images. On the horizontal axis, are the densely connected layers stacked. Notice, that the concatenation of features (circled c) are done using features from higer scales and from earlier in the same scale-path. Each block of the \gls{msdnet} contains a classifiers, where the model can terminate the inference.
+The combination of multi-scale feature maps for coarse-level features and information preservation from densely connected layers are shown to be important for early exit models. Figure \ref{fig:msdnet} from \cite{huang_multi-scale_2017} shows the model design. On the vertical axis, shows multi-scale paths that downscale the input images. On the horizontal axis, shows the stacked densely connected layers. Notice that the concatenation of features (circled c) are done using features from higher scales and from earlier in the same scale-path. Also note that each block of the \gls{msdnet} contains a classifier.
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/msdnet}
@@ -100,17 +99,17 @@ The combination multi-scale feature maps for coarse-level features and informati
 
 \newpage\section{Analytical Model} \label{sec:ee-metrics}
 
-In this section we define the analytical model used for our experiments. We compare the conventional models with the early exiting models. Most \gls{dnn}s are built of blocks of convolution and pooling layers, at least the ones we use. We adapt the same notation for the early exiting inference model and the conventional inference model with a single exit at the end of the \gls{dnn}, see figure \ref{fig:inference_models}.
+In this section we define the analytical model used for our experiments. We compare the conventional models with the early exiting models. Most \gls{dnn}s are built of blocks of convolution and pooling layers. We adapt the same notation for the early exiting inference model and the conventional inference model with a single exit at the end of the \gls{dnn}, see figure \ref{fig:inference_models}.
 	\begin{figure}
 		\centering
 		\captionsetup[subfigure]{justification=centering, farskip=1pt,captionskip=1pt}
 		\subfloat[Conventional Inference Model]{\includegraphics[width=.7\linewidth]{figures/models/conv_math}}
 		\hfill
 		\subfloat[Early Exit Inference Model]{\includegraphics[width=.7\linewidth]{figures/models/exit_math}}
-		\caption[\gls{dnn} structure]{\gls{dnn} inference models: A \gls{dnn} is constructed by stacking layers of non-linear function on top of each other to form a \gls{dag}. The layers are typically grouped into blocks, and a classification layer is attached at the end of the network, i.e. exits in our models.}
+		\caption[\gls{dnn} structure]{\gls{dnn} inference models: A \gls{dnn} is constructed by stacking layers of non-linear function on top of each other to form a \gls{dag}. The layers are typically grouped into blocks, and a classification layer is attached at the end of the network.}
 		\label{fig:inference_models}
 	\end{figure}	
-	We define the inference latency for both models. We also define classification accuracy, early exit condition and our problem formulation. 
+	We define the inference latency for both models. We also define classification accuracy, early exit condition and the problem as defined in 5). 
 	
 	Assume $ C $ denotes the number of image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images.
 
@@ -235,16 +234,16 @@ In this section we describe our implementation of early exit models. We have imp
 
 \subsection{Branchy-ResNet} 
 
-Residual Networks or \gls{resnet}s \cite{he_deep_2015} have for long been a state-of-the-art network and won ILSVRC15 using 152 layers. The building blocks of the residual networks is the residual layer, which have made it possible to train extremely deep networks. The depth of \gls{dnn}s is of paramount importance to extract increasingly richer features from images to obtain highly accurate classification models. Training plain \gls{vgg} networks \cite{simonyan_very_2015} with more than ten layers to convergence is not easy due to vanishing/exploding gradients. To mitigates this problem the \gls{resnet} adds a shortcut connection, which skips a layer or a block of layers. Information from earlier layers are preserved by the skip connection, which diminishes the vanishing gradient problem. Thus, this type of network have shown to be easier to train compared to its plain counterpart, and able to obtain far superior accuracy. The skip connection adds the identity of the input to the output of the layer or block, see figure \ref{fig:residualblock}
+Residual Networks or \gls{resnet}s \cite{he_deep_2015} have for long been a state-of-the-art network and won ILSVRC15 using 152 layers. The residual layers are the building blocks of the residual networks. The residual layers have made it possible to train extremely deep networks. The depth of \gls{dnn}s is of paramount importance to extract increasingly richer features from images to obtain highly accurate classification models. Training plain \gls{vgg} networks \cite{simonyan_very_2015} with more than ten layers to convergence is not easy due to vanishing/exploding gradients. To mitigate this problem the \gls{resnet} adds a shortcut connection, which skips a layer or a block of layers. Information from earlier layers are preserved by the skip connection, which diminishes the vanishing gradient problem. Thus, this type of network has proved to be easier to train compared to plain networks, and obtains far superior accuracy. The skip connection adds the identity of the input to the output of the layer or block, see figure \ref{fig:residualblock}
 
 \begin{figure}
 	\centering
 	\includegraphics[width=.5\linewidth]{figures/models/residualblock}
-	\caption[Residual Block]{Residaul Block: A residual block adds the identity i.e. the input to the layer or block of layers to the ouput of the block. Source: \citetitle{he_deep_2015} \cite{he_deep_2015}}
+	\caption[Residual Block]{Residual Block: A residual block adds the identity, i.e. the input to the layer or block of layers to the ouput of the block. Source: \citetitle{he_deep_2015} \cite{he_deep_2015}}
 	\label{fig:residualblock}
 \end{figure}
 
-The residual networks proposed in \cite{he_deep_2015} are grouped into 4 resolutions block each of which downsamples the input data. The network are proposed with different number of layers $ \left\{18, 34, 50, 101, 152\right\} $ exemplifying the ability to train extremely deep networks. Table \ref{tbl:resnet101} describes the blocks and layers of the \gls{resnet} architecture. \gls{pytorch} provides implementations of these networks. The implementations can be trained from scratch or can be initialized with downloadable pre-trained weights based on ImageNet. \gls{resnet}101 have been chosen for this project, as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}-121 implementation and also have similar inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
+The residual networks proposed in \cite{he_deep_2015} are grouped into 4 resolution blocks each of which downsamples the input data. The network are designed with different number of layers $ \left\{18, 34, 50, 101, 152\right\} $ exemplifying the ability to train extremely deep networks. Table \ref{tbl:resnet101} describes the blocks and layers of the \gls{resnet} architecture. \gls{pytorch} provides implementations in different types of networks. These models can be trained from scratch or initialized with downloadable pre-trained weights based on ImageNet. \gls{resnet}101 has been chosen for this project as it has comparable depth to the smallest available \gls{pytorch} \gls{densenet}-121 implementation and also have similar inference latency on a Titan Xp (8.90ms and 8.93ms) \cite{bianco_benchmark_2018}.
 
 \small
 \begin{center}
@@ -844,18 +843,18 @@ We have shown, that it is possible to achieve better runtimes using an early exi
 
 \subsubsection{Theoretical Exit Score Threshold Analysis}
 
-We mentioned in section \ref{sec:ee-branchy-vs-cascaded}, that a score threshold can be used to control the accuracy-latency trade-off of early exiting models. If a high threshold is selected, only a few samples can confidently exit the model at an early exit, thus no significant delay improvements may be found. On the contrary, if a low threshold is selected a significant delay improvement may be found, however at a corresponding reduction in accuracy. 
+We mentioned in section \ref{sec:ee-branchy-vs-cascaded} that a score threshold can be used to control the accuracy-latency trade-off of early exiting models. If a high threshold is selected, only a few samples can confidently exit the model at an early exit, thus no significant delay improvements may be found. On the contrary, if a low threshold is selected a significant delay improvement may be found, however at a corresponding reduction in accuracy. 
 
 In this experiment, we let all samples get classified at each exit until the end of the network. The purpose of this experiment is to conduct a theoretical study of the impact of the exit threshold. We log the predicted class label and score output. Using the two different score functions, $ f_{max} $ and $ f_{margin} $, we mark a sample \emph{exitable}, if the output of the score function higher than the threshold. We analyse all models against a range of thresholds $ \gamma = \left\{0.1, 0.2, \dots 0,9\right\} $.
 
-\Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compare all exits of all early exit models a rising threshold. We plot the result for both score functions.
-The figures shows the frequency of exited samples, that have been correctly classified and exited ({\color{sns-green}green}), and incorrectly classified and exited due to satisfying score ({\color{sns-red}red}). The frequency of not exited samples ({\color{sns-blue}blue}). 
+\Cref{fig:resnet_confidence,fig:resnet_score-margin,fig:densenet_confidence,fig:densenet_score-margin,fig:msdnet_confidence,fig:msdnet_score-margin} compare all exits at a rising threshold. We show the results for both score functions.
+The figures show the frequency of exited samples that have been correctly exited ({\color{sns-green}green}), incorrectly exited samples ({\color{sns-red}red}), and the frequency of not exited samples ({\color{sns-blue}blue}). 
 
-The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits, shows how the models becomes more accurate at deeper exits. If a sample is exited incorrectly at an early exit and it could have been correctly classified at later exit, the overall accuracy of the model is reduced. Raising the threshold reduces the amount of incorrectly exited samples ({\color{sns-red}red}), but also reduces the frequency of correctly classified samples. 
+The growing frequency of correctly exited samples ({\color{sns-green}green}) at later exits, shows how the models become more accurate at deeper exits. If a sample is exited incorrectly at an early exit and it could have been correctly classified at later exit, the overall accuracy of the model is reduced. Raising the threshold reduces the amount of incorrectly exited samples ({\color{sns-red}red}), but also reduces the frequency of correctly classified samples. 
 
-We aim to reduce the amount of incorrectly exited samples more, than we reduce the amount of correctly exited samples, at the cost of samples not exited, by rasing the score threshold. The line plotted on each subfigure, shows the change in exiting accuracy, as we raise the score threshold ({\color{sns-orange}orange}). The exiting accuracy is the ratio of correctly classified samples out of all exited samples, hence we do not account for not exited samples. Raising the threshold results in a higher exiting accuracy, as the amount incorrectly exited is reduced more, than the number of correctly exited samples. 
+By rasing the score threshold we aim to reduce the number of incorrectly exited samples more than we reduce the amount of correctly exited samples. The line shown on each subfigure, shows the change in exiting accuracy as we raise the score threshold ({\color{sns-orange}orange}). The exiting accuracy is the ratio of correctly classified samples out of all exited samples, hence we do not account for not exited samples. 
 
-The figures show, that generally \emph{score-margin} has more desirable traits, as less samples are incorrectly exited ({\color{sns-red}red}), at the expense of additional samples not exited ({\color{sns-blue}blue}). The result matches the study in \cite{park_big/little_2015,tann_flexible_2018}, showing a stronger correlation for the \emph{score-margin} and accuracy, than confidence score and accuracy. 
+The figures show that the score-margin has more desirable traits, as less samples are incorrectly exited ({\color{sns-red}red}). The result matches the study in \cite{park_big/little_2015,tann_flexible_2018}, showing a stronger correlation between  score-margin and accuracy, than between confidence score and accuracy. 
 
 \newcounter{imagenumber}
 \begin{center}
@@ -1165,7 +1164,7 @@ As stated in our problem, we aim to maximize the reliability. Recall the reliabi
 
 We measured the time for all samples to reach a prediction at all exits. We analysed the accuracy given different deadlines with 1 ms granularity. In figure \ref{fig:delay-threshold}, we plot the reliability against increasing delay thresholds.
 
-The result show staircase-like functions of reliability as we relax the delay constraint, high reliability can be obtained as more time is available. The steps of the functions are located close to the mean time for prediction at a later exit of the model, see table \ref{tbl:inference-stats}. The dashed lines show the inference time for the conventional models. Using early exit models, we are able to  improve the reliability for stringent delay threshold. In fact, we enable service not possible for the conventional model. The conventional model is inflexible, and for the most part have a sharp rising function when service becomes possible. However, if the last exit of the early exit model is always reachable i.e. the last step, then the conventional models will achieve superior reliability, due to the model being more accurate under no constraints. 
+The results show staircase-like functions of reliability. As we relax the delay constraint, higher reliability can be obtained, since more time is available. The steps of the graph show a later becomes available within the delay constraint. The dashed lines show the inference time for the conventional models. Using early exit models, we are able to  improve the reliability of more stringent delay threshold. In fact, we enable \gls{ai}-driven service not possible for the conventional model. The conventional model is inflexible and has a sharp rising graph, when service becomes possible. However, if the last exit of the early exit model is reachable then the conventional models will achieve superior reliability, due to the model being more accurate under relaxed constraints. 
 
 \section{Summary} \label{sec:ee-summary}
 
