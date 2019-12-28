@@ -20,7 +20,7 @@ Figure \ref{fig:hardvseasy} exemplifies samples, where the object is easily sepa
 
 \section{BranchyNet vs. Cascaded DNN} \label{sec:ee-branchy-vs-cascaded}
 
-Both \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} and cascaded \gls{dnn} \cite{leroux_resource-constrained_2015} were published around the same time (\citeyear{}). The cascaded \gls{dnn} adds intermediate classifiers after a layer, or a block of layers in a \gls{dnn}, whereas \gls{branchynet} constructs early exit branches with additional convolution layers, see figure \ref{fig:cascaded-vs-branchy}.
+Both \gls{branchynet} \cite{teerapittayanon_branchynet:_2016} and cascaded \gls{dnn} \cite{leroux_resource-constrained_2015} were published around the same time (\citeyear{teerapittayanon_branchynet:_2016,leroux_resource-constrained_2015}). The cascaded \gls{dnn} adds intermediate classifiers after a layer, or a block of layers in a \gls{dnn}, whereas \gls{branchynet} constructs early exit branches with additional convolution layers, see figure \ref{fig:cascaded-vs-branchy}.
 
 \begin{figure}
 	\centering
@@ -318,7 +318,7 @@ To construct the early exits model a pooling-layer followed by a fully-connected
 The early exits of \gls{bresnet} are placed immediately after a resolution block, as;
 \begin{enumerate}
 	\item The exit must be placed sufficiently deep so that the model can predict some input samples correctly
-	\item If used in a collaborative setup, a smaller feature representation is desired to reduce the offloaded data size. The exits are placed after the resolution block, as the filter size is unchanged within the block \cite{bottlenet}. 
+	\item If used in a collaborative setup, a smaller feature representation is desired to reduce the offloaded data size. The exits are placed after the resolution block, as the filter size is unchanged within the block \cite{eshratifar_bottlenet:_2019}. 
 \end{enumerate}
 
 
@@ -573,7 +573,7 @@ The results section consists of two main parts. Section \ref{sec:ee-results-trai
 
 \subsection{Training Results} \label{sec:ee-results-training}
 We trained the three early exiting models \gls{bresnet}, \gls{bdensenet} and \gls{msdnet}, along with conventional versions of the \gls{resnet}101 and \gls{densenet}-121. In each epoch the training- and validation-, -loss and -accuracy have been logged.
-We trained \gls{bresnet} using transfer learning from the ImageNet dataset. We froze the features of the network. As in \cite{cascaded}, we only trained the classifiers of the exits. Figure \ref{fig:frozen-b-resnet-miniimagenet-100} show the results from the training. The figure shows that none of the intermediate classifiers can obtain acceptable accuracy on neither the training nor the validation set. The features learned from a conventional model are not suitable for the early exit models. Because the features for the shallower part of the network are not optimized for the early classifiers. In \cite{teerapittayanon_branchynet:_2016}, they unfreeze the model base to allow the features of the model to be optimized for the intermediate classifiers of the early exits. Figure \ref{fig:b-resnet-miniimagenet-100} show the training results with significant improvements. This study reveals the need to train the entire model to obtain an early exit model with decent accuracy.
+We trained \gls{bresnet} using transfer learning from the ImageNet dataset. We froze the features of the network. As in \cite{leroux_resource-constrained_2015}, we only trained the classifiers of the exits. Figure \ref{fig:frozen-b-resnet-miniimagenet-100} show the results from the training. The figure shows that none of the intermediate classifiers can obtain acceptable accuracy on neither the training nor the validation set. The features learned from a conventional model are not suitable for the early exit models. Because the features for the shallower part of the network are not optimized for the early classifiers. In \cite{teerapittayanon_branchynet:_2016}, they unfreeze the model base to allow the features of the model to be optimized for the intermediate classifiers of the early exits. Figure \ref{fig:b-resnet-miniimagenet-100} show the training results with significant improvements. This study reveals the need to train the entire model to obtain an early exit model with decent accuracy.
 \begin{center}
 	
 	\begin{minipage}[t]{.9\linewidth}
