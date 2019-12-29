@@ -440,9 +440,8 @@ All code is written in \gls{python} 3.7 \cite{van_rossum_python_1995} using the 
 framework \cite{paszke_automatic_2017} and using the \gls{torchvision} 0.4 library \cite{marcel_torchvision_2010}. All code is available at
 {\color{sns-grey}\url{https://github.com/AlexKarlsen/thesis-src}}. 
 
-Table \ref{tbl:platforms} lists the hardware platforms used for the experiments and their characteristics. Table \ref{tbl:models} lists the models used in the experiment and compares the number of layers, parameters, and \acrshort{flop}s of the models. The number of parameters and \acrshort{flop}s have been found using \gls{thop} \cite{zhu_thop_nodate}, by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models. Note, only a small overhead in the number of parameters and \acrshort{flop}s is added for the early exit models compared to the conventional models. Thus, we expect only a small additional delay from the intermediate classifiers, which is proved in section \ref{sec:edge-results}.
-
-\begin{minipage}[t]{\linewidth}
+Table \ref{tbl:platforms} lists the hardware platforms used for the experiments and their characteristics. 
+\begin{footnotesize}
 	\begin{longtabu}{>{\bfseries}X[0.8]|X[0.8]|X[1.5]|X[r0.3]}
 		\caption[Platform hardware comparison]{Platform hardware comparison of Window 10 Stationary PC named \gls{gpu-ws}, an NVIDIA \gls{jetson} development edge computer, and an Intel \gls{nuc} mini pc} \label{tbl:platforms} \\
 		\toprule
@@ -468,8 +467,11 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 		NUC		  	& Intel i7-7567U	& None										& 16GB \tabularnewline									
 		\bottomrule
 	\end{longtabu}
-\end{minipage}
 %equipped with a NVIDIA GeForce 1080 GTX \gls{gpu} using CUDA 10.1 and cuDNN 7.6.3.
+
+
+	
+
 
 \begin{longtabu}{>{\bfseries}X|X[r]|X[r]|X[r]}
 	\caption[Model comparison]{ Model Parametric Comparison. The \gls{bdensenet} and \gls{msdnet} drastically reduces the number of parameters and G\gls{flop}s compared to \gls{bresnet}. The early exit models should be able to reduce inference delay, as they need fewer parameters and \gls{flop}s.}\label{tbl:models} \\
@@ -513,6 +515,9 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 	\hspace{3mm} Exit-4  & 5 & 7.210 & 0.107 \tabularnewline
 	\bottomrule
 \end{longtabu}
+\end{footnotesize}
+
+Table \ref{tbl:models} lists the models used in the experiment and compares the number of layers, parameters, and \acrshort{flop}s of the models. The number of parameters and \acrshort{flop}s have been found using \gls{thop} \cite{zhu_thop_nodate}, by inference a random 4d tensor of size $ (\mathrm{batch,channels,width,height})=(1,3,224,224) $ to all models. Note, only a small overhead in the number of parameters and \acrshort{flop}s is added for the early exit models compared to the conventional models. Thus, we expect only a small additional delay from the intermediate classifiers, which is proved in section \ref{sec:edge-results}.
 
 
 \begin{enumdescript}
@@ -520,17 +525,13 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 	The listed and described training hyperparameters have been used for all training sessions. 
 	
 	\begin{enumdescript}
-		\item[Epochs] An epoch is a round of training in which all training samples have been presented to the model. The training time of 50 epochs has been selected to limit the overall training time to give time for multiple attempts and training multiple models.
-		
-		Training the models on the available hardware took $\sim$30-50 hours, depending on the model. In total, five models have been trained once the rest of the training settings was found.
+		\item[Epochs] An epoch is a round of training in which all training samples have been presented to the model. The training time of 50 epochs has been selected to limit the overall training time to give time for multiple attempts and training multiple models. Training the models on the available hardware took $\sim$30-50 hours, depending on the model. In total, five models have been trained once the rest of the training settings was found.
 		
 		\item[Early Stopping] Early stopping is selecting the best-obtained model by alternating between training and validation phases for each epoch. The best model is the one obtaining the highest accuracy on the validation data set. Early stopping is a mechanism to avoid overtraining a model that overfits the training data and obtain poor validation accuracy. For \gls{branchynet}, we use the model with the highest average accuracy in order not to favor any part of the model.  
 		
 		\item[Exit Weights] The same unit weights have been selected for all exits of the model, not to favor any part of the model. In \cite{teerapittayanon_branchynet:_2016}, they claim that putting more weight on early branches has a regularizing impact on the later classifiers. However, they have chosen the same unit weights for all branches, for comparison of multiple models, and avoid a time-consuming search for specific branch weights on a per-model basis.
 		
-		\item[Optimizer] The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd} \cite{goodfellow_deep_2016}. \gls{sgdr} \cite{loshchilov_sgdr:_2016} has shown faster convergence on several datasets due to its ability to escape local minima. In contrast to former proposed annealing learning rate schedules \cite{}, \gls{sgdr} follows a cyclic learning rate schedule. It has shown to perform better than adaptive optimizers, e.g., Adam \cite{kingma_adam:_2014}, which implement adaptive learning rates to avoid being stuck in local minima. 
-		
-		\gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
+		\item[Optimizer] The weights of \gls{dnn}s are typically trained using a variant of \gls{sgd} \cite{goodfellow_deep_2016}. \gls{sgdr} \cite{loshchilov_sgdr:_2016} has shown faster convergence on several datasets due to its ability to escape local minima. In contrast to former proposed annealing learning rate schedules \cite{}, \gls{sgdr} follows a cyclic learning rate schedule. It has shown to perform better than adaptive optimizers, e.g., Adam \cite{kingma_adam:_2014}, which implement adaptive learning rates to avoid being stuck in local minima.  \gls{sgdr} uses an aggressive cosine annealing schedule with warm restarts. Figure \ref{fig:cosineannealing} illustrates the learning rate schedule.
 		
 		\begin{minipage}[t]{\linewidth}
 			\centering
@@ -543,8 +544,7 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 		A batch size of 16 was found to be the maximum power of 2 possible within the computational budget of 8Gb RAM. The standard choice of 32 caused memory exhaustion. However, a batch size of 16 provide decent training times and may provide additional regularization over 32. Smaller batch sizes were not experimented with due to project scope.
 		
 		\item[Datasets] \gls{min100} is a subset of the \gls{ilsvrc2012} dataset \cite{russakovsky_imagenet_2015}. \gls{min100} was created for this project to reduce training time from several weeks to only days on available hardware. The subset is inspired by \cite{vinyals_matching_2016}, which also uses a subset of 100 classes with 600 samples for each class. \gls{min100} contains 100 out of 1.000 randomly sampled classes, which gives 127.300 out of 1.2m training samples, and 5.000 out of 50.000 validation samples. A full list of classes is found in table \ref{tbl:min100}. 
-		
-		Compared to other sufficiently dense classification datasets, e.g, \gls{tinyimagenet} \cite{li_cs231n:_2018}, \gls{cifar10} and \gls{cifar100} \cite{krizhevsky_cifar-10_nodate}, the image sizes of these datasets are respectively $(64\times 64$), $(32\times 32)$, $(32\times 32)$ pixels, all of which considered too small for this project. Other datasets such as MS COCO and Pascal VOC are better suited for object detection/segmentation, as images are not cropped to only focus on a single object, thus too challenging for classification. Pascal VOC was initially tested. However, training showed clear signs overfitted the training data due to data sparsity. 
+		Compared to other sufficiently dense classification datasets, e.g, \gls{tinyimagenet} \cite{li_cs231n:_2018}, \gls{cifar10} and \gls{cifar100} \cite{krizhevsky_cifar-10_nodate}, the image sizes of these datasets are respectively $(64\times 64$), $(32\times 32)$, $(32\times 32)$ pixels, all of which considered too small for this project. Other datasets such as MS COCO and Pascal VOC are better suited for object detection/segmentation, as images are not cropped to only focus on a single object, thus too challenging for classification. Pascal VOC was initially tested. However, training showed clear signs of overfitting the training data probably due to data sparsity. 
 		
 		\item[Image Augmentation] Image augmentation is a tool to virtually create more training data \cite{perez_effectiveness_2017}, without having to annotate new samples \cite{goodfellow_deep_2016}. Image augmentation has shown to improve the validation accuracy as \gls{dnn}'s ability to generalize a specific classification problem has a close connection with the number of available training samples.
 		Image augmentation involves transformations using tools from image processing to apply noise injection randomly or color space transformations, e.g., contrast and saturation distortions, geometric transformations, such as simple transformations of flipping the image, and affine transformations to create different image perspectives \cite{shorten_survey_2019}. Figure \ref{fig:augmentation} shows 64 random augmentations of an image of an elephant achieved using \gls{imgaug} \cite{jung_imgaug:_nodate}.  
@@ -556,9 +556,7 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 			\label{fig:augmentation}
 		\end{minipage}
 		
-		New methods have been proposed where image transformations are learned to improve generalization, e.g., AutoAugment \cite{cubuk_autoaugment:_2018}. \gls{gan}s can help overcome the problem of limited data given the available training data or a 3D model, by artificially constructing synthetic samples in different backgrounds, light settings, and from alternate perspectives. However, these methods are another area of research and have been considered out of scope for this project.
-		
-		Methods that do not cover enriching the available training data, but alters the learning procedure are called regularization and covers; weight decay \cite{krogh_simple_nodate}, dropout \cite{srivastava_dropout:_nodate}, batch normalization \cite{ioffe_batch_2015}, and others. We do not experiment with these regularization techniques but use the settings already set in the implementation of the models.
+		New methods have been proposed where image transformations are learned to improve generalization, e.g., AutoAugment \cite{cubuk_autoaugment:_2018}. \gls{gan}s can help overcome the problem of limited data given the available training data or a 3D model, by artificially constructing synthetic samples in different backgrounds, light settings, and from alternate perspectives. However, these methods are another area of research and have been considered out of scope for this project. Methods that do not cover enriching the available training data, but alters the learning procedure are called regularization and covers; weight decay \cite{krogh_simple_nodate}, dropout \cite{srivastava_dropout:_nodate}, batch normalization \cite{ioffe_batch_2015}, and others. We do not experiment with these regularization techniques but use the settings already set in the implementation of the models.
 		
 		\item[Transfer Learning] Transfer learning is the procedure of using a pre-trained model to train on a new dataset. The assumption is that features learned on one image dataset can be reused for another dataset \cite{yosinski_how_2014}. Typically models have been pre-trained on the ImageNet dataset. The density of the dataset enables models to learn general features suitable for other domains \cite{kornblith_better_2019}. Transfer learning is especially suitable when the new data domain is of limited quantity, and the similarities between the two data domains are strong. If the similarities are weak, a model can be fine-tuned, i.e., only training the deep and specialized features. The general features of the shallow layers can be reused and are not optimized by freezing the weights \cite{li_cs231n:_2018}. Transfer learning can reduce the training time to learn general features of shallow layers, and possibly learn more specific features at deeper layers optimized for the new dataset.
 	\end{enumdescript}
@@ -974,7 +972,7 @@ In this section, we aim to evaluate the early existing capabilities of the diffe
 		\hfill
 		\subfloat[$\gamma= 0.9$\label{fig:model-c-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_confidence_comparison_9}}
 		
-		\caption[Model comparison of early exit capabilities using confidence threshold]{Model comparison of early exit capabilities using score-max}
+		\caption[Model comparison of early exit capabilities using score max]{Model max of early exit capabilities using score-max. The subfigures represent raising the threshold. Each subfigure contains a plot for correctly exited samples and another one for incorrectly exited samples at the different exits. }
 		\label{fig:model_c-threshold_comparison}
 	\end{figure}
 	
@@ -1007,7 +1005,7 @@ In this section, we aim to evaluate the early existing capabilities of the diffe
 		\hfill
 		\subfloat[$\gamma= 0.9$\label{fig:model-threshold_comparison_t_9}]{\includegraphics[width=.33\linewidth]{figures/inference_plots/model_comparison_9}}
 		
-		\caption[Model comparison of early exit capabilities]{Model comparison of early exit capabilities using score-margin}
+		\caption[Model comparison of early exit capabilities]{Model comparison of early exit capabilities using score margin. The subfigures represent raising the threshold. Each subfigure contains a plot for correctly exited samples and another one for incorrectly exited samples at the different exits. }
 		\label{fig:model_threshold_comparison}
 	\end{figure}
 	
@@ -1020,8 +1018,7 @@ This result indicates that we can reduce the average inference delay by using th
 
 \subsubsection{Score Threshold and the Accuracy-Latency Trade-Off}
 
-We infer all validation samples to all models. We measure the time for a prediction to exit for raised score threshold $ \gamma = \left\{0.1, 0.2, \dots 0,9\right\} $. We let samples exit the inference using the score-margin function and log the prediction result. Figure \ref{fig:threshold-acc-lat-trade-off} shows the inference accuracy and latency of all the models on the platforms. The figure shows the accuracy-latency trade-off implied by the early exit model.
-
+We infer all validation samples to all models. We measure the time for a prediction to exit for raised score threshold $ \gamma = \left\{0.1, 0.2, \dots 0,9\right\} $. We let samples exit the inference using the score-margin function and log the prediction result. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=0pt,captionskip=0pt}
@@ -1033,12 +1030,12 @@ We infer all validation samples to all models. We measure the time for a predict
 	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference}}
 	\hfill
 	\subfloat[NUC\label{fig:nuc-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference}}
-	\caption[Threshold Accuracy-Latency Trade-off]{Threshold Accuracy-Latency Trade-off on \protect\subref{fig:early_exit_vs_conv} GPU Workstation, \protect\subref{fig:jetson-early_exit_vs_conv} Jetson TX2 and \protect\subref{fig:nuc-early_exit_vs_conv} NUC }
+	\caption[Score margin threshold and the Accuracy-Latency Trade-off]{Score-margin threshold used to control the accuracy-latency trade-off of the models on \protect\subref{fig:early_exit_vs_conv} GPU Workstation, \protect\subref{fig:jetson-early_exit_vs_conv} Jetson TX2, and \protect\subref{fig:nuc-early_exit_vs_conv} NUC }
 	\label{fig:threshold-acc-lat-trade-off}
 \end{figure}
 
-Raising the score threshold improves the models' accuracy but also introduces more latency. We showed in the previous section that raising the score threshold forces the model to use deeper exits more frequently. The raises threshold result in additional delay. In figure \ref{fig:threshold-acc-lat-trade-off-by-time} and \ref{fig:threshold-acc-lat-trade-off}, we show the accuracy-latency tradeoff by plotting accuracy against the meantime.
-
+Figure \ref{fig:threshold-acc-lat-trade-off} shows the inference accuracy and latency of all the models on the platforms. The figure shows the accuracy-latency trade-off implied by the early exit model.
+Raising the score threshold improves the models' accuracy but also introduces more latency. We showed in the previous section that raising the score threshold forces the model to use deeper exits more frequently. The raises threshold result in additional delay. 
 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=0pt,captionskip=0pt}
@@ -1050,14 +1047,15 @@ Raising the score threshold improves the models' accuracy but also introduces mo
 	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_time}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference_by_time}}
 	\hfill
 	\subfloat[NUC\label{fig:nuc-early_exit_vs_time}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/nuc_inference_by_time}}
-	\caption[Threshold Accuracy-Latency Trade-off]{Threshold Accuracy-Latency Trade-off on \protect\subref{fig:early_exit_vs_conv} GPU Workstation, \protect\subref{fig:jetson-early_exit_vs_conv} Jetson TX2 and \protect\subref{fig:nuc-early_exit_vs_conv} NUC }
+	\caption[Compact view of the Accuracy-Latency Trade-off]{The figure shows a compacted view of the accuracy-latency trade-off using the score margin on \protect\subref{fig:early_exit_vs_conv} GPU Workstation, \protect\subref{fig:jetson-early_exit_vs_conv} Jetson TX2 and \protect\subref{fig:nuc-early_exit_vs_conv} NUC }
 	\label{fig:threshold-acc-lat-trade-off-by-time}
 \end{figure}
 
+In figure \ref{fig:threshold-acc-lat-trade-off-by-time} and \ref{fig:threshold-acc-lat-trade-off}, we show the accuracy-latency tradeoff by plotting accuracy against the meantime.
 The flexibility of the early exit models shows that when more time is available, higher accuracy can be achieved. The conventional models are inflexible as no early exit is present. Even though they can achieve higher accuracy, they also require more time.
-For the accuracy-latency trade-off on the \gls{gpu}-workstation and the Jetson, the \gls{bresnet} is outperforming the other models. On the NUC, \gls{bresnet} is the worst performing, and the \gls{msdnet} is outperforming the others. In table \ref{tbl:score-acc-lat-trade}, the change in accuracy and time using different thresholds compared to let the inference run to the end.
-A low threshold gives a significant reduction in inference latency, however, also at the cost of accuracy. Significant time saving is still possible when selecting a high threshold, which only introduces a small cost of accuracy. Some overthinking is mitigated when selecting a high threshold, as minor improvement of accuracy is found using a threshold value of 0.9 for both \gls{resnet} and \gls{densenet}.
-\begin{minipage}[t]{\linewidth}\begin{small}
+For the accuracy-latency trade-off on the \gls{gpu}-workstation and the Jetson, the \gls{bresnet} is outperforming the other models. On the NUC, \gls{bresnet} is the worst performing, and the \gls{msdnet} is outperforming the others. 
+
+	\begin{scriptsize}
 		
 		\begin{longtabu}{>{\bfseries}X|X|X[r]|X[r]|X[r]|X[r]}
 			\caption[Score Threshold Accuracy-Latency Trade-off]{Score Threshold Accuracy-Latency Trade-off. The table shows the impact of score threshold on accuracy and latency. The table compares running the early exit model all the wat to the end with letting samples exit based on the score.}\label{tbl:score-acc-lat-trade} \\
@@ -1112,8 +1110,10 @@ A low threshold gives a significant reduction in inference latency, however, als
 			&$ \gamma = 0.9 $ 	& -0.00 & -14.32 & -34.46 & -23.44 \tabularnewline 
 			\bottomrule
 		\end{longtabu}
-	\end{small}
-\end{minipage}
+	\end{scriptsize}
+
+In table \ref{tbl:score-acc-lat-trade}, the change in accuracy and time using different thresholds compared to let the inference run to the end.
+A low threshold gives a significant reduction in inference latency, however, also at the cost of accuracy. Significant time saving is still possible when selecting a high threshold, which only introduces a small cost of accuracy. Some overthinking is mitigated when selecting a high threshold, as minor improvement of accuracy is found using a threshold value of 0.9 for both \gls{resnet} and \gls{densenet}.
 
 We have shown that the early exit model can be used to reduce the latency with a compromise in accuracy when controlled by a score threshold. However, can we use early exits \gls{dnn} to meet the delay requirement for time-critical application? 
 
@@ -1125,12 +1125,12 @@ We let all the validation samples inference the early exit models and let all ex
 	\centering
 	\includegraphics[height=.05\textheight]{figures/delay_plots/delay_threshold_legend}
 	\hfill
-	\subfloat[GPU Workstation]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/delay_plots/gpu__delay_threshold}}
+	\subfloat[GPU Workstation\label{fig:delay-threshold-gpu}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/delay_plots/gpu__delay_threshold}}
 	\hfill
-	\subfloat[Jetson TX2]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/delay_plots/jetson__delay_threshold}}
+	\subfloat[Jetson TX2\label{fig:delay-threshold-jetson}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/delay_plots/jetson__delay_threshold}}
 	\hfill
-	\subfloat[NUC]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/delay_plots/nuc__delay_threshold}}
-	\caption[Reliability vs. Computation Latency]{Reliability vs. Delay Threshold}
+	\subfloat[NUC\label{fig:delay-threshold-nuc}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/delay_plots/nuc__delay_threshold}}
+	\caption[Reliability vs. Computation Latency]{Reliability vs. Delay Threshold on \protect\subref{fig:delay-threshold-gpu} GPU Workstation, \protect\subref{fig:delay-threshold-jetson} Jetson TX2, and \protect\subref{fig:delay-threshold-nuc} NUC}
 	\label{fig:delay-threshold}
 \end{figure}
 The figure shows a staircase-like graph of reliability. As we relax the delay constraint, higher reliability can be obtained, since more time is available. The steps of the graph show when a later exit becomes available within the delay constraint. The dashed lines show the inference time for the conventional models. Using early exit models, we can improve the reliability of the more stringent delay threshold. We enable \gls{ai}-driven service not even possible for the conventional model. The conventional model is inflexible and has only one step when service becomes possible. Thus, the conventional model is more prone to unexpected delays. However, if the last exit of the early exit model is reachable, then the conventional models will achieve superior reliability due to the model being more accurate under relaxed constraints. 

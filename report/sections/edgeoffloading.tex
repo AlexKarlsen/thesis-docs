@@ -10,13 +10,13 @@ We propose \acrfull{aee}, an inference scheme based on an early exit \gls{dnn}. 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\subfloat[Continuois predictions\label{fig:offloading-scheme-successful}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_all}}
+	\subfloat[Continuous reply of predictions\label{fig:offloading-scheme-successful}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_all}}
 \end{figure}
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
-	\subfloat[Timeout of Continuois predictions\label{fig:offloading-scheme-timeout}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_timeout}}
-	\caption[Offloading scheme]{\gls{aee} edge offloading: \protect\subref{fig:offloading-scheme-successful} continuous prediction received with no timeouts. \protect\subref{fig:offloading-scheme-timeout} 2 predictions received prior to timeout. }
+	\subfloat[Timeout interrupts the continuous reply of predictions\label{fig:offloading-scheme-timeout}]{\includegraphics[width=.7\linewidth]{figures/models/timeline_timeout}}
+	\caption[Offloading scheme]{\gls{aee} edge offloading: \protect\subref{fig:offloading-scheme-successful} continuous predictions received with no timeouts. \protect\subref{fig:offloading-scheme-timeout} Timeout interrupted the service, and only two predictions are available. }
 	\label{fig:offloading-scheme}
 \end{figure} 
 
@@ -305,21 +305,22 @@ Using the confidence max reduces the accuracy compared to the latest received pr
 	\captionsetup[subfigure]{justification=centering}
 	\centering
 	\includegraphics[width=.7\linewidth]{figures/edge/exit0-4_legend}
-	\subfloat[B-ResNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-resnet_correctness}}
+	\subfloat[B-ResNet\label{fig:exit-highscore-resnet}]{\includegraphics[width=.33\linewidth]{figures/edge/b-resnet_correctness}}
 	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[width=.33\linewidth]{figures/edge/b-densenet_correctness}}
+	\subfloat[B-DenseNet\label{fig:exit-highscore-densenet}]{\includegraphics[width=.33\linewidth]{figures/edge/b-densenet_correctness}}
 	\hfill
-	\subfloat[MSDNet]{\includegraphics[width=.33\linewidth]{figures/edge/msdnet_correctness}}
-	\caption[Model Highest Scoring Exit]{Model Highest Scoring Exit}
+	\subfloat[MSDNet\label{fig:exit-highscore-msdnet}]{\includegraphics[width=.33\linewidth]{figures/edge/msdnet_correctness}}
+	\caption[Highest Scoring Exit]{Highest-scoring exit when one to all predictions are available for \protect\subref{fig:delay-threshold-gpu} \gls{bresnet}, \protect\subref{fig:delay-threshold-jetson} \gls{bdensenet}, and \protect\subref{fig:delay-threshold-nuc} \gls{msdnet} }
 	\label{fig:exit-highscore}
 \end{figure}
+
 Figure \ref{fig:exit-highscore} shows the distribution of the highest-scoring exit, given the number of exit predictions received. The result shows that the score of later exits is not exclusively higher than the earlier exits. Additionally, it shows whether the highest score exit is correct or incorrect. It shows that the frequency of an early exit being incorrect when it is the highest-scoring is more often than for later exits.
 
 Figure \ref{fig:top-5-cumulative}  shows the top-5 accuracy and cumulative top-5 accuracy. The cumulative top-5 accuracy contains all class labels from the top-5 classes of all previous exits. 
 \begin{figure}
 	\centering
 	\includegraphics[width=.8\linewidth]{figures/edge/top5cumulative}
-	\caption[Top-5 Cumulative]{Model Cumulative Top-5 Accuracy}
+	\caption[Top-5 accuracy and Cumulative Top-5 accuracy]{Top-5 accuracy and Cumulative Top-5 accuracy}
 	\label{fig:top-5-cumulative}
 \end{figure}
 
@@ -336,31 +337,34 @@ The score margin produces the worst results for all models. Thus, having a big d
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.7\linewidth, keepaspectratio]{figures/edge/theoretical_score_combination_legend}
-	\subfloat[B-ResNet]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
+	\subfloat[B-ResNet\label{fig:combi-resnet}]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/b-resnet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[B-DenseNet]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
+	\subfloat[B-DenseNet\label{fig:combi-densenet}]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/b-densenet_theoretical_score_combinations}}
 	\hfill
-	\subfloat[MSDNet]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
-	\caption[Combination Function with $ n $ Available Exits]{Combination Function with $ n $ Available Exits}
+	\subfloat[MSDNet\label{fig:combi-msdnet}]{\includegraphics[height=.22\textheight, keepaspectratio]{figures/edge/msdnet_theoretical_score_combinations}}
+	\caption[Combination Function with $ n $ Available Exits]{Combination Function with $ n $ Available Exits for \protect\subref{fig:combi-resnet} \gls{bresnet}, \protect\subref{fig:combi-densenet} \gls{bdensenet}, and \protect\subref{fig:combi.msdnet} \gls{msdnet}}
 	\label{fig:theoretical-info-combi}
 \end{figure}
 
 
 \subsection{Edge Offloading: \gls{aee} vs. Conventional Offloading}
 
-We set up our implementation using NUC as an end-device and both \gls{jetson} and \gls{gpu-ws} as edge servers. We let all the inference of validation samples be offloaded to the edge servers. For the delay threshold we use 0.1ms granularity by setting $\delta = \{0.1,0.2, \dots, 250.0\}$. Figure \ref{fig:practical-offloading} shows the achieved reliability for the delay threshold. Generally, the \gls{gpu-ws} achieves higher reliability at lower delays than the \gls{jetson}. The figure shows how \gls{aee} enables service at more stringent delay thresholds that are not even possible when offloading conventional models for edge inference. The scheme successfully improves the reliability below 75 ms for the \gls{jetson}, and below 50 ms for the \gls{gpu-ws} using \gls{bresnet} and \gls{bdensenet}. 
-No model achieves superior reliability at all delays, which means the selection of models should be based on the delay threshold, the available bandwidth, and the inference latency. The figure shows the model to select given the delay threshold with the available bandwidth for this test by selecting the model achieving the highest reliability.
+We set up our implementation using NUC as an end-device and both \gls{jetson} and \gls{gpu-ws} as edge servers. We let all the inference of validation samples be offloaded to the edge servers. For the delay threshold we use 0.1ms granularity by setting $\delta = \{0.1,0.2, \dots, 250.0\}$. Figure \ref{fig:practical-offloading} shows the achieved reliability for the delay threshold. 
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
 	\centering
 	\includegraphics[width=.5\linewidth]{figures/edge/offloading_legend}
-	\subfloat[\gls{jetson}]{\includegraphics[width=.8\linewidth]{figures/edge/jetson_offloading}}
+	\subfloat[\gls{jetson}\label{fig:offloading-jetson}]{\includegraphics[width=.8\linewidth]{figures/edge/jetson_offloading}}
 	\hfill
-	\subfloat[\gls{gpu-ws}]{\includegraphics[width=.8\linewidth]{figures/edge/gpu_offloading}}
+	\subfloat[\gls{gpu-ws}\label{fig:offloading-gpu}]{\includegraphics[width=.8\linewidth]{figures/edge/gpu_offloading}}
 	%	\subfloat[Local Jetson TX2]{\includegraphics[width=\linewidth]{figures/delay_plots/jetson__delay_threshold}}
-	\caption[Offloading NUC to Jetson]{Offloading NUC to Jetson}
+	\caption[Offloading Reliability]{Offloading reliability vs. delay threshold from NUC to \protect\subref{fig:offloading-jetson} \gls{jetson}, and \protect\subref{fig:offloading-gpu} \gls{gpu-ws}.}
 	\label{fig:practical-offloading}
 \end{figure}
+
+Generally, the \gls{gpu-ws} achieves higher reliability at lower delays than the \gls{jetson}. The figure shows how \gls{aee} enables service at more stringent delay thresholds that are not even possible when offloading conventional models for edge inference. The scheme successfully improves the reliability below 75 ms for the \gls{jetson}, and below 50 ms for the \gls{gpu-ws} using \gls{bresnet} and \gls{bdensenet}. 
+No model achieves superior reliability at all delays, which means the selection of models should be based on the delay threshold, the available bandwidth, and the inference latency. The figure shows the model to select given the delay threshold with the available bandwidth for this test by selecting the model achieving the highest reliability.
 
 \subsection{Local On-Device Inference vs. Edge Offloading}
 
@@ -374,7 +378,7 @@ Generally, the figures show the impact of adding communication. Communication la
 	\subfloat[\gls{jetson} as Edge\label{fig:resnet-offloading-vs-local-jetson}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_b-resnet_offloading_vs_local}}
 	\hfill
 	\subfloat[\gls{gpu-ws} as Edge\label{fig:resnet-offloading-vs-local-gpu}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_b-resnet_offloading_vs_local}}
-	\caption[Offloading comparison of residual networks]{Offloading comparison of residual networks}
+	\caption[Offloading comparison of residual networks]{Reliability vs. delay threshold for local inference and offloaded \gls{aee} compared with conventional schemes for the residual networks.}
 	\label{fig:resnet-offloading-vs-local}
 \end{figure}
 
@@ -387,7 +391,7 @@ Figure \ref{fig:resnet-offloading-vs-local} shows how the \gls{aee} scheme for e
 	\subfloat[\gls{jetson} as Edge\label{fig:densenet-offloading-vs-local-jetson}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_b-densenet_offloading_vs_local}}
 	\hfill
 	\subfloat[GPU Workstation as Edge\label{fig:densenet-offloading-vs-local-gpu}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_b-densenet_offloading_vs_local}}
-	\caption[Offloading comparison of densely connected networks]{Offloading comparison of densely connected networks}
+	\caption[Offloading comparison of densely connected networks]{Reliability vs. delay threshold for local inference and offloaded \gls{aee} compared with conventional schemes for the densely connected networks.}
 	\label{fig:densenet-offloading-vs-local}
 \end{figure}
 
@@ -401,7 +405,7 @@ The \gls{densenet}s tell a somewhat different story. We are still able to improv
 	\subfloat[\gls{jetson} as Edge]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/jetson_msdnet_offloading_vs_local}}
 	\hfill
 	\subfloat[\gls{gpu-ws} as Edge]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/edge/gpu_msdnet_offloading_vs_local}}
-	\caption[Offloading comparison of multi-scale dense networks]{Offloading comparison of multi-scale dense networks}
+	\caption[Offloading comparison of multi-scale dense networks]{Reliability vs. delay threshold for local inference and offloaded \gls{aee} compared with conventional schemes for the multi-scale dense networks.}
 	\label{fig:msdnet-offloading-vs-local}
 \end{figure}
 
