@@ -6,7 +6,7 @@ In this chapter; section \ref{sec:edge-aee} presents our offloading scheme, sect
 
 \section{\acrfull{aee} for Time-Critical Applications} \label{sec:edge-aee}
 
-We propose \acrfull{aee}, an inference inference scheme based on early exit \gls{dnn}. It utilizes the inherent properties of the early exit model. It adaptively maximizes the reliability using a best-effort approach by continuously returning predictions as they become ready. The inference is only terminated when a deadline is violated. The increasingly confident predictions from the continuous reply of prediction enable service not possible using conventional \gls{dnn}s. Our scheme is flexible as it can function for on-device, edge offloading, or collaborative inference architectures. 
+We propose \acrfull{aee}, an inference inference scheme based on early exit \gls{dnn}. It utilizes the inherent properties of the early exit model. It adaptively maximizes the reliability using a best-effort approach by continuously returning predictions as they become ready. The inference is only terminated when a deadline is violated. The increasingly confident predictions from the continuous reply of prediction enables service not possible using conventional \gls{dnn}s. Our scheme is flexible as it can function for on-device, edge offloading, or collaborative inference architectures. 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
@@ -38,9 +38,7 @@ In this section, we define the system model for \gls{aee}. Note, the notations d
 	\begin{align*}
 	T_{i,n}^{loc} > T_{i,n}^{edge}
 	\end{align*}
-	
-	
-	Due to the difference in computing resources, the computation time at edge is expected to be significantly lower than local computation time, i.e. $ T_{i,n}^{loc,cmp} > T_{i,n}^{edge,cmp} $. 
+	Due to the difference in computing resources, the compute time at edge is expected to be significantly lower than local computation time, i.e. $ T_{i,n}^{loc,cmp} > T_{i,n}^{edge,cmp} $. 
 	
 	
 	\begin{enumdescript}
@@ -48,7 +46,7 @@ In this section, we define the system model for \gls{aee}. Note, the notations d
 		\begin{align}
 		T_{i}^{loc}= T_{i}^{cmp,loc}
 		\end{align}
-		\item[Edge Offloading] Edge offloading runtime requires communication of data from local to remote and sending back results.
+		\item[Edge Offloading] Edge offloading requires additional communication of data from local to remote and sending back results.
 		\begin{align}
 		T_{i}^{edge}=T_{i}^{com}+ T_{i}^{cmp,edge}
 		\end{align}
@@ -65,7 +63,7 @@ In this section, we define the system model for \gls{aee}. Note, the notations d
 	There are several ways to define combination function $ f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n}\right) $
 	\begin{enumdescript}
 		
-		\item[Latest Recieved Prediction] assumes the last recieved prediction is the most confident as accuracy grow with exit depth. Thus, the methods is constraintto only use the most recent prediction from exit $n$.
+		\item[Latest Recieved Prediction] assumes the last recieved prediction is the most confident as accuracy grow with exit depth. Thus, the methods is constraint to only use the most recent prediction from exit $n$.
 		\begin{align}
 		f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \hat{c}_{i,n}^{*}
 		\end{align}
@@ -83,13 +81,13 @@ In this section, we define the system model for \gls{aee}. Note, the notations d
 		f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) = \arg \underset{c}{\max} \{s_{i,1}, \dots, s_{i,C}\}, \\ \text{where\:} s_{i,c} = \sum_{j=1}^{n}\hat{y}_{i,n,c}\: \forall \ 1\le c \le C
 		\end{split}
 		\end{align}			
-		\item[Max Score Margin] assumes the class with the largest score-margin among all available exits is the most confident prediction. 			\begin{align}
+		\item[Max Score Margin] assumes the class with the largest score margin among all available exits is the most confident prediction. 			\begin{align}
 		\begin{split}
 		f\left(\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n} \right) =c^*_{1,\hat{n}},\\
 		\text{where\:} \hat{n} \in \{1, 2, ..., n\}
 		\end{split}	
 		\end{align}
-		this means $ \hat{n} $ is the exit, that provided the prediction with largest score margin, i.e.
+		this means $ \hat{n} $ is the exit that provided the prediction with largest score margin, i.e.
 		\begin{align*}
 		\begin{split}
 		\hat{n} = \arg \underset{j}{\max} \left\{f_{margin}(\bm{y}_{i,1}), ..., f_{margin}(\bm{y}_{i,n})\right\} ,\\
@@ -116,7 +114,7 @@ In this section, we define the system model for \gls{aee}. Note, the notations d
 	T_{i}^{edge}
 	\end{cases}
 	\end{align*}
-	We have a delay violation, if no prediction is provided before the deadline, i.e. $ T_{i} > \delta $  
+	We have a delay violation if no prediction is provided before the deadline, i.e., $ T_{i} > \delta $  
 	
 	\item[Problem] As in chapter \ref{ch:earlyexit}, we define a maximization problem. The aim is to maximize the reliability for each image by selecting the best possible exit
 	\begin{maxi}
@@ -124,9 +122,9 @@ In this section, we define the system model for \gls{aee}. Note, the notations d
 		{}{}
 		%\addConstraint{T_{i,n}}{\leq \delta}
 	\end{maxi}
-	where $ \bm{n} = \left\{ n_1, n_2, \dots, n_I \right\}$ is a vector to denote which exit point would be used for prediction image $ i $ for available exit point $ n_i \in \left\{1,2, \dots, N\right\} $.
+	where $ \bm{n} = \left\{ n_1, n_2, \dots, n_I \right\}$ is a vector to denote which exit point would be used for prediction image $ i $ from available exit point $ n_i \in \left\{1,2, \dots, N\right\} $.
 	
-	Similar to chapter \ref{ch:earlyexit}, we solve this problem by best-effort scheme, i.e., feed each exit results back and let the user decide the prediction. Instead of an upfront exit decision. For following reasons:
+	Similar to chapter \ref{ch:earlyexit}, we solve this problem by best-effort scheme, i.e., feed each exit results back and let the user decide the prediction. We argue for best-effort over upfront exit decision for the following reasons:
 	\begin{enumerate}
 		\item latency uncertainty, not least from newly introduced communication, makes it hard to make an exit decision in advance
 		\item delay overhead from algorithm to make the decision is comparable with the delay overhead the classifier of each exit point \cite{li_edge_2018}
