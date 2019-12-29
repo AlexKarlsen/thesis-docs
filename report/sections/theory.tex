@@ -64,6 +64,7 @@ Four different edge-centric architectures are illustrated in figure \ref{fig:edg
 			\subfloat[Collaborative Edge Inference\label{fig:edge-device-mode}]{\includegraphics[width=\linewidth]{figures/models/edge_device}}
 		\end{figure}
 	\end{minipage}
+	\vskip 2em
 	\begin{minipage}{0.5\linewidth}
 		\centering
 		\captionsetup[subfigure]{justification=centering}
@@ -84,13 +85,13 @@ Four different edge-centric architectures are illustrated in figure \ref{fig:edg
 
 In the next section, first is related work for local on-device inference and edge inference offloading presented, where all processing is done solely by one peer. Secondly, is related work for collaborative inference presented, where the processing is partitioned on the depth-axis between multiple peers. Lastly, is distributed inference presented, where processing is partitioned on the input-axis between multiple peers. 
 \section{Fast Inference} \label{sec:ei-fast-inference}
-In this section, are enabling technologies for fast inference described. Our main concern is obtaining faster inference on a model-level. Other research directions, e.g., hardware acceleration for \gls{cpu}s and \gls{gpu}s, and development of \gls{asic} and \gls{fpga}, i.e., specialized hardware such as Google's \gls{tpu} to accelerate training and inferencing \gls{dnn}s. 
+In this section, are enabling technologies for fast inference described. Our main concern is obtaining faster inference on a model-level. Other research directions are, for instance, hardware acceleration for \gls{cpu}s and \gls{gpu}s, and development of \gls{asic} and \gls{fpga}, i.e., specialized hardware such as Google's \gls{tpu} to accelerate training and inferencing \gls{dnn}s. 
 
 We present studies in current literature that operates on a model level, e.g., model design, -compression, -selection, -early exit, and -layer skipping. Additionally, for collaborative inference we present methods to reduce communication delays such as feature compression and other partition architectures. Table \ref{tbl:fast-inference} summarizes the technologies. We omit technologies that operates on an infrastructural level, e.g., edge caching, input filtering, and support for multi-tenancy \cite{zhou_edge_2019}.
 \begin{minipage}[t]{\linewidth}
 	\begin{footnotesize}
 		\begin{longtabu}{>{\bfseries}X[c]|X[l]|X[3l]|X[c]}
-			\caption[Fast Inference Related Work]{Enabling technologies categorized by inference architecture. On-device and edge offloading have been collapsed, as both are central processing. Collaborative edge and edge cloud are collapsed, as both are decentral processing. The Distributed inference is decentral, but the partitioning is done on another axis.} \label{tbl:fast-inference} \\
+			\caption[Fast Inference Related Work]{Enabling technologies categorized by inference architecture. On-device and edge offloading have been collapsed, as both are central processing. Collaborative edge and edge cloud are collapsed, as both are decentral processing. The Distributed inference is decentral, but the partitioning is done in the input-axis.} \label{tbl:fast-inference} \\
 			\toprule
 			\rowfont{\bfseries}
 			Architecture & Technology & Speed-Up method & Works \tabularnewline
@@ -144,7 +145,7 @@ We present studies in current literature that operates on a model level, e.g., m
 In this section, we present studies aimed at centralized inference.
 
 \begin{enumdescript}
-	\item[Model Design] To improve inference latency, studies have been made in designing \gls{dnn}s, which reduces the size of the model. Smaller models reduce the memory footprint and run more efficiently on mobile and \gls{iot} devices. Most research addresses ways to reduce the number of parameters, such as \gls{squeezenet} \cite{iandola_squeezenet:_2016}, that downsamples the data size for a thinner network. Others propose creating more efficient models that reduce the number of \acrshort{flop}s. \gls{mobilenet}s \cite{howard_mobilenets:_2017,sandler_mobilenetv2:_2018} decomposes the convolution filters into simpler operations, thus reduces the number of computations for the model. \gls{shufflenet}s \cite{zhang_shufflenet:_2017, ma_shufflenet_2018} uses a point-wise convolution operation and channel shuffling to reduce the number of computations. Commonly, all these models are less accurate compared to the state-of-the-art model, but far more efficient \cite{bianco_benchmark_2018}. 
+	\item[Model Design] To improve inference latency, studies have been made in designing \gls{dnn}s, which reduces the size of the model. Smaller models reduce the memory footprint and run more efficiently on mobile and \gls{iot} devices. Most research addresses ways to reduce the number of parameters, such as SqueezeNet \cite{iandola_squeezenet:_2016}, that downsamples the data size for a thinner network. Others propose creating more efficient models that reduce the number of \acrshort{flop}s. MobileNets \cite{howard_mobilenets:_2017,sandler_mobilenetv2:_2018} decomposes the convolution filters into simpler operations, thus reduces the number of computations for the model. ShuffleNets \cite{zhang_shufflenet:_2017, ma_shufflenet_2018} uses a point-wise convolution operation and channel shuffling to reduce the number of computations. Commonly, all these models are less accurate compared to the state-of-the-art model, but far more efficient \cite{bianco_benchmark_2018}. 
 		
 	\item[Model compression] Pruning is a widespread compression technique. It is used to create sparse networks by removing the least contributing neurons and connections. Pruning has shown significant speed-ups with only a small loss in accuracy \cite{zhou_edge_2019}. The impact of compression is application dependent and can be applied to any pre-trained \gls{dnn}. Additionally, it can be used in combination with other techniques \cite{cheng_survey_2017}.
 	
@@ -157,7 +158,7 @@ In this section, we present studies aimed at centralized inference.
 	Quantization is a compression technique by using a more compact representation of network weights and activations, i.e., 16-bit floating-point instead of 32-bit floating-point \cite{cheng_survey_2017}. The extreme case is binarization, where weights and activations are learned as a binary representation. In BinaryConnect \cite{courbariaux_binaryconnect:_2015} and \gls{bnn} \cite{courbariaux_binarized_2016}, arithmetic operations are replaced with bit-wise operations, thus significantly improving the power-efficiency and inference latency. However, using binary weights for the extremely deep networks have shown significant degradation of model accuracy \cite{cheng_survey_2017}.
 	
 	In \cite{hinton_distilling_2015}, \gls{kd} is proposed. \gls{kd} is a framework to train \gls{dnn} in a student-teacher paradigm. The student network is penalized using the output of an ensemble of teacher networks. \gls{kd} can be viewed as compression of the ensemble of teacher networks into the student network \cite{cheng_survey_2017}. 
-	In \cite{romero_fitnets:_2014}, \gls{fitnet} is proposed. \gls{fitnet} is a method to train thinner and shallower student networks using a deeper teacher network. In \gls{fitnet}, the student network learns to mimic the teacher network. However, this approach requires the softmax loss function, which limits its usage \cite{cheng_survey_2017}.  
+	In \cite{romero_fitnets:_2014}, FitNet is proposed. FitNet is a method to train thinner and shallower student networks using a deeper teacher network. In FitNet, the student network learns to mimic the teacher network. However, this approach requires the softmax loss function, which limits its usage \cite{cheng_survey_2017}.  
 	
 	\item[Model Selection] Model selection aims to reduce inference by selecting an appropriately deep model. If a shallow model can produce satisfying predictions, time is saved by not running an unnecessarily deep model. In \cite{bolukbasi_adaptive_2017}, an adaptive model selection framework is proposed. The framework stacks three \gls{dnn}s with increasing depth and accuracy; \gls{alexnet}, \gls{googlenet}, and \gls{resnet}50. 
 	
@@ -184,7 +185,7 @@ In this section, we present studies aimed at centralized inference.
 	\begin{minipage}[t]{\linewidth}    
 		\centering                          
 		\includegraphics[width=.7\linewidth]{figures/models/branchy}
-		\captionof{figure}[Early Exit Architecture]{Early Exit Architecture}
+		\captionof{figure}[Early Exit Architecture]{Early Exit Architecture. Intermediate exits are added to the \acrfull{dag}.}
 		\label{fig:branchynet}
 	\end{minipage}
 	
@@ -193,7 +194,7 @@ In this section, we present studies aimed at centralized inference.
 	\begin{minipage}[t]{\linewidth}    
 		\centering                          
 		\includegraphics[width=.8\linewidth]{figures/models/skipnet}
-		\captionof{figure}[SkipNet]{SkipNet: Source \citetitle{wang_skipnet:_2017} \cite{wang_skipnet:_2017}}
+		\captionof{figure}[SkipNet]{In SkipNet, layers are skipped depending on the complexity of the input. Source \citetitle{wang_skipnet:_2017} \cite{wang_skipnet:_2017}}
 	\end{minipage}
 	
 	The framework adds complexity to the model by introducing skipping gates between intermediate layers of the network. The classifications are learned as a usual supervised learning problem using labeled data. Skipping-policies are learned using reinforcement learning by rewarding skipping decisions with a small impact on accuracy. The work shows that only a small fraction of inputs require these extremely deep models. Thus SkipNet can reduce the computational cost by 30\% of a\gls{resnet}101 on the ImageNet dataset. 
@@ -204,7 +205,7 @@ In this section, we present studies aimed at centralized inference.
 	\begin{minipage}[t]{\linewidth}    
 		\centering
 		\includegraphics[width=\linewidth]{figures/models/blockdrop}
-		\captionof{figure}[BlockDrop]{BlockDrop: Source \citetitle{wu_blockdrop:_2017} \cite{wu_blockdrop:_2017}}
+		\captionof{figure}[BlockDrop]{In BlockDrop, a policy network is trained to estimate the complexity of the input. Based on the complexity, a decision is made of which layer of a residual network to drop. Source \citetitle{wu_blockdrop:_2017} \cite{wu_blockdrop:_2017}}
 	\end{minipage}	
 	
 	
@@ -217,7 +218,7 @@ Collaborative inference of a \gls{dnn} is also known as model partitioning. Inst
 \begin{minipage}[t]{\linewidth}    
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/partitioning}
-	\captionof{figure}[Model partitioning]{Edge-Device model partitioning runs part of the model on-device and offloads the rest to edge processing.}
+	\captionof{figure}[Model partitioning]{For model partitioning, a part of the model is inferred on-device. The inference of the remaining layers is offloaded to the edge for processing.}
 	\label{fig:offlaoding}
 \end{minipage}
 
@@ -236,10 +237,11 @@ Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning schedu
 	
 	%	\gls{bottlenet} is a novel neural network module.
 	Client-side \gls{bottlenet} implements a reduction unit and a compressor unit. The reduction unit creates a smaller representation of the intermediate features by applying spatial-wise and channel-wise convolutions. The compressor applies lossy JPEG compression to the features. The server decompresses the received data, and the restoration unit restores the intermediate feature using channel-wise and spatial-wise deconvolution.	
+	
 	\begin{minipage}[t]{\linewidth}
 		\centering
 		\includegraphics[width=.8\linewidth]{figures/models/bottlenet}
-		\captionof{figure}[BottleNet Unit]{BottleNet Unit}
+		\captionof{figure}[BottleNet Unit]{In BottleNet, the input size is reduced using spatial- and channel-wise convolutions and compressed using lossy compression. The input is restored server-side to continue the inference process.}
 	\end{minipage}
 	
 	\gls{bottlenet} can achieve 84$\times$ bit savings compared offloading the entire image with less than 2\% degradation of accuracy. The deterioration is caused by lossy compression and compensated by compression-aware training. Under good networking conditions, the evaluation of \gls{bottlenet} shows that the best partition point is right after the first convolution, as a smaller representation of the input can already be found. 	
@@ -248,9 +250,10 @@ Neurosurgeon \cite{kang_neurosurgeon:_2017} is a lightweight partitioning schedu
 	\begin{minipage}[t]{\linewidth}
 		\centering
 		\includegraphics[width=\linewidth]{figures/models/cascaded}
-		\captionof{figure}[Cascaded \gls{dnn} over a computing hierarchy]{Cascaded \gls{dnn} over a computing hierarchy}
+		\captionof{figure}[Cascaded \gls{dnn} over a computing hierarchy]{A distributed exit model is partitioned to let a client handle the first or first couple of exit, and offload the remaining inference to one or more servers.}
 		\label{fig:early-exit-colab}
 	\end{minipage}
+
 	The model is distributed in a manner, where one or more exits are processed by the end-device and one or more exits on the edge server. Communication efforts can be reduced by terminating the process locally if a satisfying prediction is obtained. Nonetheless, model partitioning introduces communication delay to the inference task that must be accounted for, e.g., using one of the methods for feature compression.
 	
 	\gls{ddnn} \cite{teerapittayanon_distributed_2017} extends the idea by proposing a framework for geographically distributed end-devices to solve an inference task collaboratively. It is decided to exit the inference locally if a satisfactory prediction score is obtained. If not, the intermediate outputs from the geographically distributed end-devices are aggregated for sensor fusion by a \gls{dnn} at a higher level in the hierarchy. The fusing \gls{dnn} produces a prediction using data from all upstream end-devices. Using the early exit model in this fashion does not only show improvement for early exits but also the final prediction. Additionally, \gls{ddnn}s offer benefits from distributed computing to provide fault tolerance, when some local \gls{dnn} comes with a poor or a missed prediction. \gls{ddnn} has been proposed for Industry 4.0 to solve autonomous defect detection in \cite{li_deep_2018}. 

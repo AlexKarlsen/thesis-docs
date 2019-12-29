@@ -324,18 +324,17 @@ The early exits of \gls{bresnet} are placed immediately after a resolution block
 
 \newpage\subsection{Branchy-DenseNet}
 
-Densely Connected Network or \gls{densenet} is proposed in \cite{huang_densely_2016}. In \cite{huang_densely_2016}, it discovered that many of the residual layers in \gls{resnet}s only have a small contribution to the output, and can be dropped during training. \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to re-learn redundant information by adding previously learned information to the output. Figure \ref{fig:densenet} shows the dense connections that combine features from all subsequent layers in a block. Note, the feature size grows throughout a densely connected block as a result of concatenation. Therefore the \gls{densenet} can be thinner as the number of channels can be fewer, which makes it more efficient compared to plain and residual networks. Additionally, densely connected blocks have a regularizing effect, thus reducing overfitting and have shown to train better on smaller data sets.
+Densely Connected Network or \gls{densenet} is proposed in \cite{huang_densely_2016}. In \cite{huang_densely_2016}, it discovered that many of the residual layers in \gls{resnet}s only have a small contribution to the output, and can be dropped during training. \gls{densenet} combines features from all subsequent layers by concatenation, as there is no need to re-learn redundant information by adding previously learned information to the output. Figure \ref{fig:densenet} shows the dense connections that combine features from all subsequent layers in a block. 
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/densenet}
-	\caption[\gls{densenet}]{\gls{densenet}: The densely connected layers are similarly grouped into blocks called dense blocks. Source: \citetitle{huang_densely_2016} \cite{huang_densely_2016}.}
+	\caption[\gls{densenet}]{\gls{densenet}: The densely connected layers concatenate the output of all previous layers. The layers are grouped into blocks called dense blocks. Source: \citetitle{huang_densely_2016} \cite{huang_densely_2016}.}
 	\label{fig:densenet}
 \end{figure}
+ 
+Note, the feature size grows throughout a densely connected block as a result of concatenation. Therefore the \gls{densenet} can be thinner as the number of channels can be fewer, which makes it more efficient compared to plain and residual networks. Additionally, densely connected blocks have a regularizing effect, thus reducing overfitting and have shown to train better on smaller data sets. Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet}-121 architecture.
 
-Table \ref{tbl:densenet121} describes the block and layers of the \gls{densenet} architecture. 
-
-In \cite{huang_multi-scale_2017}, they argue, that the collective knowledge from all preceding layers of \gls{densenet} gives more diversified features compared to the correlated features of \gls{resnet}s. In \cite{huang_multi-scale_2017}, the diversified features are shown to be more suited for early exiting, as the information is better preserved using densely connected layers. Additionally, they show the placement of an intermediate classifier in a \gls{densenet} has less impact on the learned features for a later classifier. They argue that the collapsed information to generate a short-term feature for an earlier classifier can be restored by the dense connections for a later classifier.
 \begin{small}
 	\begin{minipage}[c]{\linewidth}
 		\begin{longtabu}{>{\bfseries}X|X[c]|X[2c]}
@@ -412,18 +411,24 @@ In \cite{huang_multi-scale_2017}, they argue, that the collective knowledge from
 		\color{caption-color}{\textit{Source: \citetitle{huang_densely_2016}, by \citeauthor{huang_densely_2016} \cite{huang_densely_2016}, describes a full list of Densely Connected Networks (\gls{densenet}-121, \gls{densenet}-169, \gls{densenet}-201 and \gls{densenet}-264)}} \color{main-color}
 	\end{minipage}
 \end{small}
+
 In the same manner, as for \gls{resnet} exits consisting of a pooling layer and a linear classifier is attached to the model.
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/models/b-densenet}
 	\caption[B-\gls{densenet} architecture]{\gls{bdensenet}: \gls{densenet}-121 extended to implement the \gls{branchynet} framework. The figure illustrates the placement of exits after a densely connected block. If the sample could not be exited, the inference continues to the transition layer, which downsamples the input for the next dense block. }
 	\label{fig:b-densenet}
 \end{figure}
+
+In \cite{huang_multi-scale_2017}, they argue, that the collective knowledge from all preceding layers of \gls{densenet} gives more diversified features compared to the correlated features of \gls{resnet}s. In \cite{huang_multi-scale_2017}, the diversified features are shown to be more suited for early exiting, as the information is better preserved using densely connected layers. Additionally, they show the placement of an intermediate classifier in a \gls{densenet} has less impact on the learned features for a later classifier. They argue that the collapsed information to generate a short-term feature for an earlier classifier can be restored by the dense connections for a later classifier. 
 For the \gls{bdensenet}, we place the exits after the densely connected blocks, for two reasons: 
+
 \begin{enumerate}
 	\item We must go sufficiently deep to obtain features that can correctly classify some samples.
 	\item We place exits before the transition layer to avoid unnecessary downsampling if exiting is already possible. 
 \end{enumerate}
+
 Note, partitioning for remote execution is done after the transition layer, as a smaller data size can be offloaded. Figure \ref{fig:b-densenet} illustrates the exit placement.
 
 The early exits were placed after down-sampling layers or block, with the primary reason to reduce the offloading data size of intermediate features for collaborative inference on edge. However, in \cite{huang_multi-scale_2017}, the placement of early exit is placed within the resolution- and dense blocks. They implement new versions of the \gls{resnet} and \gls{densenet} with the same number of layers within each block. They evenly distributed two exits within each block, i.e., eight exits in all. We limited ourselves to only four early exits classifiers, in order not to slow the interference process. In fact, in \cite{berestizshevsky_sacrificing_2019}, the same placement of classifiers is used. To limit the delay overhead and reduce wasted computation if samples cannot be exited. Our exits only consist of a pooling layer to reduce the feature size and a linear classifier, as in \cite{kaya_shallow-deep_nodate}, whereas in \cite{teerapittayanon_branchynet:_2016}, they add convolution layers in exit branches. 
@@ -530,7 +535,7 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 		\begin{minipage}[t]{\linewidth}
 			\centering
 			\includegraphics[width=.7\linewidth]{figures/lr.png}
-			\captionof{figure}[Cosine Annealing Learning Rate]{Cosine Annealing Learning Rate} 
+			\captionof{figure}[Cosine Annealing Learning Rate with Warm Restarts]{The cyclic learning rate of the using cosine annealing with warms restarts} 
 			\label{fig:cosineannealing}
 		\end{minipage}
 		
@@ -547,7 +552,7 @@ Table \ref{tbl:platforms} lists the hardware platforms used for the experiments 
 		\begin{minipage}[t]{\linewidth}
 			\centering
 			\includegraphics[width=.7\linewidth]{figures/augmentation/augmentation_high_resolution.png}
-			\captionof{figure}[Image Augmentaion Example]{Image Augmentation of an elephant}
+			\captionof{figure}[Image Augmentaion Example]{Image Augmentation using \gls{imgaug}. The augmentation randomly applies noise injection, flipping, and affine transformations.}
 			\label{fig:augmentation}
 		\end{minipage}
 		
