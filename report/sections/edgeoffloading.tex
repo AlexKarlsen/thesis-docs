@@ -6,7 +6,7 @@ In this chapter; section \ref{sec:edge-aee} presents our offloading scheme, sect
 
 \section{\acrfull{aee} for Time-Critical Applications} \label{sec:edge-aee}
 
-We propose \acrfull{aee}, an inference inference scheme based on early exit \gls{dnn}. It utilizes the inherent properties of the early exit model. It adaptively maximizes the reliability using a best-effort approach by continuously returning predictions as they become ready. The inference is only terminated when a deadline is violated. The increasingly confident predictions from the continuous reply of prediction enables service not possible using conventional \gls{dnn}s. Our scheme is flexible as it can function for on-device, edge offloading, or collaborative inference architectures. 
+We propose \acrfull{aee}, an inference scheme based on a early exit \gls{dnn}. It utilizes the inherent properties of the early exit model. It adaptively maximizes the reliability using a best-effort approach by continuously returning predictions as they become ready. The inference is only terminated when a deadline is violated. The increasingly confident predictions from the continuous replies enables service not possible using conventional \gls{dnn}s. Our scheme is flexible as it can function for on-device, edge offloading, or collaborative inference architectures. 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
@@ -20,7 +20,7 @@ We propose \acrfull{aee}, an inference inference scheme based on early exit \gls
 	\label{fig:offloading-scheme}
 \end{figure} 
 
-Figure \ref{fig:offloading-scheme} illustrates the scheme in the context of edge offloading. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Data is immediately offloaded upon acquisition from the end device to edge server not to waste idle time on the edge server. The edge server runs the inference process, and whenever a prediction is ready, it is sent back to the end device. Figure \ref{fig:offloading-scheme-timeout} illustrates a case where a timeout occurs, and only two predictions are available. Timeouts occur when a deadline is violated. It can be caused by unexpected delays from congestions in the communication medium or due to high server workloads and others. Successively receiving prediction allow the user to select the prediction among received replies. We examine ways to select the prediction using information from all replies.
+Figure \ref{fig:offloading-scheme} illustrates the scheme in the context of edge offloading. Figure \ref{fig:offloading-scheme-successful} illustrates the continuous reply of predictions. Data is immediately offloaded upon acquisition from the end device to edge server not to waste idle time on the edge server. The edge server runs the inference process, and whenever a prediction is ready, it is sent back to the end device. Figure \ref{fig:offloading-scheme-timeout} illustrates a case where a timeout occurs. Timeouts occur when a deadline is violated. In this case only two predictions are available. Timeouts can be caused by unexpected delays from congestions in the communication medium or due to high server workloads and others. Successively receiving prediction allow the user to select the prediction among the received replies. We examine ways to select the prediction using information from all replies.
 \section{System Model} \label{sec:edge-system-model}
 In this section, we define the system model for \gls{aee}. Note, the notations defined in chapter \ref{ch:earlyexit} is also used here, i.e., $ C $ denotes the number of the image classes, $ N $ denotes the number of the exit points in a DNN, $ I $ denotes the number of images. 	
 \begin{enumdescript}
@@ -194,7 +194,7 @@ The function takes as input the top-5 score vector $ \bm{\hat{y}}_{i,n}^{top5}$ 
 	\end{align*}
 }      
 
-Having multiple score vectors $ \left\{\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n}\right\}  $ in the original class space, allow us to formulate a $ n \times C $ score matrix $ \bm{\hat{Y}}_{i}^{n \times C} $.
+Having multiple score vectors $ \left\{\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{i,n}\right\}  $ in the original class space allow us to formulate a $ n \times C $ score matrix $ \bm{\hat{Y}}_{i}^{n \times C} $.
 \begin{align}
 \bm{\hat{Y}}_{i}^{n \times C} =
 \begin{bmatrix}
@@ -205,10 +205,11 @@ Having multiple score vectors $ \left\{\bm{\hat{y}}_{i,1}, \dots, \bm{\hat{y}}_{
 \end{bmatrix}
 \end{align}
 
-Formulating as matrix ease the implementation of combination functions using \gls{numpy} \cite{oliphant_numpy:_2006}, to use methods from linear algebra, e.g. finding the maximum entry and summing the columns.
+Formulating as matrix ease the implementation of combination functions using \gls{numpy} \cite{oliphant_numpy:_2006}. 
 \subparagraph{Example: Prediction matrix and information combination} 
 \blockquote[]{	 	
 	For this classification example, the number of classes $C=10$. We receive three predictions within a time frame and assume the predictions have been expanded.
+	
 	We construct the matrix $ \bm{\hat{Y}}_{i}^{n \times C} $
 	\begin{align*}
 	\bm{\hat{Y}}_{i}^{n \times C} =
@@ -230,16 +231,18 @@ Formulating as matrix ease the implementation of combination functions using \gl
 		\end{bmatrix}_{1 \times 10}
 		\end{align*}
 		The resulting prediction becomes label 0.
-		\item Using the method max score-margin, we find the largest difference between the two highest scores in row, and the resulting prediction becomes label 5.
+		\item Using the method max score-margin, we find the largest difference between the two highest scores. The largest difference is found in the second row. Thus, the resulting prediction becomes label 5.
 	\end{enumerate}
-	Evidently, combining the scores gives different outcomes in this theoretical yet realistic example.
+	Combining the scores gives different outcomes for the combination functions in this theoretical yet realistic example.
 	
 }
 
 \section{Results} \label{sec:edge-results}
 
-In this section, we present a theoretical study of using the combination functions. We have conducted practical experiments to maximize the reliability when offloading the inference task to the edge using both the early exit models and the conventional models. We compare local processing on the \gls{nuc} as end device and edge offloading to \gls{jetson} or \gls{gpu-ws} as edge servers, and we evaluate the impact of reliable communication when offloading using \gls{tcp}. 
+In this section, we present a theoretical study of using the combination functions. We have conducted practical experiments to maximize the reliability when offloading the inference task to the edge using both the early exit models and the conventional models. We compare local processing on the \gls{nuc} as end-device and edge offloading to \gls{jetson} or \gls{gpu-ws} as edge servers, and we evaluate the impact of reliable communication when offloading using \gls{tcp}. 
+
 \subsection{Information Combination Analysis}
+
 We examine the possibility of combining information from multiple predictions to improve accuracy. We studied top-1 predictions results and found that we encounter overthinking as in \cite{kaya_shallow-deep_nodate}. A concrete example is the 6th sample from the \gls{bresnet}.
 \begin{align*}
 c_6=0,
@@ -266,10 +269,10 @@ c_6=0,
 \end{bmatrix}
 \end{align*}
 Where $ c_6 $ is the ground truth class label, $ \bm{\hat{c}}_6 $ is the predicted class labels, $ \hat{y}^*_6 $ is the corresponding prediction score for the class label at all exits. $ b $ denotes the correctness of each exit as a binary value, where 1 is correct 0 is incorrect.
-The prediction from the first exit is correct. However, based on the scores, the model is more confident about the last prediction. Using the max confidence prediction will become label 62.  In \cite{kaya_shallow-deep_nodate}, they show marginal improvements using the max score. Unfortunately, we did not achieve the same improvements. Table \ref{tbl:latest-vs-max} show our results when having prediction from all exits available. Using the confidence max reduces the accuracy compared to the latest received prediction. The small reduction using max confidence is most likely caused by larger uncertainties from the less accurate early exits. In \cite{kaya_shallow-deep_nodate}, they do not operate with a time constraint and always have all predictions available. We cannot be sure to have received all predictions within the time frame. Our goal is to improve accuracy when all predictions are not available. 
-\begin{minipage}[t]{\linewidth}
+
+The prediction from the first exit is correct. However, based on the scores, the model is more confident about the last prediction. Using the max confidence prediction will become label 62. In \cite{kaya_shallow-deep_nodate}, they show marginal improvements using the max score. Unfortunately, we did not achieve the same improvements. Table \ref{tbl:latest-vs-max} show our results when having prediction from all exits available.
 	\begin{longtabu}{>{\bfseries}X|X|X}
-		\caption[]{} \label{tbl:latest-vs-max} \\
+		\caption[Lastest Received Prediction vs. Max score using Top-1]{Lastest Received Prediction vs. Max score using Top-1} \label{tbl:latest-vs-max} \\
 		\toprule
 		\rowfont{\bfseries}
 		Model & Latest Received Prediction & Max Score   \tabularnewline
@@ -293,7 +296,8 @@ The prediction from the first exit is correct. However, based on the scores, the
 		MSDNet		& 0.8640 	& 0.8598 \tabularnewline							
 		\bottomrule
 	\end{longtabu}
-\end{minipage}
+
+Using the confidence max reduces the accuracy compared to the latest received prediction. The small reduction using max confidence is most likely caused by larger uncertainties from the less accurate early exits. In \cite{kaya_shallow-deep_nodate}, they do not operate with a time constraint and always have all predictions available. We cannot be sure to have received all predictions within the time frame. Our goal is to improve accuracy when all predictions are not available. 
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering}
 	\centering
@@ -306,7 +310,8 @@ The prediction from the first exit is correct. However, based on the scores, the
 	\caption[Model Highest Scoring Exit]{Model Highest Scoring Exit}
 	\label{fig:exit-highscore}
 \end{figure}
-Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit, given the number of exit predictions received. The result shows that the score of later exits is not exclusively higher than the earlier exits. Additionally, it shows whether the highest score exit is correct or incorrect. The result shows that the frequency of an early exit being incorrect when it is the highest-scoring is more often than for later exits. In general, the scores from later exits scores of \gls{bresnet} is more significant than for the other two models. 
+Figure \ref{fig:exit-highscore} shows the distribution of highest scoring exit, given the number of exit predictions received. The result shows that the score of later exits is not exclusively higher than the earlier exits. Additionally, it shows whether the highest score exit is correct or incorrect. It shows that the frequency of an early exit being incorrect when it is the highest-scoring is more often than for later exits. In general, the scores from later exits scores of \gls{bresnet} is more larger than for the other two models. 
+
 Figure \ref{fig:top-5-cumulative}  shows the top-5 accuracy and cumulative top-5 accuracy. The cumulative top-5 accuracy contains all class labels from the top-5 classes of all previous exits. 
 \begin{figure}
 	\centering
@@ -316,7 +321,11 @@ Figure \ref{fig:top-5-cumulative}  shows the top-5 accuracy and cumulative top-5
 \end{figure}
 
 The figure shows that having multiple predictions does indeed improve cumulative top-5. Hence there is a better chance of the correct label being in the set of predictions when using all available exit outputs. We question whether we can combine top-5 scores to more confidently select the correct prediction and thereby improve accuracy. 
-In figure \ref{fig:theoretical-info-combi}, show the accuracy when the combination function is applied when having one to all exit predictions available. The brown line \textit{optimum-top5} would be the maximum achievable accuracy if we were able to cherry-pick the right class among the cumulative top-5 predictions. The purple line \textit{optimum-top1} would be the achievable accuracy if we were able to cherry-pick the correct class among the cumulative top-1 predictions. 
+
+We analyzed the achievable accuracy using the combination function having one to all prediction available. In figure \ref{fig:theoretical-info-combi}, we show the results of our analysis.  
+
+The brown line \textit{optimum-top5} would be the maximum achievable accuracy if we were able to cherry-pick the right class among the cumulative top-5 predictions. The purple line \textit{optimum-top1} would be the achievable accuracy if we were able to cherry-pick the correct class among the cumulative top-1 predictions.
+
 Only using the confidence sum for the \gls{msdnet} shows a small improvement in accuracy exclusively when all predictions are available. When predictions from all exits are not available, none of the proposed combination functions can improve the accuracy. There is a more significant difference between the accuracy of the exits of both \gls{bresnet}'s and \gls{bdensenet}'s compared to \gls{msdnet}. The early exit contains more uncertainty which disturbs the prediction. Thus, only the \gls{msdnet} can improve the accuracy when having all predictions available.
 The score margin produces the worst results for all models. Thus, having a big difference between the two highest-scoring classes is not equivalent to being correct. Using the confidence max achieves close to the same performance as using the latest received prediction for \gls{bresnet} and \gls{bdensenet}. Our results show that merely using the latest received predictions is the best overall choice for these early exit models. Henceforth we use the latest received prediction.
 
@@ -332,8 +341,10 @@ The score margin produces the worst results for all models. Thus, having a big d
 	\caption[Combination Function with $ n $ Available Exits]{Combination Function with $ n $ Available Exits}
 	\label{fig:theoretical-info-combi}
 \end{figure}
+
+
 \subsection{Edge Offloading: \gls{aee} vs Conventional Offloading}
-We set up our system using NUC as end-device and both \gls{jetson} and \gls{gpu-ws} as edge servers. We let all the inference of validation samples be offloaded to the edge servers. For the delay threshold we use 0.1 ms granularity by setting $\delta = \{0,0.1,0.1, \dots, 300,0\}$. Figure \ref{fig:practical-offloading}  shows the achieved reliability for the delay threshold. Generally, the \gls{gpu-ws} achieves higher reliability at lower delays than the \gls{jetson}. The figure shows how \gls{aee} enables service at more stringent delay thresholds that are not even possible when offloading conventional models for edge inference. The scheme successfully improves the reliability below 75 ms for the \gls{jetson}, and below 50 ms for the \gls{gpu-ws} using \gls{bresnet} and \gls{bdensenet}. 
+We set up our implementation using NUC as end-device and both \gls{jetson} and \gls{gpu-ws} as edge servers. We let all the inference of validation samples be offloaded to the edge servers. For the delay threshold we use 0.1ms granularity by setting $\delta = \{0.1,0.2, \dots, 250.0\}$. Figure \ref{fig:practical-offloading} shows the achieved reliability for the delay threshold. Generally, the \gls{gpu-ws} achieves higher reliability at lower delays than the \gls{jetson}. The figure shows how \gls{aee} enables service at more stringent delay thresholds that are not even possible when offloading conventional models for edge inference. The scheme successfully improves the reliability below 75 ms for the \gls{jetson}, and below 50 ms for the \gls{gpu-ws} using \gls{bresnet} and \gls{bdensenet}. 
 No model achieves superior reliability at all delays, which means the selection of models should be based on the delay threshold, the available bandwidth, and the inference latency. The figure shows the model to select given the delay threshold with the available bandwidth for this test by selecting the model achieving the highest reliability.
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=1pt,captionskip=1pt}
@@ -346,7 +357,9 @@ No model achieves superior reliability at all delays, which means the selection 
 	\caption[Offloading NUC to Jetson]{Offloading NUC to Jetson}
 	\label{fig:practical-offloading}
 \end{figure}
+
 \subsection{Local On-Device Inference vs. Edge Offloading}
+
 We compare edge offloading inference to edge servers with local inference on the \gls{nuc}. In figure \ref{fig:resnet-offloading-vs-local} we compare the \gls{resnet} based models. In figure \ref{fig:densenet-offloading-vs-local} the \gls{densenet} based models and lastly in figure \ref{fig:msdnet-offloading-vs-local} the \gls{msdnet} model.
 Generally, the figures show the impact of adding communication. Communication latency introduces additional uncertainty, which softens the curves and makes the steps to next exit less sharp compared to local inference. Note, there is a gap in reliability between local and edge. The reason why local execution can obtain higher reliability is due to deadline violations caused by significant variations in communication time. If we extend the x-axis to go above 1s, we would be able to see that the gap is closing. 
 \begin{figure}
@@ -374,7 +387,8 @@ Figure \ref{fig:resnet-offloading-vs-local} shows how the \gls{aee} scheme for e
 	\label{fig:densenet-offloading-vs-local}
 \end{figure}
 
-The \gls{densenet} tells a somewhat different story. We are still able to improve reliability remarkably under stringent delay requirements using \gls{aee} compared to offloading a conventional model and also to local inference. However, when reaching 70-80 ms on \gls{jetson}, all other schemes start to outperform  \gls{aee} edge offloading. Note, that local inference of the conventional model is always faster than offloading to \gls{jetson}. The performance difference between the \gls{jetson} and \gls{nuc} is small, when we compare to \gls{gpu-ws}, offloading the conventional model more reliable under 75 ms. We elaborate on the small performance gap after the \gls{msdnet}.
+The \gls{densenet}s tell a somewhat different story. We are still able to improve reliability significantly under stringent delay requirements using \gls{aee} compared to offloading a conventional model and also to local inference. However, when reaching 70-80 ms on \gls{jetson}, all other schemes start to outperform  \gls{aee} edge offloading. Note, that local inference of the conventional model is always faster than offloading to \gls{jetson}. For the \gls{gpu-ws} offloading the conventional model is more reliable under 75 ms. We can conclude, that the difference in computing performance between the \gls{jetson} and \gls{nuc} is small. The \gls{nuc} is a relatively powerful device compared to other \gls{iot} device, e.g. the Raspberry Pi. The \gls{nuc} has a low power Intel i7 \gls{cpu}. In most scenarios in real-life, end-devices are more likely to be equipped with low-end ARM processors or even smaller processing units, which will degrade the inference time of any of the models. In \cite{zheng_apache/incubator-tvm_nodate}, they report average runtime of 726.0 ms of \gls{resnet}50 on Raspberry Pi, i.e., such low-end devices are infeasible for real-time processing. Other end-devices may not even be able to run any of the models locally, which makes offloading inevitable. Given these results, the edge servers may not necessarily need to be equipped with powerful \gls{gpu}s, as the NUC can achieve such high performance specially when running the \gls{msdnet}. 
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering, farskip=0pt,captionskip=0pt}
 	\centering
@@ -387,9 +401,13 @@ The \gls{densenet} tells a somewhat different story. We are still able to improv
 	\label{fig:msdnet-offloading-vs-local}
 \end{figure}
 
-\gls{msdnet} tells an entirely different story. The local inference is always able to achieve higher reliability, disregardless of offloading to \gls{jetson} or \gls{gpu-ws}. 
-Offloading \gls{aee} to the edge improves system reliability in general compared to on-device \gls{aee} inference. Especially, \gls{aee} using \gls{bresnet} at the edge outperforms local inference \gls{resnet}-based model under stringent latency requirements. The improvement is most significant when using the \gls{gpu-ws}, which is a significantly more powerful machine. For the \gls{msdnet}, our offloading solution was uncompetitive with local execution. The NUC is a very powerful end-device with a low power Intel i7 \gls{cpu}. In most scenarios in real-life, end-devices are more likely to be equipped with low-end ARM processors or even smaller processing units, which will degrade the inference time of any of the models. In \cite{zheng_apache/incubator-tvm_nodate}, they report average runtime of 726.0 ms of \gls{resnet}50 on Raspberry Pi, i.e., such low-end devices are infeasible for real-time processing. Other end devices may not even be able to run any of the models locally, which makes offloading inevitable. Given these results, the edge servers may not necessarily need to be equipped with powerful \gls{gpu}s, as the NUC can achieve such high performance running the \gls{msdnet}. These results illustrate the complexity of offloading the inference task, as we were not able to find a single model that provided the best reliability for all delay thresholds.
-The mean, standard deviation, minimum- and maximum value for the communication time is given in table \ref{tbl:time-offloading}. The mean of the added communication was 25ms, with a standard deviation of 110.93ms, which exemplifies the instability of communication delays. In the worst case, it takes almost 1s to send an image.
+The \gls{msdnet} tells an entirely different story. The local inference is always able to achieve higher reliability, disregardless of offloading to \gls{jetson} or \gls{gpu-ws}. 
+Offloading \gls{aee} to the edge improves system reliability in general compared to on-device \gls{aee} inference. Especially, \gls{aee} using \gls{bresnet} at the edge outperforms local inference \gls{resnet}-based model under stringent latency requirements. The improvement is most significant when using the \gls{gpu-ws}, which is a significantly more powerful machine. For the \gls{msdnet}, our offloading solution was uncompetitive with local execution. These results illustrate the complexity of offloading the inference task, as we were not able to find a single model that provided the best reliability for all delay thresholds.
+
+\subsection{Communication Latency}
+
+We measured the communication times for offloading. In table \ref{tbl:time-offloading},
+we present the statistics for the measurements.
 \begin{longtabu}{>{\bfseries}X[2]|X|X|X|X}
 	\caption[Communication Statistics]{Communication Statistics} \label{tbl:time-offloading} \\
 	\toprule
@@ -410,22 +428,28 @@ The mean, standard deviation, minimum- and maximum value for the communication t
 	\bottomrule
 \end{longtabu}
 
-We set up a test, where we sent the images from the client to the server. We logged the network traffic and analyzed the package overhead using \gls{wireshark} \cite{noauthor_wireshark_nodate}, e.g., acknowledgments packets, retransmission packets, and other controlling overhead used by TCP to ensure reliable transmission.  Figure \ref{fig:tcp-overhead} shows the impact of \gls{tcp} package overhead on the transmission delay. 
+The meantime for the communication delay was 25ms, with a standard deviation of 110.93ms, which exemplifies the instability of communication delays. In the worst case, it takes almost 1s to send an image.
+
+To examine the impact of reliable communication, we set up another test. The images are sent from the client to the server. Using \gls{wireshark} \cite{noauthor_wireshark_nodate}, we logged the network traffic and analyzed the package overhead, e.g., acknowledgements packets, retransmission packets, and other controlling overhead used by \gls{tcp} to ensure reliable transmission. Figure \ref{fig:tcp-overhead} shows the density of \gls{tcp} package overhead for three scenarios. 
 \begin{figure}
 	\centering
 	\includegraphics[width=.5\linewidth]{figures/tcp/density_legend}
 	\includegraphics[width=.8\linewidth]{figures/tcp/density}
-	\caption[TCP retransmission overhead]{TCP retransmission overhead}
+	\caption[TCP retransmission overhead]{TCP packet overhead}
 	\label{fig:tcp-overhead}
 \end{figure}
-The test was made in three different scenarios (meeting room, kitchen, and corridor). For the scenarios, the end-device is moved further away from the server. The distance reduces the quality of the communication link. In a poor communication environment, \gls{tcp} can be expected to have a high overhead caused by increasing retransmissions, thus harming the overall delay.  
-
+The test was made in three different scenarios (meeting room, kitchen, and corridor). For the scenarios, the end-device is moved further away from the server. The distance reduces the quality of the communication link. In a poor communication environment, \gls{tcp} can be expected to have a high overhead caused by increasing packet overhead from particularly retransmissions, thus harming the overall delay.  
 
 \section{Summary} \label{sec:edge-summary}
 
+We investigated combination function for client-side selection of the prediction. We did not find a combination function which improved the accuracy compared to use the lastest receieved prediction. 
 
-The improvement is most significant  Compared to the local inference of early exit models we improve the reliability with the \gls{gpu-ws} as edge, however using the \gls{jetson} the \gls{bdensenet} is providing a more reliable service locally, yet offloading to a stronger server, i.e., \gls{gpu-ws} show improvements.
 Using \gls{aee} for edge offloading enables service at more stringent delay thresholds not even possible when offloading conventional models for edge inference. The scheme successfully improves the reliability below 75 ms for the \gls{jetson}, and below 50 ms for the \gls{gpu-ws} using \gls{bresnet} and \gls{bdensenet}. Offloading the different models show overlapping reliability of the \gls{bresnet} and \gls{bdensenet}, hence it depends on the delay threshold which model to select.
+
+Generally offloading \gls{aee} improves the reliability compared to the local inference of \gls{aee}. When offloading to the powerful server, i.e., \gls{gpu-ws} the reliability for \gls{bresnet} is improved for delays below 200ms and 100ms for the \gls{densenet}. With the \gls{jetson} as edge, the reliability of both \gls{bresnet} and \gls{bdensenet} is improved below 70ms. Neither server could achieve competitive reliability to local inference of the \gls{msdnet}.
+
+We investigate the impact of reliable communication and show the large variations in delay when introducing communication. \gls{tcp} can cause big delay in poor communication environment which harms the reliability for real-time service. In chapter \ref{ch:discussion} we discuss alternatives to \gls{tcp}.
+
 
 
 

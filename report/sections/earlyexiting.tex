@@ -1012,12 +1012,17 @@ Notice, only a few numbers of samples require the last exits for any of the mode
 Note, for each threshold setting, the frequency of correctly and incorrectly classification for each model sum to one, i.e., summing all blue bars for the \gls{resnet}, is equivalent to all samples of the test.
 
 This result indicates that we can reduce the average inference delay by using the exit condition. In the next section, we evaluate the score threshold's impact on the accuracy-latency trade-off.
+
 \subsubsection{Score Threshold and the Accuracy-Latency Trade-Off}
-We inference all validation samples. We measure the time for a prediction to exit for raised score threshold $ \gamma = \left\{0.1, 0.2, \dots 0,9\right\} $. We let samples exit the inference using the score-margin function and log the prediction result. Figure \ref{fig:threshold-acc-lat-trade-off} shows the inference accuracy and latency of all the models on the platforms. The figure indicates the accuracy-latency trade-off implied by the early exit model.
+
+We infer all validation samples to all models. We measure the time for a prediction to exit for raised score threshold $ \gamma = \left\{0.1, 0.2, \dots 0,9\right\} $. We let samples exit the inference using the score-margin function and log the prediction result. Figure \ref{fig:threshold-acc-lat-trade-off} shows the inference accuracy and latency of all the models on the platforms. The figure shows the accuracy-latency trade-off implied by the early exit model.
+
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=0pt,captionskip=0pt}
 	\centering
-	\includegraphics[width=.4\linewidth]{figures/threshold_plots/inference_legend}
+	\includegraphics[width=.35\linewidth]{figures/threshold_plots/inference_legend}
+	\\
 	\subfloat[GPU Workstation\label{fig:early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/gpu_inference}}
 	\hfill
 	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_conv}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference}}
@@ -1028,10 +1033,13 @@ We inference all validation samples. We measure the time for a prediction to exi
 \end{figure}
 
 Raising the score threshold improves the models' accuracy but also introduces more latency. We showed in the previous section that raising the score threshold forces the model to use deeper exits more frequently. The raises threshold result in additional delay. In figure \ref{fig:threshold-acc-lat-trade-off-by-time} and \ref{fig:threshold-acc-lat-trade-off}, we show the accuracy-latency tradeoff by plotting accuracy against the meantime.
+
+
 \begin{figure}
 	\captionsetup[subfigure]{justification=centering,farskip=0pt,captionskip=0pt}
 	\centering
 	\includegraphics[width=.4\linewidth]{figures/threshold_plots/inference_by_time_legend}
+	\\
 	\subfloat[GPU Workstation\label{fig:gpu-early_exit_vs_time}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/gpu_inference_by_time}}
 	\hfill
 	\subfloat[Jetson TX2\label{fig:jetson-early_exit_vs_time}]{\includegraphics[width=\textwidth,height=.22\textheight,keepaspectratio]{figures/threshold_plots/jetson_inference_by_time}}
@@ -1128,4 +1136,4 @@ We measured inference time on three hardware platforms. The inference times are 
 We investigated score thresholds as a mechanism to exit samples early. We used both score-max and score-margin. The max score confidence threshold is widely used in early exiting literature \cite{leroux_resource-constrained_2015, leroux_cascading_2017, kaya_shallow-deep_nodate, berestizshevsky_sacrificing_2019}. The score-margin has not been used directly for early exiting but used in model selection frameworks \cite{park_big/little_2015,tann_flexible_2018}. The score-margin was able to remove most incorrectly exited samples when choosing a sufficiently high threshold value. Additionally, we compared the early exit capabilities of the models. The model comprised of densely connected blocks \gls{bdensenet} and \gls{msdnet} were able to correctly exit more samples at early exits, where the model designed for early exiting, \gls{msdnet} outperformed its competitors. 
 We studied the accuracy-latency trade-off for early exit models. Early exit models can reduce runtime compared to conventional models. The \gls{bresnet} has shown to be the best model at making a compromise between accuracy and latency on the \gls{gpu}-enabled platforms. In sharp contrast to the accuracy-latency trade-off on the NUC. On the NUC both the \gls{bdensenet} and \gls{msdnet} were better than \gls{bresnet}.
 Finally, we evaluated the reliability under different delay threshold. The conventional models are outperformed at stringent delay thresholds. \gls{bresnet} is still the better model on the \gls{gpu}-enabled platforms. However, not as exclusively as figure \ref{fig:threshold-acc-lat-trade-off-by-time} shows when using a score threshold. Figure \ref{fig:delay-threshold} shows that for certain delay thresholds, \gls{bdensenet} is better. For the \gls{nuc}, the \gls{msdnet} was the best choice.
-Figure \ref{fig:delay-threshold} encourages model selection, where the most reliable model is chosen based on the required delay threshold.
+Figure \ref{fig:delay-threshold} encourages model selection, where the most reliable model is chosen based on the required delay.
